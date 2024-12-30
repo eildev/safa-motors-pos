@@ -13,19 +13,15 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('branch_id')->unsigned();
-            $table->string('name');
-            $table->string('email')->nullable();
-            $table->string('phone');
+            $table->string('name', 150);
+            $table->string('slug', 255)->unique();
+            $table->string('business_name', 150)->nullable();
+            $table->string('phone', 20)->index(); // Indexed for performance
             $table->text('address')->nullable();
-            $table->decimal('opening_receivable', 12, 2)->nullable();
-            $table->decimal('opening_payable', 12, 2)->nullable();
-            // // calculated data
-            $table->decimal('wallet_balance',14,2)->default(0);
-            $table->decimal('total_receivable',20,2)->default(0);
-            $table->decimal('total_payable',20,2)->default(0);
-            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-            $table->timestamps();
+            $table->enum('customer_type', ['wholesale', 'retailer'])->comment('Customer Type')->index();
+            $table->decimal('due_balance', 12, 2)->default(0);
+            $table->softDeletes(); // Added soft delete
+            $table->timestamps(0); // Removed microsecond precision
         });
     }
 

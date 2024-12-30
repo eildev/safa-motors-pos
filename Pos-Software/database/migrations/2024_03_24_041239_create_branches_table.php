@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
-            $table->string('name',50);
-            $table->string('address',500);
-            $table->string('phone',20);
-            $table->string('email',50)->nullable();
-            $table->string('logo',50)->nullable();
-            $table->unsignedBigInteger('manager_id')->nullable();
-            $table->timestamps();
+            $table->string('name', 100)->unique(); // Branch name must be unique
+            $table->string('address', 250);
+            $table->string('phone', 20)->index(); // Indexed for better query performance
+            $table->string('email', 100)->nullable()->index(); // Increased length and added index
+            $table->string('logo', 150)->nullable(); // Adjusted length for larger file paths
+            $table->integer('manager_id')->nullable();
+            $table->softDeletes(); // Added for soft delete functionality
+            $table->timestamps(0); // Removed microsecond precision
         });
     }
 

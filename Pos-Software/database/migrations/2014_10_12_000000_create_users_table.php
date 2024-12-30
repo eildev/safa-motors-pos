@@ -13,16 +13,20 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('phone')->nullable();
+            $table->string('name', 150);
+            $table->string('email', 150)->unique()->index();
+            $table->string('phone', 20)->nullable()->index();
             $table->string('photo')->nullable();
             $table->text('address')->nullable();
+            $table->unsignedBigInteger('role_id')->default(2); // Default role set to "user"
             $table->timestamp('email_verified_at')->nullable();
-            $table->unsignedBigInteger('branch_id')->unsigned();
-            $table->string('password');
+            $table->unsignedBigInteger('branch_id')->index();
+            $table->string('password', 255);
             $table->rememberToken();
-            $table->timestamps();
+            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade')->onUpdate('cascade');
+            $table->softDeletes(); // Added for soft delete functionality
+            $table->timestamps(0); // Removed microsecond precision
         });
     }
 

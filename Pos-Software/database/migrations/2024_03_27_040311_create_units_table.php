@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('units', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 40);
-            $table->string('related_to_unit', 40)->nullable();
-            // + | *
-            $table->string('related_sign', 20)->nullable();
-            // Quantity
-            $table->integer('related_by')->default(0);
-            $table->timestamps();
+            $table->string('name', 50)->unique(); // Added unique constraint for unit name
+            $table->string('purchase_unit', 50)->nullable();
+            $table->string('sale_unit', 50)->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active')->index(); // Used enum for status
+            $table->softDeletes(); // Added for soft delete functionality
+            $table->timestamps(0); // Removed microsecond precision
         });
     }
 

@@ -13,18 +13,14 @@ return new class extends Migration
     {
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('branch_id')->unsigned();
-            $table->string('name');
-            $table->string('email')->nullable();
-            $table->string('phone');
-            $table->text('address')->nullable();
-            $table->decimal('opening_receivable', 12, 2)->nullable();
-            $table->decimal('opening_payable', 12, 2)->nullable();
-            // calculated
-            $table->decimal('wallet_balance', 14, 2)->default(0);
-            $table->decimal('total_receivable', 20, 2)->default(0);
-            $table->decimal('total_payable', 20, 2)->default(0);
-            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
+            $table->string('name', 255);
+            $table->string('slug', 255)->unique(); // Updated
+            $table->string('business_name', 255)->nullable();
+            $table->string('address', 255)->nullable();
+            $table->string('phone', 20)->nullable()->index(); // Indexed
+            $table->tinyInteger('supplier_type')->comment('1: Wholesale, 2: Retailer'); // Changed from enum
+            $table->decimal('due_balance', 12, 2)->default(0); // UnsignedDecimal used
+            $table->softDeletes(); // Added for soft delete functionality
             $table->timestamps();
         });
     }

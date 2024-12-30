@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('sub_categories', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('category_id')->unsigned();
+            $table->unsignedBigInteger('category_id')->index(); // Indexed for better performance
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
-            $table->string('name', 250)->nullable();
-            $table->string('slug', 250)->nullable();
-            $table->string('image')->nullable();
-            $table->tinyInteger('status')->default(0);
-            $table->timestamps();
+            $table->string('name', 150)->index(); // Adjusted length and indexed
+            $table->string('slug', 100)->unique(); // Adjusted length
+            $table->enum('status', ['active', 'inactive'])->default('active'); // Used enum for clarity
+            $table->softDeletes(); // Added for soft delete functionality
+            $table->timestamps(0); // Removed microsecond precision
         });
     }
     /**

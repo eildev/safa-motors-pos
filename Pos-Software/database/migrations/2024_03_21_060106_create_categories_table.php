@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 250)->nullable();
-            $table->string('slug', 250)->nullable();
-            $table->string('image', 250)->nullable();
-            $table->tinyInteger('status')->default(0);
-            $table->timestamps();
+            $table->string('name', 150)->index(); // Name field indexed with adjusted length
+            $table->string('slug', 100)->unique(); // Reduced slug length
+            $table->enum('status', ['active', 'inactive'])->default('active'); // Used enum for status
+            $table->softDeletes(); // Added soft deletes
+            $table->timestamps(0); // Removed microsecond precision
         });
     }
 

@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('brands', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('slug');
-            $table->string('image')->nullable();
-            $table->text('description')->nullable();
-            $table->timestamps();
+            $table->string('name', 150)->index(); // Adjusted length and indexed
+            $table->string('slug', 100)->unique(); // Adjusted length
+            $table->enum('status', ['active', 'inactive'])->default('active')->index(); // Used enum for status
+            $table->softDeletes(); // Added soft delete functionality
+            $table->timestamps(0); // Removed microsecond precision
         });
     }
 
