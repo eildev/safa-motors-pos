@@ -2,10 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Size;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Psize;
+
 use Carbon\Carbon;
+
 class SizeSeeder extends Seeder
 {
     /**
@@ -15,39 +17,34 @@ class SizeSeeder extends Seeder
     {
         $sizes = [
             [
-            'id' => 1,
-            'category_id' => 1,
-            'size' => 'S',
-            'created_at' => Carbon::now(),
+                'id' => 1,
+                'category_id' => 1,
+                'size' => 'S',
             ],
             [
-            'id' => 2,
-            'category_id' => 1,
-            'size' => 'M',
-            'created_at' => Carbon::now(),
+                'id' => 2,
+                'category_id' => 1,
+                'size' => 'M',
             ],
             [
-            'id' => 3,
-            'category_id' => 1,
-            'size' => 'L',
-            'created_at' => Carbon::now(),
+                'id' => 3,
+                'category_id' => 1,
+                'size' => 'L',
             ],
             [
-            'id' => 4,
-            'category_id' => 1,
-            'size' => 'XL',
-            'created_at' => Carbon::now(),
+                'id' => 4,
+                'category_id' => 1,
+                'size' => 'XL',
             ],
             [
-            'id' => 5,
-            'category_id' => 1,
-            'size' => 'XXL',
-            'created_at' => Carbon::now(),
+                'id' => 5,
+                'category_id' => 1,
+                'size' => 'XXL',
             ],
         ];
 
         foreach ($sizes as $size) {
-            Psize::create($size);
+            Size::create($size);
         }
     }
 }

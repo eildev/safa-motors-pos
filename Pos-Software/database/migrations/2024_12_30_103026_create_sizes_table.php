@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('sizes', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('category_id')->unsigned();
+            $table->string('size', 50)->nullable();
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
             $table->timestamps();
         });
     }
