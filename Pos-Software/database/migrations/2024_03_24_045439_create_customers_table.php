@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('business_name', 150)->nullable();
             $table->string('phone', 20)->index(); // Indexed for performance
             $table->text('address')->nullable();
-            $table->enum('customer_type', ['wholesale', 'retailer'])->comment('Customer Type')->index();
+            $table->enum('customer_type', ['Transport_owner', 'Technician', 'Floating'])->comment('Customer Type')->index();
             $table->decimal('due_balance', 12, 2)->default(0);
             $table->softDeletes(); // Added soft delete
             $table->timestamps(0); // Removed microsecond precision
