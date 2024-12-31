@@ -39,7 +39,7 @@
                                 <td><img src="{{asset('uploads/branch/'. $branch->logo)}}" alt="logo" height="60px" width="60px"></td>
                                 <td>
                                     @if(Auth::user()->can('branch.add'))
-                                    <a href="{{route('branch.edit',$branch->id)}}" class="btn btn-sm btn-primary btn-icon">
+                                    <a href="{{route('branch.edit',$branch->slug)}}" class="btn btn-sm btn-primary btn-icon">
                                         <i data-feather="edit"></i>
                                     </a>
                                     @endif

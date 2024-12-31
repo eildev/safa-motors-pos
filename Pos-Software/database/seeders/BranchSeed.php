@@ -15,6 +15,7 @@ class BranchSeed extends Seeder
     {
         Branch::create([
             'name' => 'Eclipse Blends and Blossom',
+            'slug' => 'eclipse-blends-and-blossom',
             'address' => 'House 41, Road 6, Block E, Banasree, Rampura, Dhaka, Bangladesh',
             'email' => 'ebb@gmail.com',
             'phone' => '01917344267',
