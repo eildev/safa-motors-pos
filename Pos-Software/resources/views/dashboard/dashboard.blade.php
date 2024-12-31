@@ -91,9 +91,7 @@
                                         <td class="text-end">0.00</td>
                                     </tr>
                                     @php
-                                        $products = App\Models\Product::where('branch_id', Auth::user()->branch_id)
-                                            ->orderBy('stock', 'asc')
-                                            ->get();
+                                        $products = App\Models\Product::get();
                                         //Show Stock Value
                                         $products->each(function ($product) {
                                             $product->total_stock_value = $product->cost * $product->stock;

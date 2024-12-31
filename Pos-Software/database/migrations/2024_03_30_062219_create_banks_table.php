@@ -17,11 +17,13 @@ return new class extends Migration
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->string('name', 100);
             $table->string('bank_branch_name', 150)->nullable();
-            $table->string('manager_name', 150)->nullable();
-            $table->string('phone_number', 20)->nullable();
-            $table->string('account_number', 20)->nullable();
-            $table->string('email', 200)->nullable();
+            $table->string('bank_branch_manager_name', 150)->nullable();
+            $table->string('bank_branch_phone', 20)->nullable();
+            $table->string('bank_account_number', 20)->nullable();
+            $table->string('bank_branch_email', 200)->nullable();
             $table->decimal('opening_balance', 12, 2)->default(0);
+            $table->decimal('cash_in', 12, 2)->default(0);
+            $table->decimal('cash_out', 12, 2)->default(0);
             $table->decimal('current_balance', 12, 2)->default(0);
             $table->enum('status', ['active', 'inactive'])->default('active')->index(); // Used enum for status
             $table->timestamps();
