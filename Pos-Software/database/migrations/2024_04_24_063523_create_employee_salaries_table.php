@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('balance', 12, 2)->comment('creadit - debit');
             $table->bigInteger('payment_method');
             $table->text('note')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

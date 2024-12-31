@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('purpose')->nullable();
             $table->string('number',20);
             $table->text('message');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

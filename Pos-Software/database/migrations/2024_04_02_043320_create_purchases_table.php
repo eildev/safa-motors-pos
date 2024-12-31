@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id')->unsigned();
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->unsignedBigInteger('supplier_id')->unsigned();
-            $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
+            $table->foreign('supplier_id')->references('id')->on('suppliers');
             $table->date('purchase_date');
             $table->unsignedBigInteger('purchase_by')->nullable();
             $table->foreign('purchase_by')->references('id')->on('users');

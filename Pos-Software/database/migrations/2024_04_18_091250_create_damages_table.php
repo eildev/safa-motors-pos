@@ -16,12 +16,12 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id')->unsigned();
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->unsignedBigInteger('product_id')->unsigned();
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            $table->integer('qty');
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->integer('quantity');
             $table->decimal('damage_cost', 12, 2)->comment('cost_price * qty');
-            $table->integer('sub_unit_qty')->nullable();
             $table->date('date');
             $table->text('note')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

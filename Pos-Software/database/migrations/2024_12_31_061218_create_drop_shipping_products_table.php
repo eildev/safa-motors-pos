@@ -11,17 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('investors', function (Blueprint $table) {
+        Schema::create('drop_shipping_products', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('branch_id')->unsigned();
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-            $table->string('name')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('type')->nullable();
-            $table->decimal('debit', 12, 2)->default(0);
-            $table->decimal('credit', 12, 2)->default(0);
-            $table->decimal('balance', 14, 2)->default(0);
-            $table->tinyInteger('status')->default(0);
+            $table->string('name', 255);
+            $table->string('slug', 255)->uniqid();
+            $table->decimal('cost_price', 12, 2)->nullable();
+            $table->decimal('sell_price', 12, 2)->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('investors');
+        Schema::dropIfExists('drop_shipping_products');
     }
 };
