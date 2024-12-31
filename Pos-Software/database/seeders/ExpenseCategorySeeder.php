@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\ExpenseCategory;
+
 class ExpenseCategorySeeder extends Seeder
 {
     /**
@@ -14,20 +15,24 @@ class ExpenseCategorySeeder extends Seeder
     {
         $expensCategorys = [
             [
-            'id' => 1,
-            'name' => 'Rent',
+                'id' => 1,
+                'name' => 'Rent',
+                'slug' => 'rent',
             ],
             [
-            'id' => 2,
-            'name' => 'Electricity',
+                'id' => 2,
+                'name' => 'Electricity',
+                'slug' => 'electricity',
             ],
             [
-            'id' => 3,
-            'name' => 'Paper Bill',
+                'id' => 3,
+                'name' => 'Paper Bill',
+                'slug' => 'paper-bill',
             ],
             [
-            'id' => 4,
-            'name' => 'Net Bill',
+                'id' => 4,
+                'name' => 'Net Bill',
+                'slug' => 'net-bill',
             ],
         ];
         foreach ($expensCategorys as $expensCategory) {

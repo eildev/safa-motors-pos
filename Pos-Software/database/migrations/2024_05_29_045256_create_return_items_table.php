@@ -20,6 +20,8 @@ return new class extends Migration
             $table->decimal('product_total');
             $table->decimal('return_profit')->nullable();
             $table->foreign('return_id')->references('id')->on('returns')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

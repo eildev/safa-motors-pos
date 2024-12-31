@@ -15,15 +15,19 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('branch_id')->unsigned();
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
+            $table->unsignedBigInteger('sale_id');
+            $table->foreign('sale_id')->references('id')->on('sales')->onDelete('cascade');
+            $table->unsignedBigInteger('customer_id');
+            $table->foreign('customer_id')->references('id')->on('customers');
             $table->string('return_invoice_number');
-            $table->integer('sale_id');
-            $table->integer('customer_id');
             $table->dateTime('return_date');
             $table->decimal('refund_amount');
             $table->string('return_reason')->nullable();
             $table->decimal('total_return_profit')->nullable();
             $table->tinyInteger('status')->default(0);
-            $table->integer('processed_by');
+            $table->unsignedBigInteger('processed_by');
+            $table->foreign('processed_by')->references('id')->on('users');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

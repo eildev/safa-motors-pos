@@ -11,17 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('promotions', function (Blueprint $table) {
+        Schema::create('drop_shipping_products', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('branch_id')->unsigned();
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-            $table->string('promotion_name');
-            $table->text('description')->nullable();
-            $table->date('start_date');
-            $table->date('end_date');
-            $table->enum('discount_type', ['percentage', 'fixed_amount']);
-            $table->integer('discount_value');
-            $table->enum('status', ['active', 'expired', 'inactive'])->default('active');
+            $table->string('name', 255);
+            $table->string('slug', 255)->uniqid();
+            $table->decimal('cost_price', 12, 2)->nullable();
+            $table->decimal('sell_price', 12, 2)->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -31,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('promotions');
+        Schema::dropIfExists('drop_shipping_products');
     }
 };

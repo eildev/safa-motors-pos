@@ -17,13 +17,14 @@ return new class extends Migration
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->date('expense_date');
             $table->unsignedBigInteger('expense_category_id')->nullable();
-            $table->foreign('expense_category_id')->references('id')->on('expense_categories')->onDelete('cascade');
+            $table->foreign('expense_category_id')->references('id')->on('expense_categories');
             $table->string('purpose', 255);
-            $table->decimal('amount');
+            $table->decimal('amount', 12, 2);
             $table->string('image')->nullable();
             $table->string('spender')->nullable();
             $table->integer('bank_account_id')->nullable();
             $table->text('note')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

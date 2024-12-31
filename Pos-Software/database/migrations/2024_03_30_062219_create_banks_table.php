@@ -25,7 +25,8 @@ return new class extends Migration
             $table->decimal('cash_in', 12, 2)->default(0);
             $table->decimal('cash_out', 12, 2)->default(0);
             $table->decimal('current_balance', 12, 2)->default(0);
-            $table->enum('status', ['active', 'inactive'])->default('active')->index(); // Used enum for status
+            $table->enum('status', ['active', 'inactive'])->default('active')->index();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

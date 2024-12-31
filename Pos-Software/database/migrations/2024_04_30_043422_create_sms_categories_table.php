@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('sms_categories', function (Blueprint $table) {
             $table->id();
             $table->string('name',255);
+            $table->string('slug', 255)->uniqid();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

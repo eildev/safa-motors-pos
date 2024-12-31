@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('credit', 12, 2)->nullable();
             $table->decimal('balance', 12, 2);
             $table->text('note')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
