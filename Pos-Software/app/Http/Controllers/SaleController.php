@@ -22,6 +22,7 @@ use App\Models\ViaSale;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Str;
 // use Validator;
 use Illuminate\Support\Facades\Validator;
@@ -35,7 +36,7 @@ class SaleController extends Controller
     }
     public function getCustomer()
     {
-        $data = Customer::where('branch_id', Auth::user()->branch_id)->latest()->get();
+        $data = Customer::latest()->get();
         return response()->json([
             'status' => 200,
             'message' => 'successfully save',
@@ -47,18 +48,18 @@ class SaleController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'phone' => 'required',
+            'customer_type' => 'required',
         ]);
 
         if ($validator->passes()) {
             $customer = new Customer;
-            $customer->branch_id = Auth::user()->branch_id;
             $customer->name = $request->name;
+            $customer->slug =  Str::slug($request->name);
             $customer->phone = $request->phone;
-            $customer->email = $request->email;
+            $customer->business_name = $request->business_name;
             $customer->address = $request->address;
-            $customer->opening_payable = $request->wallet_balance ?? 0;
-            $customer->wallet_balance = $request->wallet_balance ?? 0;
-            $customer->total_receivable = $request->wallet_balance ?? 0;
+            $customer->customer_type = $request->customer_type;
+            $customer->due_balance = $request->due_balance ?? 0;
             $customer->created_at = Carbon::now();
             $customer->save();
 

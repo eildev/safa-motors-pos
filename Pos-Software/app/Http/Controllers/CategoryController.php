@@ -48,7 +48,7 @@ class CategoryController extends Controller
     //     }
     // }
 
-    // using spati image optimizer 
+    // using spati image optimizer
     // public function store(Request $request)
     // {
     //     // Validate incoming request
@@ -148,6 +148,7 @@ class CategoryController extends Controller
 
     public function store(Request $request, ImageService $imageService)
     {
+        try {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
@@ -156,12 +157,11 @@ class CategoryController extends Controller
         if ($validator->passes()) {
             $category = new Category;
 
-            if ($request->hasFile('image')) {
-                $destinationPath = public_path('uploads/category/');
-                $imageName = $imageService->resizeAndOptimize($request->file('image'), $destinationPath);
-
-                $category->image = $imageName;
-            }
+            // if ($request->hasFile('image')) {
+            //     $destinationPath = public_path('uploads/category/');
+            //     $imageName = $imageService->resizeAndOptimize($request->file('image'), $destinationPath);
+            //     $category->image = $imageName;
+            // }
 
             $category->name = $request->name;
             $category->slug = Str::slug($request->name);
@@ -177,6 +177,13 @@ class CategoryController extends Controller
                 'error' => $validator->messages(),
             ]);
         }
+    } //end try
+    catch (\Exception $e) {
+        return response()->json([
+            'status' => 500,
+            'error' => 'An unexpected error occurred: ' . $e->getMessage(),
+        ]);
+    }//end catch
     }
 
 
@@ -214,18 +221,6 @@ class CategoryController extends Controller
             $category = Category::findOrFail($id);
             $category->name =  $request->name;
             $category->slug = Str::slug($request->name);
-            if ($request->image) {
-                $imageName = rand() . '.' . $request->image->extension();
-                $request->image->move(public_path('uploads/category/'), $imageName);
-                if ($category->image) {
-                    $previousImagePath = public_path('uploads/category/') . $category->image;
-                    if (file_exists($previousImagePath)) {
-                        unlink($previousImagePath);
-                    }
-                }
-                $category->image = $imageName;
-            }
-
             $category->save();
             return response()->json([
                 'status' => 200,
@@ -239,27 +234,22 @@ class CategoryController extends Controller
         }
     }
     public function status($id)
-    {
-        $category = Category::findOrFail($id);
-        $newStatus = $category->status == 0 ? 1 : 0;
-        $category->update([
-            'status' => $newStatus
-        ]);
-        return response()->json([
-            'status' => 200,
-            'newStatus' => $newStatus,
-            'message' => 'Status Changed Successfully',
-        ]);
-    }
+{
+    $category = Category::findOrFail($id);
+    $newStatus = $category->status === 'inactive' ? 'active' : 'inactive';
+    $category->update(['status' => $newStatus]);
+
+    return response()->json([
+        'status' => 200,
+        'newStatus' => $newStatus,
+        'message' => 'Status changed successfully.',
+    ]);
+}
+
     public function destroy($id)
     {
+
         $category = Category::findOrFail($id);
-        if ($category->image) {
-            $previousImagePath = public_path('uploads/category/') . $category->image;
-            if (file_exists($previousImagePath)) {
-                unlink($previousImagePath);
-            }
-        }
         $category->delete();
         return response()->json([
             'status' => 200,

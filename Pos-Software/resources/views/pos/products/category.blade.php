@@ -22,7 +22,7 @@
                                 <tr>
                                     <th>SN</th>
                                     <th>Category Name</th>
-                                    <th>Image</th>
+
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -55,19 +55,7 @@
                                 type="text" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
                             <span class="text-danger category_name_error"></span>
                         </div>
-                        <div class="mb-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h6 class="card-title">Category Image</h6>
-                                    <p class="mb-3 text-warning">Note: <span class="fst-italic">Image not
-                                            required. If you
-                                            add
-                                            a category image
-                                            please add a 400 X 400 size image.</span></p>
-                                    <input type="file" class="categoryImage" name="image" id="myDropify" />
-                                </div>
-                            </div>
-                        </div>
+
 
                 </div>
                 <div class="modal-footer">
@@ -95,20 +83,6 @@
                                 type="text" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
                             <span class="text-danger edit_category_name_error"></span>
                         </div>
-                        <div class="mb-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h6 class="card-title">Category Image</h6>
-                                    <div style="height:150px;position:relative">
-                                        <button class="btn btn-info edit_upload_img"
-                                            style="position: absolute;top:50%;left:50%;transform:translate(-50%,-50%)">Browse</button>
-                                        <img class="img-fluid showEditImage" src=""
-                                            style="height:100%; object-fit:cover">
-                                    </div>
-                                    <input hidden type="file" class="categoryImage edit_image" name="image" />
-                                </div>
-                            </div>
-                        </div>
 
                 </div>
                 <div class="modal-footer">
@@ -134,20 +108,20 @@
             let host = window.location.host;
             let url = protocol + host;
             // image onload when category edit
-            const edit_upload_img = document.querySelector('.edit_upload_img');
-            const edit_image = document.querySelector('.edit_image');
-            edit_upload_img.addEventListener('click', function(e) {
-                e.preventDefault();
-                edit_image.click();
+            // const edit_upload_img = document.querySelector('.edit_upload_img');
+            // const edit_image = document.querySelector('.edit_image');
+            // edit_upload_img.addEventListener('click', function(e) {
+            //     e.preventDefault();
+            //     edit_image.click();
 
-                edit_image.addEventListener('change', function(e) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.querySelector('.showEditImage').src = e.target.result;
-                    }
-                    reader.readAsDataURL(this.files[0]);
-                });
-            });
+            //     edit_image.addEventListener('change', function(e) {
+            //         var reader = new FileReader();
+            //         reader.onload = function(e) {
+            //             document.querySelector('.showEditImage').src = e.target.result;
+            //         }
+            //         reader.readAsDataURL(this.files[0]);
+            //     });
+            // });
 
             // show error
             function showError(name, message) {
@@ -207,13 +181,13 @@
                             <td>
                                 ${category.name ?? ""}
                             </td>
-                            <td>
-                                <img src="${category.image ? `${url}/uploads/category/` + category.image : `${url}/dummy/image.jpg`}" alt="cat Image">
-                            </td>
-                            <td>
-                                <button id="categoryButton_${category.id}" class="btn ${category.status != 0 ? 'btn-success' : 'btn-danger' } categoryButton"
-                                data-id="${category.id}">${category.status != 0 ? 'Active' : 'Inactive'}</button>
-                            </td>
+                           <td> <button id="categoryButton_${category.id}"
+                                    class="btn ${category.status === 'inactive' ? 'btn-danger' : 'btn-success'} categoryButton"
+                                    data-id="${category.id}"
+                                    data-status="${category.status}">
+                                ${category.status === 'inactive' ? 'Inactive' : 'Active'}
+                            </button> </td>
+
                             <td>
                                 @if (Auth::user()->can('category.edit'))
                                 <a href="#" class="btn btn-primary btn-icon category_edit" data-id=${category.id} data-bs-toggle="modal" data-bs-target="#edit">
@@ -364,8 +338,8 @@
             // category Status
             $(document).ready(function() {
                 $('.showData').on('click', '.categoryButton', function() {
-                    var categoryId = $(this).data('id');
-                    // alert(categoryId);
+                    var button = $(this);
+                    var categoryId = button.data('id');
                     $.ajax({
                         url: '/category/status/' + categoryId,
                         type: 'POST',
@@ -373,23 +347,21 @@
                             _token: '{{ csrf_token() }}'
                         },
                         success: function(response) {
-                            if (response.status == 200) {
-                                // var button = $('#categoryButton_' + categoryId);
-                                if (response.status == 200) {
-                                    var button = $('#categoryButton_' + categoryId);
-                                    if (response.newStatus == 1) {
-                                        button.removeClass('btn-danger').addClass(
-                                            'btn-success').text('Active');
-                                    } else {
-                                        button.removeClass('btn-success').addClass(
-                                            'btn-danger').text('Inactive');
-                                    }
-                                } else {
-                                    button.removeClass('btn-success').addClass(
-                                        'btn-danger').text(
+                            if (response.status === 200) {
+                                var newStatus = response.newStatus;
+                                button
+                                    .removeClass(newStatus === 'active' ? 'btn-danger' :
+                                        'btn-success')
+                                    .addClass(newStatus === 'active' ? 'btn-success' :
+                                        'btn-danger')
+                                    .text(newStatus === 'active' ? 'Active' :
                                         'Inactive');
-                                }
+                            } else {
+                                alert('Failed to update status. Please try again.');
                             }
+                        },
+                        error: function() {
+                            alert('Error occurred while updating status.');
                         }
                     });
                 });

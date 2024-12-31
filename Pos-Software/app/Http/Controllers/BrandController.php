@@ -26,14 +26,14 @@ class BrandController extends Controller
         ]);
         if ($validator->passes()) {
             $brand = new Brand;
-            if ($request->image) {
-                $imageName = rand() . '.' . $request->image->extension();
-                $request->image->move(public_path('uploads/brand/'), $imageName);
-                $brand->image = $imageName;
-            }
+            // if ($request->image) {
+            //     $imageName = rand() . '.' . $request->image->extension();
+            //     $request->image->move(public_path('uploads/brand/'), $imageName);
+            //     $brand->image = $imageName;
+            // }
             $brand->name =  $request->name;
             $brand->slug = Str::slug($request->name);
-            $brand->description = $request->description;
+            // $brand->description = $request->description;
             $brand->save();
             return response()->json([
                 'status' => 200,
@@ -81,18 +81,18 @@ class BrandController extends Controller
             $brand = Brand::findOrFail($id);
             $brand->name =  $request->name;
             $brand->slug = Str::slug($request->name);
-            $brand->description = $request->description;
-            if ($request->image) {
-                $imageName = rand() . '.' . $request->image->extension();
-                $request->image->move(public_path('uploads/brand/'), $imageName);
-                if ($brand->image) {
-                    $previousImagePath = public_path('uploads/brand/') . $brand->image;
-                    if (file_exists($previousImagePath)) {
-                        unlink($previousImagePath);
-                    }
-                }
-                $brand->image = $imageName;
-            }
+            // $brand->description = $request->description;
+            // if ($request->image) {
+            //     $imageName = rand() . '.' . $request->image->extension();
+            //     $request->image->move(public_path('uploads/brand/'), $imageName);
+            //     if ($brand->image) {
+            //         $previousImagePath = public_path('uploads/brand/') . $brand->image;
+            //         if (file_exists($previousImagePath)) {
+            //             unlink($previousImagePath);
+            //         }
+            //     }
+            //     $brand->image = $imageName;
+            // }
 
             $brand->save();
             return response()->json([

@@ -285,6 +285,11 @@
                             <span class="text-danger customer_name_error"></span>
                         </div>
                         <div class="mb-3 col-md-6">
+                            <label for="name" class="form-label">Business Name</label>
+                            <input id="defaultconfig" class="form-control email" maxlength="39" name="business_name"
+                                type="text">
+                        </div>
+                        <div class="mb-3 col-md-6">
                             <label for="name" class="form-label">Phone Nnumber <span
                                     class="text-danger">*</span></label>
                             <input id="defaultconfig" class="form-control phone" maxlength="39" name="phone"
@@ -292,20 +297,25 @@
                             <span class="text-danger phone_error"></span>
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Email</label>
-                            <input id="defaultconfig" class="form-control email" maxlength="39" name="email"
-                                type="email">
-                        </div>
-
-                        <div class="mb-3 col-md-6">
                             <label for="name" class="form-label">Address</label>
                             <input id="defaultconfig" class="form-control address" maxlength="39" name="address"
                                 type="text">
                         </div>
-                        <div class="col-md-12">
+                        <div class="mb-3 col-md-6">
+                            <label for="name" class="form-label">Customer Type</label><span
+                            class="text-danger">*</span>
+                           <select class="form-control customer_type" name="customer_type" id="" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
+                           <option value="" selected disabled>Select Customer Type </option>
+                            <option value="Transport_owner">Transport Owner</option>
+                            <option value="Technician">Technician</option>
+                            <option value="Floating">Floating</option>
+                           </select>
+                           <span class="text-danger customer_type_error"></span>
+                        </div>
+                        <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label">Previous Due</label>
-                                <input type="number" class="form-control" name="wallet_balance" placeholder="0.00">
+                                <input type="number" class="form-control" name="due_balance" placeholder="0.00">
                             </div>
                         </div><!-- Col -->
                 </div>
@@ -690,6 +700,9 @@
                             }
                             if (res.error.phone) {
                                 showError('.phone', res.error.phone);
+                            }
+                            if (res.error.customer_type) {
+                                showError('.customer_type', res.error.customer_type);
                             }
                         }
                     }

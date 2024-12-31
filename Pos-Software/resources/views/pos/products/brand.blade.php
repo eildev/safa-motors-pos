@@ -17,13 +17,13 @@
                             data-bs-target="#exampleModalLongScollable"><i data-feather="plus"></i></button>
                     </div>
                     <div id="" class="table-responsive">
-                        <table class="table">
+                        <table id="example" class="table">
                             <thead>
                                 <tr>
                                     <th>SN</th>
                                     <th>Brand Name</th>
-                                    <th>Description</th>
-                                    <th>Image</th>
+                                    {{-- <th>Description</th>
+                                    <th>Image</th> --}}
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -55,23 +55,6 @@
                                 type="text" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
                             <span class="text-danger brand_name_error"></span>
                         </div>
-                        <div class="mb-3">
-                            <label for="name" class="form-label description">Description</label>
-                            <textarea class="form-control" id="defaultconfig-4" rows="5" placeholder="" name="description"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h6 class="card-title">Brand Image</h6>
-                                    <p class="mb-3 text-warning">Note: <span class="fst-italic">Image not
-                                            required. If you
-                                            add
-                                            a brand image
-                                            please add a 400 X 400 pixel size image.</span></p>
-                                    <input type="file" class="brandImage" name="image" id="myDropify" />
-                                </div>
-                            </div>
-                        </div>
 
                 </div>
                 <div class="modal-footer">
@@ -99,26 +82,6 @@
                                 type="text" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
                             <span class="text-danger edit_brand_name_error"></span>
                         </div>
-                        <div class="mb-3">
-                            <label for="name" class="form-label ">Description</label>
-                            <textarea class="form-control edit_description" id="defaultconfig-4" rows="5" placeholder=""
-                                name="description"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h6 class="card-title">Brand Image</h6>
-                                    <div style="height:150px;position:relative">
-                                        <button class="btn btn-info edit_upload_img"
-                                            style="position: absolute;top:50%;left:50%;transform:translate(-50%,-50%)">Browse</button>
-                                        <img class="img-fluid showEditImage" src=""
-                                            style="height:100%; object-fit:cover">
-                                    </div>
-                                    <input hidden type="file" class="brandImage edit_image" name="image" />
-                                </div>
-                            </div>
-                        </div>
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -139,20 +102,20 @@
 
         $(document).ready(function() {
             // image onload when brand edit
-            const edit_upload_img = document.querySelector('.edit_upload_img');
-            const edit_image = document.querySelector('.edit_image');
-            edit_upload_img.addEventListener('click', function(e) {
-                e.preventDefault();
-                edit_image.click();
+            // const edit_upload_img = document.querySelector('.edit_upload_img');
+            // const edit_image = document.querySelector('.edit_image');
+            // edit_upload_img.addEventListener('click', function(e) {
+            //     e.preventDefault();
+            //     edit_image.click();
 
-                edit_image.addEventListener('change', function(e) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.querySelector('.showEditImage').src = e.target.result;
-                    }
-                    reader.readAsDataURL(this.files[0]);
-                });
-            });
+            //     edit_image.addEventListener('change', function(e) {
+            //         var reader = new FileReader();
+            //         reader.onload = function(e) {
+            //             document.querySelector('.showEditImage').src = e.target.result;
+            //         }
+            //         reader.readAsDataURL(this.files[0]);
+            //     });
+            // });
 
             // show error
             function showError(name, message) {
@@ -202,6 +165,9 @@
                         // console.log(res.data);
                         const brands = res.data;
                         $('.showData').empty();
+                        if ($.fn.DataTable.isDataTable('#example')) {
+                            $('#example').DataTable().clear().destroy();
+                        }
                         if (brands.length > 0) {
                             $.each(brands, function(index, brand) {
                                 const tr = document.createElement('tr');
@@ -211,12 +177,6 @@
                             </td>
                             <td>
                                 ${brand.name ?? ""}
-                            </td>
-                            <td>
-                                ${brand.description ? brand.description.slice(0,15)  : ""}
-                            </td>
-                            <td>
-                                <img src="${brand.image ? 'http://127.0.0.1:8000/uploads/brand/' + brand.image : 'http://127.0.0.1:8000/dummy/image.jpg'}" alt="Brand Image">
                             </td>
                             <td>
                                 <a href="#" class="btn btn-primary btn-icon brand_edit" data-id=${brand.id} data-bs-toggle="modal" data-bs-target="#edit">
@@ -241,6 +201,13 @@
                                 </td>
                             </tr>`)
                         }
+                        $('#example').DataTable({
+                            columnDefs: [{
+                                "defaultContent": "-",
+                                "targets": "_all"
+                            }],
+                            dom: 'Bfrtip',
+                        });
 
 
                     }
