@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Transaction extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes; 
     protected $guarded = [];
     public function customer()
     {
@@ -20,10 +21,6 @@ class Transaction extends Model
     public function bank()
     {
         return $this->belongsTo(Bank::class, 'payment_method', 'id');
-    } //
-    public function investor()
-    {
-        return $this->belongsTo(Investor::class, 'others_id', 'id');
     } //
 
     public function particularData()
@@ -45,8 +42,6 @@ class Transaction extends Model
             // Check for specific cases like 'Adjust Due Collection' or 'Return'
         } elseif (strpos($particulars, 'Adjust Due Collection') !== false || strpos($particulars, 'Return') !== false) {
             return Returns::find($this->others_id); // Match with others_id and return return data
-        } elseif (strpos($particulars, 'OthersReceive') !== false || strpos($particulars, 'OthersPayment') !== false) {
-            return Investor::find($this->others_id);
         }
 
         // Default case: return null if no match

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->decimal('withdraw', 12, 2);
             $table->decimal('current_balance', 12, 2);
             $table->date('closing_date')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

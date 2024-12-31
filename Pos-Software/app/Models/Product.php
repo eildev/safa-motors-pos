@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes; 
     protected $guarded = [];
 
     function category()
@@ -28,7 +29,7 @@ class Product extends Model
     }
     function size()
     {
-        return $this->belongsTo(Psize::class, 'size_id', 'id');
+        return $this->belongsTo(Size::class, 'size_id', 'id');
     }
     function damage()
     {
