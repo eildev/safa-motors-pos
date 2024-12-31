@@ -24,6 +24,7 @@
                                     <th>Brand Name</th>
                                     {{-- <th>Description</th>
                                     <th>Image</th> --}}
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -178,6 +179,14 @@
                             <td>
                                 ${brand.name ?? ""}
                             </td>
+
+                                 <td> <button id="brandButton_${brand.id}"
+                                    class="btn ${brand.status === 'inactive' ? 'btn-danger' : 'btn-success'} brandButton"
+                                    data-id="${brand.id}"
+                                    data-status="${brand.status}">
+                                ${brand.status === 'inactive' ? 'Inactive' : 'Active'}
+                            </button> </td>
+
                             <td>
                                 <a href="#" class="btn btn-primary btn-icon brand_edit" data-id=${brand.id} data-bs-toggle="modal" data-bs-target="#edit">
                                     <i class="fa-solid fa-pen-to-square"></i>
@@ -332,5 +341,36 @@
             })
 
         });
+        $(document).ready(function() {
+                $('.showData').on('click', '.brandButton', function() {
+                    var button = $(this);
+                    var brandId = button.data('id');
+                    $.ajax({
+                        url: '/brand/status/' + brandId,
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.status === 200) {
+                                var newStatus = response.newStatus;
+                                button
+                                    .removeClass(newStatus === 'active' ? 'btn-danger' :
+                                        'btn-success')
+                                    .addClass(newStatus === 'active' ? 'btn-success' :
+                                        'btn-danger')
+                                    .text(newStatus === 'active' ? 'Active' :
+                                        'Inactive');
+                            } else {
+                                alert('Failed to update status. Please try again.');
+                            }
+                        },
+                        error: function() {
+                            alert('Error occurred while updating status.');
+                        }
+                    });
+                });
+            });
+
     </script>
 @endsection

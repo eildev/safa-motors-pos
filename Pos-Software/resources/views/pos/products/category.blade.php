@@ -157,6 +157,13 @@
                         } else {
                             showError('.category_name', res.error.name);
                         }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 500) {
+                            toastr.error(xhr.responseJSON.error);
+                        } else {
+                            toastr.error('An unexpected error occurred. Please try again.');
+                        }
                     }
                 });
             })

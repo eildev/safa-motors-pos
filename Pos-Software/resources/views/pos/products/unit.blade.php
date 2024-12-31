@@ -22,9 +22,7 @@
                                 <tr>
                                     <th>SN</th>
                                     <th>Unit Name</th>
-                                    <th>Related To Unit</th>
-                                    <th>Operator</th>
-                                    <th>Related By Value</th>
+
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -49,37 +47,13 @@
                 </div>
                 <div class="modal-body">
                     <form id="signupForm" class="unitForm row">
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-12">
                             <label for="name" class="form-label">Unit Name</label>
                             <input id="defaultconfig" class="form-control unit_name" maxlength="39" name="name"
                                 type="text" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
                             <span class="text-danger unit_name_error"></span>
                         </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Related To Unit</label>
-                            <input id="defaultconfig" class="form-control related_to_unit" maxlength="39"
-                                name="related_to_unit" type="text" onkeyup="errorRemove(this);"
-                                onblur="errorRemove(this);">
-                            <span class="text-danger related_to_unit_error"></span>
-                        </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="ageSelect" class="form-label">Operator</label>
-                            <select class="form-select related_sign" name="related_sign" onclick="errorRemove(this);"
-                                onblur="errorRemove(this);">
-                                <option selected disabled>Select Operator Sign</option>
-                                <option value="+">(+)addition operator</option>
-                                <option value="-">(-)subtraction operator</option>
-                                <option value="*">(*)multiplication operator</option>
-                                <option value="/">(/)Division operator</option>
-                            </select>
-                            <span class="text-danger related_sign_error"></span>
-                        </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Related By Value</label>
-                            <input id="defaultconfig" class="form-control related_by" maxlength="10" name="related_by"
-                                type="number" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
-                            <span class="text-danger related_by_error"></span>
-                        </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -100,38 +74,14 @@
                 </div>
                 <div class="modal-body">
                     <form id="signupForm" class="editUnitForm">
+
                         <div class="mb-3">
                             <label for="name" class="form-label">Unit Name</label>
                             <input id="defaultconfig" class="form-control edit_unit_name" maxlength="39" name="name"
                                 type="text" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
                             <span class="text-danger edit_unit_name_error"></span>
                         </div>
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Related To Unit</label>
-                            <input id="defaultconfig" class="form-control edit_related_to_unit" maxlength="39"
-                                name="related_to_unit" type="text" onkeyup="errorRemove(this);"
-                                onblur="errorRemove(this);">
-                            <span class="text-danger edit_related_to_unit_error"></span>
-                        </div>
-                        <div class="mb-3">
-                            <label for="ageSelect" class="form-label">Operator</label>
-                            <select class="form-select edit_related_sign" name="related_sign"
-                                onclick="errorRemove(this);" onblur="errorRemove(this);">
-                                <option selected disabled>Select Operator Sign</option>
-                                <option value="+">(+)addition operator</option>
-                                <option value="-">(-)subtraction operator</option>
-                                <option value="*">(*)multiplication operator</option>
-                                <option value="/">(/)Division operator</option>
-                            </select>
-                            <span class="text-danger edit_related_sign_error"></span>
-                        </div>
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Related By Value</label>
-                            <input id="defaultconfig" class="form-control edit_related_by" maxlength="10"
-                                name="related_by" type="number" onkeyup="errorRemove(this);"
-                                onblur="errorRemove(this);">
-                            <span class="text-danger edit_related_by_error"></span>
-                        </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -183,15 +133,7 @@
                             if (res.error.name) {
                                 showError('.unit_name', res.error.name);
                             }
-                            if (res.error.related_to_unit) {
-                                showError('.related_to_unit', res.error.related_to_unit);
-                            }
-                            if (res.error.related_sign) {
-                                showError('.related_sign', res.error.related_sign);
-                            }
-                            if (res.error.related_by) {
-                                showError('.related_by', res.error.related_by);
-                            }
+
                         }
                     }
                 });
@@ -217,15 +159,7 @@
                             <td>
                                 ${unit.name ?? ""}
                             </td>
-                            <td>
-                                ${unit.related_to_unit ?? ""}
-                            </td>
-                            <td>
-                                ${unit.related_sign ?? ""}
-                            </td>
-                            <td>
-                                ${unit.related_by ?? 0 }
-                            </td>
+
                             <td>
                                 <a href="#" class="btn btn-primary btn-icon unit_edit" data-id=${unit.id} data-bs-toggle="modal" data-bs-target="#edit">
                                     <i class="fa-solid fa-pen-to-square"></i>
@@ -271,10 +205,7 @@
                     success: function(res) {
                         if (res.status == 200) {
                             $('.edit_unit_name').val(res.unit.name);
-                            $('.edit_related_to_unit').val(res.unit.related_to_unit);
-                            $('.edit_related_sign').val(res.unit.related_sign);
-                            $('.edit_related_by').val(res.unit.related_by);
-                            $('.update_unit').val(res.unit.id);
+
                         } else {
                             toastr.warning("No Data Found");
                         }
@@ -310,15 +241,7 @@
                             if (res.error.name) {
                                 showError('.edit_unit_name', res.error.name);
                             }
-                            if (res.error.related_to_unit) {
-                                showError('.edit_related_to_unit', res.error.related_to_unit);
-                            }
-                            if (res.error.related_sign) {
-                                showError('.edit_related_sign', res.error.related_sign);
-                            }
-                            if (res.error.related_by) {
-                                showError('.edit_related_by', res.error.related_by);
-                            }
+
                         }
                     }
                 });

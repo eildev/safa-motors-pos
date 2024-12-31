@@ -34,13 +34,8 @@ class SubCategoryController extends Controller
         ]);
 
         if ($validator->passes()) {
+            try {
             $data = $request->only(['name', 'category_id']);
-
-            if ($request->hasFile('image')) {
-                $imageName = rand() . '.' . $request->image->extension();
-                $request->image->move(public_path('uploads/subcategory'), $imageName);
-                $data['image'] = $imageName;
-            }
 
             $data['slug'] = Str::slug($request->name);
 
@@ -49,6 +44,12 @@ class SubCategoryController extends Controller
                 'status' => 200,
                 'message' => 'Sub Category Saved Successfully',
             ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'error' => 'An error occurred: ' . $e->getMessage(),
+            ]);
+        }
         } else {
             return response()->json([
                 'status' => '500',
@@ -62,11 +63,9 @@ class SubCategoryController extends Controller
         //   $subcategories = SubCategory::all();
         $subcategories = $this->subCategory->getAllSubCategory();
         $subcategories->load('category');
-
         return response()->json([
             "status" => 200,
             "data" => $subcategories,
-
         ]);
     } //
     public function edit($id)
@@ -99,18 +98,6 @@ class SubCategoryController extends Controller
             $subcategory->name =  $request->name;
             $subcategory->slug = Str::slug($request->name);
             $subcategory->category_id =  $request->category_id;
-            if ($request->image) {
-                $imageName = rand() . '.' . $request->image->extension();
-                $request->image->move(public_path('uploads/subcategory'), $imageName);
-                if ($subcategory->image) {
-                    $previousImagePath = public_path('uploads/subcategory') . $subcategory->image;
-                    if (file_exists($previousImagePath)) {
-                        unlink($previousImagePath);
-                    }
-                }
-                $subcategory->image = $imageName;
-            }
-
             $subcategory->save();
             return response()->json([
                 'status' => 200,
@@ -141,7 +128,7 @@ class SubCategoryController extends Controller
     public function status($id)
     {
         $subcategory = SubCategory::findOrFail($id);
-        $newStatus = $subcategory->status == 0 ? 1 : 0;
+        $newStatus = $subcategory->status == 'inactive' ? 'active' : 'inactive';
         $subcategory->update([
             'status' => $newStatus
         ]);

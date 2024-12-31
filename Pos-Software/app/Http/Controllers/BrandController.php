@@ -121,4 +121,17 @@ class BrandController extends Controller
             'message' => 'Brand Deleted Successfully',
         ]);
     }
+    public function status($id)
+    {
+        $brand = Brand::findOrFail($id);
+        $newStatus = $brand->status === 'inactive' ? 'active' : 'inactive';
+        $brand->update(['status' => $newStatus]);
+
+        return response()->json([
+            'status' => 200,
+            'newStatus' => $newStatus,
+            'message' => 'Status changed successfully.',
+        ]);
+    }
+
 }

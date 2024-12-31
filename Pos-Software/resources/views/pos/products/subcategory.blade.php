@@ -23,7 +23,7 @@
                                     <th>SN</th>
                                     <th>Category Name</th>
                                     <th>Sub Category Name</th>
-                                    <th>Image</th>
+
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>
@@ -67,19 +67,6 @@
                                 type="text">
                             <span class="text-danger subcategory_name_error"></span>
                         </div>
-                        <div class="mb-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h6 class="card-title">Category Image</h6>
-                                    <p class="mb-3 text-warning">Note: <span class="fst-italic">Image not
-                                            required. If you
-                                            add
-                                            a subcategory image
-                                            please add a 400 X 400 size image.</span></p>
-                                    <input type="file" class="subcategoryImage" name="image" id="myDropify" />
-                                </div>
-                            </div>
-                        </div>
 
                 </div>
                 <div class="modal-footer">
@@ -118,20 +105,7 @@
                                 name="name" type="text">
                             <span class="text-danger edit_subcategory_name_error"></span>
                         </div>
-                        <div class="mb-3">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h6 class="card-title">Sub Category Image</h6>
-                                    <div style="height:150px;position:relative">
-                                        <button class="btn btn-info edit_upload_img"
-                                            style="position: absolute;top:50%;left:50%;transform:translate(-50%,-50%)">Browse</button>
-                                        <img class="img-fluid showEditImage" {{-- src="{{ asset('uploads/category/387707397.webp') }}" --}} src=""
-                                            style="height:100%; object-fit:cover">
-                                    </div>
-                                    <input hidden type="file" class="subcategoryImage edit_image" name="image" />
-                                </div>
-                            </div>
-                        </div>
+
 
                 </div>
                 <div class="modal-footer">
@@ -145,21 +119,6 @@
     <script>
         $(document).ready(function() {
             // image onload when subcategory edit
-            const edit_upload_img = document.querySelector('.edit_upload_img');
-            const edit_image = document.querySelector('.edit_image');
-            edit_upload_img.addEventListener('click', function(e) {
-                e.preventDefault();
-                edit_image.click();
-
-                edit_image.addEventListener('change', function(e) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.querySelector('.showEditImage').src = e.target.result;
-                    }
-                    reader.readAsDataURL(this.files[0]);
-                });
-            });
-
 
             let protocol = window.location.protocol + "//";
             let host = window.location.host;
@@ -218,6 +177,12 @@
                             $('.category_name_error').text(res.error.name);
 
                         }
+                    }  , error: function(xhr) {
+                        if (xhr.status === 500) {
+                            toastr.error(xhr.responseJSON.error);
+                        } else {
+                            toastr.error('An unexpected error occurred. Please try again.');
+                        }
                     }
                 });
             })
@@ -231,9 +196,12 @@
                     success: function(res) {
                         // console.log(res.data);
                         const subcategories = res.data;
+
                         $('.showData').empty();
                         $.each(subcategories, function(index, subcategory) {
                             const tr = document.createElement('tr');
+                            const statusClass = subcategory.status === 'inactive' ? 'btn-danger' : 'btn-success';
+                            const statusText = subcategory.status === 'inactive' ? 'Inactive' : 'Active';
                             tr.innerHTML = `
                             <td>
                                 ${index+1}
@@ -241,16 +209,19 @@
                             <td>
                         ${subcategory.category ? subcategory.category.name : ""}
                             </td>
+
                             <td>
                                 ${subcategory.name ?? ""}
                             </td>
-                            <td>
-                                <img src="${subcategory.image ? `${url}/uploads/subcategory/` + subcategory.image : `${url}/dummy/image.jpg`}" alt="cat Image">
-                            </td>
-                            <td>
-                                <button id="subcategoryButton_${subcategory.id}" class="btn btn-success subcategoryButton"
-                        data-id="${subcategory.id}">Active</button>
-                            </td>
+
+                             <td>
+                             <button id="subcategoryButton_${subcategory.id}"
+                                class="btn ${statusClass} subcategoryButton"
+                                data-id="${subcategory.id}"
+                                data-status="${subcategory.status}">
+                            ${statusText}
+                        </button>
+                          </td>
                             <td>
                                 <a href="#" class="btn btn-primary btn-icon subcategory_edit" data-id=${subcategory.id} data-bs-toggle="modal" data-bs-target="#edit">
                                     <i class="fa-solid fa-pen-to-square"></i>
@@ -409,7 +380,7 @@
                                 if (response.status == 200) {
                                     var button = $('#subcategoryButton_' +
                                         subcategoryId);
-                                    if (response.newStatus == 1) {
+                                    if (response.newStatus == 'active') {
                                         button.removeClass('btn-danger').addClass(
                                             'btn-success').text('Active');
                                     } else {

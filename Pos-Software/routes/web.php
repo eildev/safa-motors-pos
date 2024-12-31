@@ -94,6 +94,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/brand/update/{id}', 'update')->name('brand.update');
         Route::post('/brand/status/{id}', 'status')->name('brand.status');
         Route::get('/brand/destroy/{id}', 'destroy')->name('brand.destroy');
+        Route::post('/brand/status/{id}', 'status');
     });
 
     // Branch related route(n)
