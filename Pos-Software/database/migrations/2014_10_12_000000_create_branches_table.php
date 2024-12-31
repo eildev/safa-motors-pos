@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100)->unique(); // Branch name must be unique
+            $table->string('name', 100); // Branch name must be unique
+            $table->string('slug', 100)->unique(); // Branch name must be unique
             $table->string('address', 250);
             $table->string('phone', 20)->index(); // Indexed for better query performance
             $table->string('email', 100)->nullable()->index(); // Increased length and added index

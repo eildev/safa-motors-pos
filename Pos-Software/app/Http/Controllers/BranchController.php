@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use  App\Models\Branch;
 use App\Services\ImageService;
+use Illuminate\Support\Str;
 use App\Repositories\RepositoryInterfaces\BranchInterface;
 
 class BranchController extends Controller
@@ -32,77 +33,78 @@ class BranchController extends Controller
         }
     }
 
-
-    // public function store(Request $request, ImageService $imageService)
-    // {
-    //     $request->validate([
-    //         'name' => 'required|string|max:99',
-    //         'phone' => 'required|max:19',
-    //         'address' => 'required|string|max:200',
-    //         'email' => 'required|email|unique:branches,email',
-    //         'logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
-    //     ]);
-
-    //     if ($request->hasFile('logo')) {
-    //         $destinationPath = public_path('uploads/branch/');
-    //         $imageName = $imageService->resizeAndOptimize($request->file('logo'), $destinationPath);
-
-    //         $bracnch = new Branch;
-    //         $bracnch->name = $request->name;
-    //         $bracnch->phone = $request->phone;
-    //         $bracnch->address = $request->address;
-    //         $bracnch->email = $request->email;
-    //         $bracnch->logo = $imageName;
-    //         $bracnch->save();
-    //         $notification = array(
-    //             'message' => 'Branch Created Successfully',
-    //             'alert-type' => 'info'
-    //         );
-    //         return redirect()->route('branch.view')->with($notification);
-    //     }
-    // } //End Method
     public function store(Request $request, ImageService $imageService)
     {
-        try {
-            $validatedData = $request->validate([
-                'name' => 'required|string|max:99',
-                'phone' => 'required|max:19',
-                'address' => 'required|string|max:200',
-                'email' => 'required|email|unique:branches,email',
-                'logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
-            ]);
+        $request->validate([
+            'name' => 'required|string|max:99',
+            'phone' => 'required|max:19',
+            'address' => 'required|string|max:200',
+            'email' => 'required|email|unique:branches,email',
+            'logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+        ]);
 
-            $imageName = null;
-
-            if ($request->hasFile('logo')) {
+        if ($request->hasFile('logo')) {
+            try {
                 $destinationPath = public_path('uploads/branch/');
                 $imageName = $imageService->resizeAndOptimize($request->file('logo'), $destinationPath);
+
+                // Generate a unique slug
+                $slug = $this->generateUniqueSlug($request->name);
+
+                $branch = new Branch;
+                $branch->name = $request->name;
+                $branch->slug = $slug;
+                $branch->phone = $request->phone;
+                $branch->address = $request->address;
+                $branch->email = $request->email;
+                $branch->logo = $imageName;
+                $branch->save();
+
+                $notification = array(
+                    'message' => 'Branch Created Successfully',
+                    'alert-type' => 'info'
+                );
+                return redirect()->route('branch.view')->with($notification);
+            } catch (\Exception $e) {
+                return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
             }
-
-            Branch::create(array_merge($validatedData, ['logo' => $imageName]));
-
-            return redirect()->route('branch.view')->with([
-                'message' => 'Branch Created Successfully',
-                'alert-type' => 'info',
-            ]);
-        } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
         }
     }
 
 
+
+
     public function BranchView()
     {
-        $branches = $this->branchrepo->getAllBranch();
-        // $branches = Branch::latest()->get();
-        return view('pos.branches.all_branches', compact('branches'));
+        try {
+            $branches = $this->branchrepo->getAllBranch(); // ডেটা ফেচ করার চেষ্টা
+
+            // ভিউতে ডেটা পাঠানো
+            return view('pos.branches.all_branches', compact('branches'));
+        } catch (\Exception $e) {
+            // যদি কোনো এরর হয়, তাহলে ব্যাকএন্ডের একটি এরর বার্তা শো করবে
+            return back()->withErrors(['error' => 'Failed to retrieve branches: ' . $e->getMessage()]);
+        }
     } //End Method
+
+
     public function BranchEdit($id)
     {
-        // $branch = $this->branchrepo->editBranch();
-        $branch = Branch::findOrFail($id);
-        return view('pos.branches.edit-branch', compact('branch'));
+        try {
+            // ব্রাঞ্চ ডেটা ফেচ করার চেষ্টা
+            $branch = Branch::where('slug', $id)->first();
+            // যদি সফল হয়, ভিউতে ডেটা পাঠানো
+            return view('pos.branches.edit-branch', compact('branch'));
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // যদি ব্রাঞ্চ আইডি না পাওয়া যায়
+            return redirect()->route('branch.view')->withErrors(['error' => 'Branch not found.']);
+        } catch (\Exception $e) {
+            // অন্য কোনো এরর হ্যান্ডলিং
+            return redirect()->route('branch.view')->withErrors(['error' => 'An unexpected error occurred: ' . $e->getMessage()]);
+        }
     } //End Method
+
+
     public function BranchUpdate(Request $request, $id)
     {
 
@@ -168,4 +170,21 @@ class BranchController extends Controller
         );
         return redirect()->back()->with($notification);
     } //End Method
+
+    /**
+     * Generate a unique slug based on the name.
+     */
+    private function generateUniqueSlug($name)
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $counter = 1;
+
+        while (Branch::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $counter;
+            $counter++;
+        }
+
+        return $slug;
+    }
 }
