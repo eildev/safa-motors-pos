@@ -66,9 +66,6 @@ class BranchController extends Controller
         }
     }
 
-
-
-
     public function BranchView()
     {
         try {
