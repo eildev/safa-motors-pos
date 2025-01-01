@@ -16,7 +16,7 @@
                     <h6 class="card-title text-info">View Employee List</h6>
 
                     <div id="" class="table-responsive">
-                        <table class="table">
+                        <table id="dataTableExample" class="table">
                             <thead>
                                 <tr>
                                     <th>SN</th>
@@ -28,6 +28,7 @@
                                     <th>Image</th>
                                     <th>Designation</th>
                                     <th>Salary</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -55,7 +56,14 @@
 
                                             <td>{{ $employe->designation ?? '' }}</td>
                                             <td>{{ $employe->salary ?? '' }}</td>
-
+                                            <td>
+                                                <button
+                                                class="btn status-toggle-btn {{ $employe->status === 'active' ? 'btn-success' : 'btn-danger' }}"
+                                                data-id="{{ $employe->id }}"
+                                                data-status="{{ $employe->status }}">
+                                                {{ $employe->status === 'active' ? 'Active' : 'Inactive' }}
+                                            </button>
+                                        </td>
                                             <td>
                                                 @if (Auth::user()->can('employee.edit'))
                                                     <a href="{{ route('employee.edit', $employe->id) }}"
@@ -91,4 +99,39 @@
             </div>
         </div>
     </div>
+    <script>
+     $(document).on('click', '.status-toggle-btn', function () {
+    const $button = $(this);
+    const employeeId = $button.data('id');
+    const currentStatus = $button.data('status');
+    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+
+    $.ajax({
+        url: `/update-status/${employeeId}/${newStatus}`, // Pass id and new status in the URL
+        type: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}' // CSRF token for security
+        },
+        success: function (response) {
+            if (response.success) {
+                // Update button text, status, and classes dynamically
+                $button
+                    .data('status', newStatus)
+                    .removeClass(currentStatus === 'active' ? 'btn-success' : 'btn-danger')
+                    .addClass(newStatus === 'active' ? 'btn-success' : 'btn-danger')
+                    .text(newStatus.charAt(0).toUpperCase() + newStatus.slice(1));
+
+                toastr.success('Status updated successfully!');
+            } else {
+                toastr.error('Failed to update status!');
+            }
+        },
+        error: function () {
+            toastr.error('Something went wrong. Please try again.');
+        }
+    });
+});
+
+
+    </script>
 @endsection

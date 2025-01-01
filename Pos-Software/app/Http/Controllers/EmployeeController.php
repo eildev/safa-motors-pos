@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\Employee;
 use App\Models\EmployeeSalary;
 use Illuminate\Support\Facades\Auth;
+use App\Services\ImageService;
+use Illuminate\Support\Facades\Log;
+
+
 use Carbon\Carbon;
 
 use App\Repositories\RepositoryInterfaces\EmployeeInterface;
@@ -29,15 +33,10 @@ class EmployeeController extends Controller
     {
         return view('pos.employee.add_employee');
     } //
-    public function EmployeeStore(Request $request)
+    public function EmployeeStore(Request $request ,ImageService $imageService)
     {
 
-        if ($request->image) {
-            $employee = new Employee();
-            $imageName = rand() . '.' . $request->image->extension();
-            $request->image->move(public_path('uploads/employee'), $imageName);
-            $employee->pic = $imageName;
-        }
+        try {
         $employee = new Employee();
         $employee->branch_id = Auth::user()->branch_id;
         $employee->full_name = $request->full_name;
@@ -47,8 +46,11 @@ class EmployeeController extends Controller
         $employee->salary = $request->salary;
         $employee->nid = $request->nid;
         $employee->designation = $request->designation;
-        $employee->status = 0;
-        // $employee->pic = $imageName;
+        if ($request->hasFile('image')) {
+            $destinationPath = public_path('uploads/employee');
+            $imageName = $imageService->resizeAndOptimize($request->file('image'), $destinationPath);
+            $employee->pic = $imageName;
+        }
         $employee->created_at = Carbon::now();
         $employee->save();
         $notification = array(
@@ -56,13 +58,24 @@ class EmployeeController extends Controller
             'alert-type' => 'info'
         );
         return redirect()->route('employee.view')->with($notification);
+    } catch (\Exception $e) {
+        // Log the exception for debugging
+        Log::error('Error adding employee: ' . $e->getMessage());
+        // Redirect back with an error notification
+        $notification = [
+            'error' => 'An error occurred while adding the employee. Please try again.',
+            'alert-type' => 'error',
+        ];
+
+        return redirect()->back()->withInput()->with($notification);
+    }
     } //
     public function EmployeeEdit($id)
     {
         $employees =  $this->employee_repo->EditEmployee($id);
         return view('pos.employee.edit_employee', compact('employees'));
     } //
-    public function EmployeeUpdate(Request $request, $id)
+    public function EmployeeUpdate(Request $request, $id, ImageService $imageService)
     {
         // dd($request->all());
         $employee = Employee::findOrFail($id);
@@ -74,10 +87,19 @@ class EmployeeController extends Controller
         $employee->salary = $request->salary;
         $employee->nid = $request->nid;
         $employee->designation = $request->designation;
-        $employee->status = 0;
-        if ($request->image) {
-            $imageName = rand() . '.' . $request->image->extension();
-            $request->image->move(public_path('uploads/employee'), $imageName);
+        // if ($request->image) {
+        //     $imageName = rand() . '.' . $request->image->extension();
+        //     $request->image->move(public_path('uploads/employee'), $imageName);
+        //     $employee->pic = $imageName;
+        // }
+        if ($request->hasFile('image')) {
+            $destinationPath = public_path('uploads/employee');
+            $imageName = $imageService->resizeAndOptimize($request->file('image'), $destinationPath);
+
+            $path = public_path('uploads/employee/' . $employee->pic);
+            if (file_exists($path)) {
+                @unlink($path);
+            }
             $employee->pic = $imageName;
         }
         $employee->save();
@@ -109,5 +131,21 @@ class EmployeeController extends Controller
         $branch = Branch::findOrFail($employee->branch_id);
         return view('pos.employee.view-details', compact('employee', 'salaries', 'branch'));
     } //
+    public function updateStatus($id, $status)
+    {
+        $employee = Employee::findOrFail($id);
+
+        if ($employee) {
+            $employee->status = $status;
+            $employee->save();
+
+            return response()->json([
+                'success' => true,
+                'status' => $employee->status,
+            ]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Employee not found']);
+    }
 
 }

@@ -17,17 +17,19 @@
                             data-bs-target="#exampleModalLongScollable"><i data-feather="plus"></i></button>
                     </div>
                     <div id="" class="table-responsive">
-                        <table id="dataTableExample" class="table">
+                        <table id="example" class="table">
                             <thead>
                                 <tr>
                                     <th>SN</th>
                                     <th>Account Name</th>
-                                    <th>Branch Name</th>
+                                    <th>Bank Branch Name</th>
                                     <th>Manager/Owner Name</th>
-                                    <th>Phone Number</th>
-                                    <th>Account</th>
+                                    <th>Branch Phone Num.</th>
+                                    <th>Bank Account Num.</th>
+                                    <th>Bank Branch Email</th>
                                     <th>Opening Balance</th>
-                                    <th>Total Balance</th>
+                                    <th>Current Balance</th>
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -43,13 +45,13 @@
     <!-- Modal -->
     <div class="modal fade" id="exampleModalLongScollable" tabindex="-1" aria-labelledby="exampleModalScrollableTitle"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered ">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalScrollableTitle">Add Bank Info</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="btn-close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body ">
                     <form id="signupForm" class="bankForm row">
                         <div class="mb-3 col-md-6">
                             <label for="name" class="form-label">Account Name <span class="text-danger">*</span></label>
@@ -58,31 +60,31 @@
                             <span class="text-danger bank_name_error"></span>
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Branch Name </label>
-                            <input id="defaultconfig" class="form-control branch_name" maxlength="39" name="branch_name"
+                            <label for="name" class="form-label">Bank Branch Name </label>
+                            <input id="defaultconfig" class="form-control branch_name" maxlength="39" name="bank_branch_name"
                                 type="text" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
                             <span class="text-danger branch_name_error"></span>
                         </div>
                         <div class="mb-3 col-md-6">
                             <label for="name" class="form-label">Manager Name/Owner Name</label>
-                            <input id="defaultconfig" class="form-control manager_name" maxlength="39" name="manager_name"
+                            <input id="defaultconfig" class="form-control manager_name" maxlength="39" name="bank_branch_manager_name"
                                 type="text">
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Phone Nnumber </label>
-                            <input id="defaultconfig" class="form-control phone_number" maxlength="39" name="phone_number"
+                            <label for="name" class="form-label">Branch Phone Nnumber </label>
+                            <input id="defaultconfig" class="form-control phone_number" maxlength="39" name="bank_branch_phone"
                                 type="tel" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
                             <span class="text-danger phone_number_error"></span>
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Account </label>
-                            <input id="defaultconfig" class="form-control account" maxlength="39" name="account"
+                            <label for="name" class="form-label">Branch Account  Num.</label>
+                            <input id="defaultconfig" class="form-control account" maxlength="39" name="bank_account_number"
                                 type="text" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
                             <span class="text-danger account_error"></span>
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Email</label>
-                            <input id="defaultconfig" class="form-control email" maxlength="39" name="email"
+                            <label for="name" class="form-label">Branch Email</label>
+                            <input id="defaultconfig" class="form-control email" maxlength="39" name="bank_branch_email"
                                 type="email">
                         </div>
                         <div class="mb-3 col-md-12">
@@ -120,41 +122,34 @@
                             <span class="text-danger bank_name_error"></span>
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Branch Name</label>
-                            <input id="defaultconfig" class="form-control edit_branch_name" maxlength="39"
-                                name="branch_name" type="text">
+                            <label for="name" class="form-label">Bank Branch Name </label>
+                            <input id="defaultconfig" class="form-control edit_bank_branch_name" maxlength="39" name="bank_branch_name"
+                                type="text" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
 
                         </div>
                         <div class="mb-3 col-md-6">
                             <label for="name" class="form-label">Manager Name/Owner Name</label>
-                            <input id="defaultconfig" class="form-control edit_manager_name" maxlength="39"
-                                name="manager_name" type="text">
+                            <input id="defaultconfig" class="form-control edit_bank_branch_manager_name" maxlength="39" name="bank_branch_manager_name"
+                                type="text">
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="name" class="form-label">Branch Phone Nnumber </label>
+                            <input id="defaultconfig" class="form-control edit_bank_branch_phone" maxlength="39" name="bank_branch_phone"
+                                type="tel" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
 
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Phone Nnumber</label>
-                            <input id="defaultconfig" class="form-control edit_phone_number" maxlength="39"
-                                name="phone_number" type="tel">
-
-                        </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Account</label>
-                            <input id="defaultconfig" class="form-control edit_account" maxlength="39" name="account"
+                            <label for="name" class="form-label">Branch Account  Num.</label>
+                            <input id="defaultconfig" class="form-control edit_bank_account_number" maxlength="39" name="bank_account_number"
                                 type="text" onkeyup="errorRemove(this);" onblur="errorRemove(this);">
-                            <span class="text-danger edit_account"></span>
+                            <span class="text-danger account_error"></span>
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="name" class="form-label">Email</label>
-                            <input id="defaultconfig" class="form-control edit_email" maxlength="39" name="email"
+                            <label for="name" class="form-label">Branch Email</label>
+                            <input id="defaultconfig" class="form-control edit_bank_branch_email" maxlength="39" name="bank_branch_email"
                                 type="email">
                         </div>
-                        {{-- <div class="mb-3 col-md-12">
-                            <label for="name" class="form-label">Opening Balance</label>
-                            <input id="defaultconfig" class="form-control edit_opening_balance" maxlength="39"
-                                name="opening_balance" type="number" onkeyup="errorRemove(this);"
-                                onblur="errorRemove(this);">
-                            <span class="text-danger edit_opening_balance_error"></span>
-                        </div> --}}
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -255,9 +250,6 @@
                 });
             })
 
-
-
-
             function bankView() {
                 // console.log('hello');
                 $.ajax({
@@ -267,19 +259,30 @@
                         const banks = res.data;
                         // console.log(banks.account_transaction);
                         $('.showData').empty();
+                        if ($.fn.DataTable.isDataTable('#example')) {
+                            $('#example').DataTable().clear().destroy();
+                        }
                         if (banks.length > 0) {
                             $.each(banks, function(index, bank) {
                                 // Calculate the sum of account_transaction balances
                                 const tr = document.createElement('tr');
                                 tr.innerHTML = `
                                     <td>${index + 1}</td>
-                                    <td>${bank.name ?? ""}</td>
-                                    <td>${bank.branch_name ?? ""}</td>
-                                    <td>${bank.manager_name ?? ""}</td>
-                                    <td>${bank.phone_number ?? 0}</td>
-                                    <td>${bank.account ?? 0}</td>
+                                    <td>${bank.name ?? "-"}</td>
+                                    <td>${bank.bank_branch_name ?? "-"}</td>
+                                    <td>${bank.bank_branch_manager_name ?? "-"}</td>
+                                    <td>${bank.bank_branch_phone ?? 0}</td>
+                                    <td>${bank.bank_account_number ?? '-'}</td>
+                                    <td>${bank.bank_branch_email ?? '-'}</td>
                                     <td>${bank.opening_balance ?? 0}</td>
-                                    <td>${bank?.latest_transaction?.balance ?? 0}</td>
+                                    <td>${bank.current_balance ?? 0}</td>
+
+                                     <td> <button id="bankButton_${bank.id}"
+                                    class="btn ${bank.status === 'inactive' ? 'btn-danger' : 'btn-success'} bankButton"
+                                    data-id="${bank.id}"
+                                    data-status="${bank.status}">
+                                        ${bank.status === 'inactive' ? 'Inactive' : 'Active'}
+                                    </button> </td>
                                     <td>
                                         <div class="dropdown">
                                             <button class="btn btn-warning dropdown-toggle" type="button" id="dropdownMenuButton1"
@@ -293,9 +296,7 @@
                                                 <a href="#" class="dropdown-item bank_edit" data-id=${bank.id} data-bs-toggle="modal" data-bs-target="#edit">
                                                     <i class="fa-solid fa-pen-to-square"></i>
                                                 Edit</a>
-                                                <a href="#"  class="dropdown-item bank_delete" data-id=${bank.id}>
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                Delete</a>
+
                                             </div>
                                         </div>
                                     </td>
@@ -314,11 +315,20 @@
                             </tr>
                             `);
                         }
+                        $('#example').DataTable({
+                            columnDefs: [{
+                                "defaultContent": "-",
+                                "targets": "_all"
+                            }],
+                            dom: 'Bfrtip',
+                        });
                     }
                 });
             }
             bankView();
-
+            // <a href="#"  class="dropdown-item bank_delete" data-id=${bank.id}>
+            //                                         <i class="fa-solid fa-trash-can"></i>
+            //                                     Delete</a>
 
 
 
@@ -338,12 +348,11 @@
                     success: function(res) {
                         if (res.status == 200) {
                             $('.edit_bank_name').val(res.bank.name);
-                            $('.edit_branch_name').val(res.bank.branch_name);
-                            $('.edit_manager_name').val(res.bank.manager_name);
-                            $('.edit_phone_number').val(res.bank.phone_number);
-                            $('.edit_account').val(res.bank.account);
-                            $('.edit_email').val(res.bank.email);
-                            $('.edit_opening_balance').val(res.bank.opening_balance);
+                            $('.edit_bank_branch_name').val(res.bank.bank_branch_name);
+                            $('.edit_bank_branch_manager_name').val(res.bank.bank_branch_manager_name);
+                            $('.edit_bank_branch_phone').val(res.bank.bank_branch_phone);
+                            $('.edit_bank_account_number').val(res.bank.bank_account_number);
+                            $('.edit_bank_branch_email').val(res.bank.bank_branch_email);
                             $('.update_bank').val(res.bank.id);
                         } else {
                             toastr.warning("No Data Found");
@@ -380,67 +389,52 @@
                             if (res.error.name) {
                                 showError('.edit_bank_name', res.error.name);
                             }
-                            if (res.error.branch_name) {
-                                showError('.edit_branch_name', res.error.branch_name);
-                            }
-                            if (res.error.manager_name) {
-                                showError('.edit_manager_name', res.error.manager_name);
-                            }
-                            if (res.error.account) {
-                                showError('.edit_account', res.error.edit_account);
-                            }
-                            if (res.error.phone_number) {
-                                showError('.edit_phone_number', res.error.phone_number);
-                            }
-                            if (res.error.opening_balance) {
-                                showError('.edit_opening_balance', res.error.opening_balance);
-                            }
                         }
                     }
                 });
             })
 
-            // bank Delete
-            $(document).on('click', '.bank_delete', function(e) {
-                // $('.bank_delete').click(function(e) {
-                e.preventDefault();
-                let id = this.getAttribute('data-id');
+            // // bank Delete
+            // $(document).on('click', '.bank_delete', function(e) {
+            //     // $('.bank_delete').click(function(e) {
+            //     e.preventDefault();
+            //     let id = this.getAttribute('data-id');
 
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "You won't be able to Delete this!",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, delete it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajaxSetup({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            }
-                        });
-                        $.ajax({
-                            url: `/bank/destroy/${id}`,
-                            type: 'GET',
-                            success: function(data) {
-                                if (data.status == 200) {
-                                    toastr.success(data.message);
-                                    bankView();
-                                } else {
-                                    Swal.fire({
-                                        icon: "error",
-                                        title: "Oops...",
-                                        text: data.message,
-                                        footer: '<a href="#">Why do I have this issue?</a>'
-                                    });
-                                }
-                            }
-                        });
-                    }
-                });
-            })
+            //     Swal.fire({
+            //         title: "Are you sure?",
+            //         text: "You won't be able to Delete this!",
+            //         icon: "warning",
+            //         showCancelButton: true,
+            //         confirmButtonColor: "#3085d6",
+            //         cancelButtonColor: "#d33",
+            //         confirmButtonText: "Yes, delete it!"
+            //     }).then((result) => {
+            //         if (result.isConfirmed) {
+            //             $.ajaxSetup({
+            //                 headers: {
+            //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            //                 }
+            //             });
+            //             $.ajax({
+            //                 url: `/bank/destroy/${id}`,
+            //                 type: 'GET',
+            //                 success: function(data) {
+            //                     if (data.status == 200) {
+            //                         toastr.success(data.message);
+            //                         bankView();
+            //                     } else {
+            //                         Swal.fire({
+            //                             icon: "error",
+            //                             title: "Oops...",
+            //                             text: data.message,
+            //                             footer: '<a href="#">Why do I have this issue?</a>'
+            //                         });
+            //                     }
+            //                 }
+            //             });
+            //         }
+            //     });
+            // })
 
 
             // add id in bank modal
@@ -484,5 +478,35 @@
                 });
             })
         });
+        $(document).ready(function() {
+                $('.showData').on('click', '.bankButton', function() {
+                    var button = $(this);
+                    var bankId = button.data('id');
+                    $.ajax({
+                        url: '/bank/status/' + bankId,
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.status === 200) {
+                                var newStatus = response.newStatus;
+                                button
+                                    .removeClass(newStatus === 'active' ? 'btn-danger' :
+                                        'btn-success')
+                                    .addClass(newStatus === 'active' ? 'btn-success' :
+                                        'btn-danger')
+                                    .text(newStatus === 'active' ? 'Active' :
+                                        'Inactive');
+                            } else {
+                                alert('Failed to update status. Please try again.');
+                            }
+                        },
+                        error: function() {
+                            alert('Error occurred while updating status.');
+                        }
+                    });
+                });
+            });
     </script>
 @endsection

@@ -36,17 +36,26 @@ class BankController extends Controller
                     'error' => $validator->messages()
                 ]);
             }
+            function generateSerialNumber()
+            {
+                $lastBank = Bank::latest('id')->first(); // Fetch the latest record
+                $lastNumber = $lastBank ? intval($lastBank->bank_account_number) : 0;
+                return str_pad($lastNumber + 1, 6, '0', STR_PAD_LEFT); // Pads to 6 digits
+            }
 
             // If validation passes, proceed with saving the bank details
             $bank = new Bank;
             $bank->branch_id = Auth::user()->branch_id;
             $bank->name = $request->name;
-            $bank->branch_name = $request->branch_name;
-            $bank->manager_name = $request->manager_name;
-            $bank->phone_number = $request->phone_number;
-            $bank->account = $request->account;
-            $bank->email = $request->email;
+            $bank->bank_branch_name = $request->bank_branch_name;
+            $bank->bank_branch_manager_name = $request->bank_branch_manager_name;
+            $bank->bank_branch_phone = $request->bank_branch_phone;
+            // $bank->bank_account_number = $request->bank_account_number;
+            $bank->bank_account_number = $request->bank_account_number ?? generateSerialNumber();
+
+            $bank->bank_branch_email = $request->bank_branch_email;
             $bank->opening_balance = $request->opening_balance;
+            $bank->current_balance =    $request->opening_balance;
             $bank->save();
 
             // Save the account transaction
@@ -113,27 +122,18 @@ class BankController extends Controller
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:99',
-            'branch_name' => 'required|max:149',
-            'phone_number' => 'required|max:19',
-            'account' => 'required',
-            // 'opening_balance' => 'required',
+
         ]);
+        try {
         if ($validator->passes()) {
             $bank = Bank::findOrFail($id);
             $bank->name =  $request->name;
-            $bank->branch_name = $request->branch_name;
-            $bank->manager_name = $request->manager_name;
-            $bank->phone_number = $request->phone_number;
-            $bank->account = $request->account;
-            $bank->email = $request->email;
-            // $bank->opening_balance = $request->opening_balance;
+            $bank->bank_branch_name = $request->bank_branch_name;
+            $bank->bank_branch_manager_name = $request->bank_branch_manager_name;
+            $bank->bank_branch_phone = $request->bank_branch_phone;
+            $bank->bank_account_number = $request->bank_account_number;
+            $bank->bank_branch_email = $request->bank_branch_email;
             $bank->save();
-
-            // $accountTransaction = AccountTransaction::where('account_id', $id)->first();
-            // $oldBalance = AccountTransaction::latest()->first();
-            // $accountTransaction->balance = (($oldBalance->balance - $accountTransaction->credit) + $request->opening_balance);
-            // $accountTransaction->credit = $request->opening_balance;
-            // $accountTransaction->save();
 
             return response()->json([
                 'status' => 200,
@@ -145,16 +145,23 @@ class BankController extends Controller
                 'error' => $validator->messages()
             ]);
         }
+    } catch (\Exception $e) {
+        // Log the error message
+        Log::error('Error to Updating bank details: ' . $e->getMessage());
+
+        // Return the errors.500 view for internal server errors
+        return response()->view('errors.500', [], 500);
     }
-    public function destroy($id)
-    {
-        $bank = Bank::findOrFail($id);
-        $bank->delete();
-        return response()->json([
-            'status' => 200,
-            'message' => 'Bank Deleted Successfully',
-        ]);
     }
+    // public function destroy($id)
+    // {
+    //     $bank = Bank::findOrFail($id);
+    //     $bank->delete();
+    //     return response()->json([
+    //         'status' => 200,
+    //         'message' => 'Bank Deleted Successfully',
+    //     ]);
+    // }
     //Bank balance Add
     public function BankBalanceAdd(Request $request, $id)
     {
@@ -194,5 +201,30 @@ class BankController extends Controller
                 'error' => $validator->messages()
             ]);
         }
+    }
+    public function status($id)
+    {
+        try {
+            $bank = Bank::findOrFail($id);
+            $newStatus = $bank->status === 'inactive' ? 'active' : 'inactive';
+            $bank->update(['status' => $newStatus]);
+
+            return response()->json([
+                'status' => 200,
+                'newStatus' => $newStatus,
+                'message' => 'Status changed successfully.',
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Bank record not found.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'An error occurred: ' . $e->getMessage(),
+            ]);
+        }
+
     }
 }

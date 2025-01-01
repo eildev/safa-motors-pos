@@ -142,12 +142,7 @@
                                         Size</a>
                                 </li>
                             @endif
-                            @if (Auth::user()->can('tax.menu'))
-                                <li class="nav-item">
-                                    <a href="{{ route('product.tax.add') }}"
-                                        class="nav-link {{ request()->routeIs('product.tax.add') ? 'nav_active' : '' }}">Tax</a>
-                                </li>
-                            @endif
+
                         </ul>
                     </div>
                 </li>

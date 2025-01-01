@@ -164,6 +164,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/employee/update/{id}', 'EmployeeUpdate')->name('employee.update');
         Route::get('/employee/delete/{id}', 'EmployeeDelete')->name('employee.delete');
         Route::get('/employee/details/{id}', 'EmployeeDetails')->name('employee.details');
+        Route::post('/update-status/{id}/{status}', 'updateStatus')->name('update.status');
     });
 
     // Banks related route
@@ -175,6 +176,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/bank/update/{id}', 'update')->name('bank.update');
         Route::get('/bank/destroy/{id}', 'destroy')->name('bank.destroy');
         Route::post('/add/bank/balance/{id}', 'BankBalanceAdd');
+        Route::post('/bank/status/{id}', 'status');
     });
 
     // Supplier related route
@@ -255,15 +257,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/promotion/branch', 'allBranch')->name('promotion.branch');
         Route::get('/promotion/details/find', 'PromotionDetailsFind')->name('promotion.details.find');
     });
-    // Tax related route(n)
-    Route::controller(TaxController::class)->group(function () {
-        Route::get('/tax/add', 'TaxAdd')->name('product.tax.add');
-        Route::post('/tax/store', 'TaxStore')->name('tax.store');
-        Route::get('/tax/view', 'TaxView')->name('tax.view');
-        Route::get('/tax/edit/{id}', 'TaxEdit')->name('tax.edit');
-        Route::post('/tax/update/{id}', 'TaxUpdate')->name('tax.update');
-        Route::get('/tax/delete/{id}', 'TaxDelete')->name('tax.delete');
-    });
+
     // Payment Method related route(n)
     Route::controller(PaymentMethodController::class)->group(function () {
         Route::get('/payment/method/add', 'PaymentMethodAdd')->name('payment.method.add');
