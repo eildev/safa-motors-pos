@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('variation_id')->unsigned()->nullable();
             $table->foreign('variation_id')->references('id')->on('variations')->onDelete('cascade');
             $table->integer('quantity');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

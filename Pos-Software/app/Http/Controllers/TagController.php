@@ -2,24 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
+use App\Models\Tags;
 use Illuminate\Http\Request;
-use App\Services\ImageService;
 use Illuminate\Support\Facades\Validator;
-use function App\Helper\generateUniqueSlug;
 use Illuminate\Support\Str;
-use App\Repositories\RepositoryInterfaces\CategoryInterface;
-
-class CategoryController extends Controller
+use App\Services\ImageService;
+class TagController extends Controller
 {
-    private $CategoryRepo;
-    public function __construct(CategoryInterface $CategoryRepo)
-    {
-        $this->CategoryRepo = $CategoryRepo;
-    }
-    public function index()
-    {
-        return view('pos.products.category');
+    public function index(){
+        return view('pos.products.tag.tags');
     }
 
 
@@ -31,15 +22,15 @@ class CategoryController extends Controller
         ]);
 
         if ($validator->passes()) {
-            $category = new Category;
-            $category->name = $request->name;
+            $tags = new Tags();
+            $tags->name = $request->name;
             // $category->slug= generateUniqueSlug($request->name, $category);
-            $category->slug = Str::slug($request->name);
-            $category->save();
+            $tags->slug = Str::slug($request->name);
+            $tags->save();
 
             return response()->json([
                 'status' => 200,
-                'message' => 'Category saved  successfully!',
+                'message' => 'Tags Saved  Successfully!',
             ]);
         } else {
             return response()->json([
@@ -55,24 +46,21 @@ class CategoryController extends Controller
         ]);
     }//end catch
     }
-
-
     public function view()
     {
-        $categories = $this->CategoryRepo->getAllCategory();
-        // $categories = Category::all();
+        $tags = Tags::all(); //
         return response()->json([
             "status" => 200,
-            "data" => $categories
+            "data" => $tags
         ]);
     }
     public function edit($id)
     {
-        $category = Category::findOrFail($id);
-        if ($category) {
+        $tags = Tags::findOrFail($id);
+        if ($tags) {
             return response()->json([
                 'status' => 200,
-                'category' => $category
+                'tags' => $tags
             ]);
         } else {
             return response()->json([
@@ -83,18 +71,19 @@ class CategoryController extends Controller
     }
     public function update(Request $request, $id)
     {
-        // dd($request->all());
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
         ]);
+        try {
         if ($validator->passes()) {
-            $category = Category::findOrFail($id);
+            $category = Tags::findOrFail($id);
             $category->name =  $request->name;
             $category->slug = Str::slug($request->name);
             $category->save();
             return response()->json([
                 'status' => 200,
-                'message' => 'Category Update Successfully',
+                'message' => 'Tags Update Successfully',
             ]);
         } else {
             return response()->json([
@@ -102,38 +91,48 @@ class CategoryController extends Controller
                 'error' => $validator->messages()
             ]);
         }
-    }
-    public function status($id)
-{
-    $category = Category::findOrFail($id);
-    $newStatus = $category->status === 'inactive' ? 'active' : 'inactive';
-    $category->update(['status' => $newStatus]);
-
-    return response()->json([
-        'status' => 200,
-        'newStatus' => $newStatus,
-        'message' => 'Status changed successfully.',
-    ]);
-}
-
-    public function destroy($id)
-    {
-        $category = Category::findOrFail($id);
-
-        $category->delete();
+    } catch (\Exception $e) {
         return response()->json([
-            'status' => 200,
-            'message' => 'Category Deleted Successfully',
+            'status' => 500,
+            'error' => 'Something went wrong! ' . $e->getMessage(),
         ]);
     }
+    }
+    public function destroy($id)
+    {
+        $tags = Tags::findOrFail($id);
+        $tags->delete();
+        return response()->json([
+            'status' => 200,
+            'message' => 'Tags Deleted Successfully',
+        ]);
+    }
+    public function status($id)
+    {
+        try {
+            $tags = Tags::findOrFail($id);
+            $newStatus = $tags->status === 'inactive' ? 'active' : 'inactive';
+            $tags->update(['status' => $newStatus]);
 
+            return response()->json([
+                'status' => 200,
+                'newStatus' => $newStatus,
+                'message' => 'Status changed successfully.',
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Handles cases where the tag with the given ID is not found
+            return response()->json([
+                'status' => 404,
+                'message' => 'Tag not found.',
+            ]);
+        } catch (\Exception $e) {
+            // Handles any other general exceptions
+            return response()->json([
+                'status' => 500,
+                'message' => 'Something went wrong! ' . $e->getMessage(),
+            ]);
+        }
 
-    // public function categoryAll()
-    // {
-    //     $categories = Category::all();
-    //     return  response()->json([
-    //         'status' => 200,
-    //         'categories' =>  $categories,
-    //     ]);
-    // }
+    }
+
 }

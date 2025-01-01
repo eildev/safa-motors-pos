@@ -30,6 +30,7 @@ use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\CompanyBalanceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ViaSaleController;
+use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -177,6 +178,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/bank/destroy/{id}', 'destroy')->name('bank.destroy');
         Route::post('/add/bank/balance/{id}', 'BankBalanceAdd');
         Route::post('/bank/status/{id}', 'status');
+    });
+    Route::controller(TagController::class)->group(function () {
+        Route::get('/tag', 'index')->name('tag');
+        Route::post('/tag/store', 'store');
+        Route::get('/tags/view', 'view');
+        Route::get('/tags/edit/{id}', 'edit');
+        Route::post('/tags/update/{id}', 'update');
+        Route::get('/tags/destroy/{id}', 'destroy');
+        Route::post('/tags/status/{id}', 'status');
     });
 
     // Supplier related route

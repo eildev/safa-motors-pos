@@ -142,6 +142,13 @@
                                         Size</a>
                                 </li>
                             @endif
+                            {{-- @if (Auth::user()->can('products-size.menu')) --}}
+                                <li class="nav-item">
+                                    <a href="{{ route('tag') }}"
+                                        class="nav-link {{ request()->routeIs('tag') ? 'nav_active' : '' }}">Tag
+                                        </a>
+                                </li>
+                            {{-- @endif --}}
 
                         </ul>
                     </div>
