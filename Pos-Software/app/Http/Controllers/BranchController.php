@@ -40,34 +40,37 @@ class BranchController extends Controller
             'phone' => 'required|max:19',
             'address' => 'required|string|max:200',
             'email' => 'required|email|unique:branches,email',
-            'logo' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'logo' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
-        if ($request->hasFile('logo')) {
-            try {
+
+        try {
+            $destinationPath = public_path('uploads/branch/');
+            $imageName = $imageService->resizeAndOptimize($request->file('logo'), $destinationPath);
+
+            // Generate a unique slug
+            $slug = $this->generateUniqueSlug($request->name);
+
+            $branch = new Branch;
+            $branch->name = $request->name;
+            $branch->slug = $slug;
+            $branch->phone = $request->phone;
+            $branch->address = $request->address;
+            $branch->email = $request->email;
+            if ($request->hasFile('logo')) {
                 $destinationPath = public_path('uploads/branch/');
                 $imageName = $imageService->resizeAndOptimize($request->file('logo'), $destinationPath);
-
-                // Generate a unique slug
-                $slug = $this->generateUniqueSlug($request->name);
-
-                $branch = new Branch;
-                $branch->name = $request->name;
-                $branch->slug = $slug;
-                $branch->phone = $request->phone;
-                $branch->address = $request->address;
-                $branch->email = $request->email;
                 $branch->logo = $imageName;
-                $branch->save();
-
-                $notification = array(
-                    'message' => 'Branch Created Successfully',
-                    'alert-type' => 'info'
-                );
-                return redirect()->route('branch.view')->with($notification);
-            } catch (\Exception $e) {
-                return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
             }
+            $branch->save();
+
+            $notification = array(
+                'message' => 'Branch Created Successfully',
+                'alert-type' => 'info'
+            );
+            return redirect()->route('branch.view')->with($notification);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
         }
     }
 
@@ -105,55 +108,39 @@ class BranchController extends Controller
     } //End Method
 
 
-    public function BranchUpdate(Request $request, $id)
+    public function BranchUpdate(Request $request, $id, ImageService $imageService)
     {
+        $request->validate([
+            'name' => 'required|string|max:99',
+            'phone' => 'required|max:19',
+            'address' => 'required|string|max:200',
+            'email' => 'required|email|unique:branches,email',
+            'logo' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
+        ]);
+        $slug = $this->generateUniqueSlug($request->name);
 
+        $branch = Branch::find($id);
+        $branch->name = $request->name;
+        $branch->slug = $slug;
+        $branch->phone = $request->phone;
+        $branch->address = $request->address;
+        $branch->email = $request->email;
         if ($request->hasFile('logo')) {
-            $request->validate([
-                'name' => 'required|max:200',
-                'phone' => 'required',
-                'address' => 'required',
-                'email' => 'required',
-                'logo' => 'required|image|mimes:jpeg,png,jpg,gif',
-            ]);
+            $destinationPath = public_path('uploads/branch/');
+            $imageName = $imageService->resizeAndOptimize($request->file('logo'), $destinationPath);
 
-            $imageName = rand() . '.' . $request->logo->extension();
-            $request->logo->move(public_path('uploads/branch/'), $imageName);
-            $branch = Branch::find($id);
             $path = public_path('uploads/branch/' . $branch->logo);
             if (file_exists($path)) {
                 @unlink($path);
             }
-            $branch->name = $request->name;
-            $branch->phone = $request->phone;
-            $branch->address = $request->address;
-            $branch->email = $request->email;
             $branch->logo = $imageName;
-            $branch->save();
-            $notification = array(
-                'message' => 'Branch Updated Successfully',
-                'alert-type' => 'info'
-            );
-            return redirect()->route('branch.view')->with($notification);
-        } else {
-            $request->validate([
-                'name' => 'required|max:200',
-                'phone' => 'required',
-                'address' => 'required',
-                'email' => 'required',
-            ]);
-            $branch = Branch::findOrFail($id);
-            $branch->name = $request->name;
-            $branch->phone = $request->phone;
-            $branch->address = $request->address;
-            $branch->email = $request->email;
-            $branch->save();
-            $notification = array(
-                'message' => 'Branch Updated  Successfully without logo ',
-                'alert-type' => 'info'
-            );
-            return redirect()->route('branch.view')->with($notification);
         }
+        $branch->save();
+        $notification = array(
+            'message' => 'Branch Updated Successfully',
+            'alert-type' => 'info'
+        );
+        return redirect()->route('branch.view')->with($notification);
     } //End Method
 
     public function BranchDelete($id)
