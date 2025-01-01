@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug', 255)->unique(); // Updated
             $table->string('business_name', 255)->nullable();
             $table->string('address', 255)->nullable();
-            $table->string('phone', 20)->nullable()->index(); // Indexed
+            $table->string('phone', 20)->index(); // Indexed
             $table->tinyInteger('supplier_type')->comment('1: Wholesale, 2: Retailer'); // Changed from enum
             $table->decimal('due_balance', 12, 2)->default(0); // UnsignedDecimal used
             $table->softDeletes(); // Added for soft delete functionality
