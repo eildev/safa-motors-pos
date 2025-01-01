@@ -1,5 +1,5 @@
 @extends('master')
-@section('title','| Unit')
+@section('title', '| Unit')
 @section('admin')
     <nav class="page-breadcrumb">
         <ol class="breadcrumb">
@@ -154,8 +154,10 @@
                         if (units.length > 0) {
                             $.each(units, function(index, unit) {
                                 const tr = document.createElement('tr');
-                                const statusClass = unit.status === 'inactive' ? 'btn-danger' : 'btn-success';
-                                const statusText = unit.status === 'inactive' ? 'Inactive' : 'Active';
+                                const statusClass = unit.status === 'inactive' ? 'btn-danger' :
+                                    'btn-success';
+                                const statusText = unit.status === 'inactive' ? 'Inactive' :
+                                    'Active';
                                 tr.innerHTML = `
                             <td>
                                 ${index+1}
@@ -238,6 +240,7 @@
                 let id = $(this).val();
                 // console.log(id);
                 let formData = new FormData($('.editUnitForm')[0]);
+                console.log("ID: ", id);
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -315,38 +318,37 @@
             })
         });
         $(document).ready(function() {
-                $('.showData').on('click', '.unitButton', function() {
-                    var unitId = $(this).data('id');
-                    // alert(categoryId);
-                    $.ajax({
-                        url: '/unit/status/' + unitId,
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function(response) {
+            $('.showData').on('click', '.unitButton', function() {
+                var unitId = $(this).data('id');
+                // alert(categoryId);
+                $.ajax({
+                    url: '/unit/status/' + unitId,
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.status == 200) {
+                            // var button = $('#categoryButton_' + categoryId);
                             if (response.status == 200) {
-                                // var button = $('#categoryButton_' + categoryId);
-                                if (response.status == 200) {
-                                    var button = $('#unitButton_' +
+                                var button = $('#unitButton_' +
                                     unitId);
-                                    if (response.newStatus == 'active') {
-                                        button.removeClass('btn-danger').addClass(
-                                            'btn-success').text('Active');
-                                    } else {
-                                        button.removeClass('btn-success').addClass(
-                                            'btn-danger').text('Inactive');
-                                    }
+                                if (response.newStatus == 'active') {
+                                    button.removeClass('btn-danger').addClass(
+                                        'btn-success').text('Active');
                                 } else {
                                     button.removeClass('btn-success').addClass(
-                                        'btn-danger').text(
-                                        'Inactive');
+                                        'btn-danger').text('Inactive');
                                 }
+                            } else {
+                                button.removeClass('btn-success').addClass(
+                                    'btn-danger').text(
+                                    'Inactive');
                             }
                         }
-                    });
+                    }
                 });
             });
-
+        });
     </script>
 @endsection
