@@ -18,7 +18,7 @@ class BranchController extends Controller
         $this->branchrepo = $branchInterface;
     }
 
-    // index function for branch 
+    // index function for branch
     public function index()
     {
         try {
@@ -109,8 +109,6 @@ class BranchController extends Controller
             'email' => 'required|email',
             'logo' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
-        $slug = $this->generateUniqueSlug($request->name);
-
         $branch = Branch::find($id);
         $branch->name = $request->name;
         $branch->slug = generateUniqueSlug($request->name, $branch);
