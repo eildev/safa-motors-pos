@@ -212,6 +212,7 @@
                 e.preventDefault();
                 // console.log('0k');
                 let id = this.getAttribute('data-id');
+              
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

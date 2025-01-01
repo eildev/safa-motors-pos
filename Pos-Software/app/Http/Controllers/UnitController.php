@@ -66,7 +66,7 @@ class UnitController extends Controller
             'name' => 'required|max:39',
 
         ]);
-        dd( $request->name);
+        // dd( $request->name);
         if ($validator->passes()) {
             $unit = Unit::findOrFail($id);
             $unit->name =  $request->name;
