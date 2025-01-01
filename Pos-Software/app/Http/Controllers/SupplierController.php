@@ -9,20 +9,28 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Models\ViaSale;
 use Carbon\Carbon;
-// use Validator;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
+use function App\Helper\generateUniqueSlug;
 
 class SupplierController extends Controller
 {
     public function index()
     {
-        return view('pos.supplier.supplier');
+        try {
+            // Attempt to load the view
+            return view('pos.supplier.supplier');
+        } catch (\Exception $e) {
+            // Handle any exceptions
+            return response()->view('errors.general', ['message' => $e->getMessage()], 500);
+        }
     }
+
+
     public function store(Request $request)
     {
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:250',
             'phone' => 'required|max:100',
@@ -32,6 +40,7 @@ class SupplierController extends Controller
         if ($validator->passes()) {
             $supplier = new Supplier;
             $supplier->name =  $request->name;
+            $supplier->slug =  generateUniqueSlug($request->name, $supplier);
             $supplier->branch_id =  Auth::user()->branch_id;
             $supplier->email = $request->email;
             $supplier->phone = $request->phone;
@@ -136,6 +145,6 @@ class SupplierController extends Controller
         $branch = Branch::findOrFail($data->branch_id);
         $banks = Bank::latest()->get();
         $isCustomer = false;
-        return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer', 'banks','viaSales'));
+        return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer', 'banks', 'viaSales'));
     }
 }//End

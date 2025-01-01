@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use  App\Models\Branch;
 use App\Services\ImageService;
-use Illuminate\Support\Str;
+use function App\Helper\generateUniqueSlug;
 use App\Repositories\RepositoryInterfaces\BranchInterface;
 
 class BranchController extends Controller
@@ -42,18 +42,10 @@ class BranchController extends Controller
             'email' => 'required|email|unique:branches,email',
             'logo' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
-
-
         try {
-            $destinationPath = public_path('uploads/branch/');
-            $imageName = $imageService->resizeAndOptimize($request->file('logo'), $destinationPath);
-
-            // Generate a unique slug
-            $slug = $this->generateUniqueSlug($request->name);
-
             $branch = new Branch;
             $branch->name = $request->name;
-            $branch->slug = $slug;
+            $branch->slug = generateUniqueSlug($request->name, $branch);
             $branch->phone = $request->phone;
             $branch->address = $request->address;
             $branch->email = $request->email;
@@ -114,14 +106,14 @@ class BranchController extends Controller
             'name' => 'required|string|max:99',
             'phone' => 'required|max:19',
             'address' => 'required|string|max:200',
-            'email' => 'required|email|unique:branches,email',
+            'email' => 'required|email',
             'logo' => 'image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
         $slug = $this->generateUniqueSlug($request->name);
 
         $branch = Branch::find($id);
         $branch->name = $request->name;
-        $branch->slug = $slug;
+        $branch->slug = generateUniqueSlug($request->name, $branch);
         $branch->phone = $request->phone;
         $branch->address = $request->address;
         $branch->email = $request->email;
@@ -157,21 +149,4 @@ class BranchController extends Controller
         );
         return redirect()->back()->with($notification);
     } //End Method
-
-    /**
-     * Generate a unique slug based on the name.
-     */
-    private function generateUniqueSlug($name)
-    {
-        $slug = Str::slug($name);
-        $originalSlug = $slug;
-        $counter = 1;
-
-        while (Branch::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $counter;
-            $counter++;
-        }
-
-        return $slug;
-    }
 }
