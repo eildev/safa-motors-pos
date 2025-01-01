@@ -17,7 +17,7 @@
                             data-bs-target="#exampleModalLongScollable"><i data-feather="plus"></i></button>
                     </div>
                     <div class="table-responsive">
-                        <table id="dataTableExample" class="table">
+                        <table id="example" class="table">
                             <thead>
                                 <tr>
                                     <th>SN</th>
@@ -178,6 +178,9 @@
                         // console.log(res.data);
                         const categories = res.data;
                         $('.showData').empty();
+                        if ($.fn.DataTable.isDataTable('#example')) {
+                            $('#example').DataTable().clear().destroy();
+                        }
                         if (categories.length > 0) {
                             $.each(categories, function(index, category) {
                                 const tr = document.createElement('tr');
@@ -222,6 +225,13 @@
                                 </td>
                             </tr>`)
                         }
+                        $('#example').DataTable({
+                            columnDefs: [{
+                                "defaultContent": "-",
+                                "targets": "_all"
+                            }],
+                            dom: 'Bfrtip',
+                        });
                     }
                 })
             }

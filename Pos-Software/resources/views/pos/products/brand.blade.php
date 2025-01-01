@@ -22,8 +22,7 @@
                                 <tr>
                                     <th>SN</th>
                                     <th>Brand Name</th>
-                                    {{-- <th>Description</th>
-                                    <th>Image</th> --}}
+
                                     <th>Status</th>
                                     <th>Action</th>
                                 </tr>

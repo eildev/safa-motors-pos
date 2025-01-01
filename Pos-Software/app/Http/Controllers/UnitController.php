@@ -64,10 +64,9 @@ class UnitController extends Controller
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:39',
-            'related_to_unit' => 'required|max:39',
-            'related_sign' => 'required|max:19',
-            'related_by' => 'required|max:10',
+
         ]);
+        dd( $request->name);
         if ($validator->passes()) {
             $unit = Unit::findOrFail($id);
             $unit->name =  $request->name;
@@ -91,6 +90,19 @@ class UnitController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'Unit Deleted Successfully',
+        ]);
+    }
+    public function status($id)
+    {
+        $unit = Unit::findOrFail($id);
+        $newStatus = $unit->status == 'inactive' ? 'active' : 'inactive';
+        $unit->update([
+            'status' => $newStatus
+        ]);
+        return response()->json([
+            'status' => 200,
+            'newStatus' => $newStatus,
+            'message' => 'Status Changed Successfully',
         ]);
     }
 }

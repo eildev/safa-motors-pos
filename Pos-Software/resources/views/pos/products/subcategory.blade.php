@@ -17,7 +17,7 @@
                             data-bs-target="#exampleModalLongScollable"><i data-feather="plus"></i></button>
                     </div>
                     <div id="" class="table-responsive">
-                        <table class="table">
+                        <table id="example" class="table">
                             <thead>
                                 <tr>
                                     <th>SN</th>
@@ -198,6 +198,9 @@
                         const subcategories = res.data;
 
                         $('.showData').empty();
+                        if ($.fn.DataTable.isDataTable('#example')) {
+                            $('#example').DataTable().clear().destroy();
+                        }
                         $.each(subcategories, function(index, subcategory) {
                             const tr = document.createElement('tr');
                             const statusClass = subcategory.status === 'inactive' ? 'btn-danger' : 'btn-success';
@@ -220,7 +223,7 @@
                                 data-id="${subcategory.id}"
                                 data-status="${subcategory.status}">
                             ${statusText}
-                        </button>
+                           </button>
                           </td>
                             <td>
                                 <a href="#" class="btn btn-primary btn-icon subcategory_edit" data-id=${subcategory.id} data-bs-toggle="modal" data-bs-target="#edit">
@@ -233,8 +236,16 @@
                             `;
                             $('.showData').append(tr);
                         })
+                        $('#example').DataTable({
+                            columnDefs: [{
+                                "defaultContent": "-",
+                                "targets": "_all"
+                            }],
+                            dom: 'Bfrtip',
+                        });
 
                     }
+
                 })
             }
             categoryView();

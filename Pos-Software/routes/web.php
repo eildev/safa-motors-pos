@@ -127,6 +127,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/unit/edit/{id}', 'edit')->name('unit.edit');
         Route::post('/unit/update/{id}', 'update')->name('unit.update');
         Route::get('/unit/destroy/{id}', 'destroy')->name('unit.destroy');
+        Route::post('/unit/status/{id}', 'status');
     });
 
     // Product Size related route(n)

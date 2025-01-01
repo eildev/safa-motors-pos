@@ -17,12 +17,12 @@
                             data-bs-target="#exampleModalLongScollable"><i data-feather="plus"></i></button>
                     </div>
                     <div id="" class="table-responsive">
-                        <table class="table">
+                        <table id="example" class="table">
                             <thead>
                                 <tr>
                                     <th>SN</th>
                                     <th>Unit Name</th>
-
+                                    <th>Status</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -148,10 +148,14 @@
                     success: function(res) {
                         const units = res.data;
                         $('.showData').empty();
-
+                        if ($.fn.DataTable.isDataTable('#example')) {
+                            $('#example').DataTable().clear().destroy();
+                        }
                         if (units.length > 0) {
                             $.each(units, function(index, unit) {
                                 const tr = document.createElement('tr');
+                                const statusClass = unit.status === 'inactive' ? 'btn-danger' : 'btn-success';
+                                const statusText = unit.status === 'inactive' ? 'Inactive' : 'Active';
                                 tr.innerHTML = `
                             <td>
                                 ${index+1}
@@ -159,7 +163,14 @@
                             <td>
                                 ${unit.name ?? ""}
                             </td>
-
+                             <td>
+                             <button id="unitButton_${unit.id}"
+                                class="btn ${statusClass} unitButton"
+                                data-id="${unit.id}"
+                                data-status="${unit.status}">
+                            ${statusText}
+                           </button>
+                          </td>
                             <td>
                                 <a href="#" class="btn btn-primary btn-icon unit_edit" data-id=${unit.id} data-bs-toggle="modal" data-bs-target="#edit">
                                     <i class="fa-solid fa-pen-to-square"></i>
@@ -183,6 +194,13 @@
                                 </td>
                             </tr>`)
                         }
+                        $('#example').DataTable({
+                            columnDefs: [{
+                                "defaultContent": "-",
+                                "targets": "_all"
+                            }],
+                            dom: 'Bfrtip',
+                        });
 
                     }
                 })
@@ -296,5 +314,39 @@
                 });
             })
         });
+        $(document).ready(function() {
+                $('.showData').on('click', '.unitButton', function() {
+                    var unitId = $(this).data('id');
+                    // alert(categoryId);
+                    $.ajax({
+                        url: '/unit/status/' + unitId,
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.status == 200) {
+                                // var button = $('#categoryButton_' + categoryId);
+                                if (response.status == 200) {
+                                    var button = $('#unitButton_' +
+                                    unitId);
+                                    if (response.newStatus == 'active') {
+                                        button.removeClass('btn-danger').addClass(
+                                            'btn-success').text('Active');
+                                    } else {
+                                        button.removeClass('btn-success').addClass(
+                                            'btn-danger').text('Inactive');
+                                    }
+                                } else {
+                                    button.removeClass('btn-success').addClass(
+                                        'btn-danger').text(
+                                        'Inactive');
+                                }
+                            }
+                        }
+                    });
+                });
+            });
+
     </script>
 @endsection
