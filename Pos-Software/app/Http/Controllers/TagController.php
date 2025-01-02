@@ -77,10 +77,10 @@ class TagController extends Controller
         ]);
         try {
         if ($validator->passes()) {
-            $category = Tags::findOrFail($id);
-            $category->name =  $request->name;
-            $category->slug = Str::slug($request->name);
-            $category->save();
+            $tags = Tags::findOrFail($id);
+            $tags->name =  $request->name;
+            $tags->slug= generateUniqueSlug($request->name, $tags);
+            $tags->save();
             return response()->json([
                 'status' => 200,
                 'message' => 'Tags Update Successfully',

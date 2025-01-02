@@ -155,7 +155,9 @@ class CRMController extends Controller
         if ($validator->passes()) {
             $smsCat = SmsCategory::findOrFail($id);
             $smsCat->name = $request->name;
+            $smsCat->slug = generateUniqueSlug($request->name, $smsCat);
             $smsCat->save();
+
 
             return response()->json([
                 'status' => 200,

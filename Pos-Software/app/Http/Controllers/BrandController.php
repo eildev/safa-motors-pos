@@ -77,7 +77,7 @@ class BrandController extends Controller
         if ($validator->passes()) {
             $brand = Brand::findOrFail($id);
             $brand->name =  $request->name;
-            $brand->slug = Str::slug($request->name);
+            $brand->slug = generateUniqueSlug($request->name, $brand);
             // $brand->description = $request->description;
             // if ($request->image) {
             //     $imageName = rand() . '.' . $request->image->extension();
