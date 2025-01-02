@@ -98,7 +98,7 @@ class SubCategoryController extends Controller
         if ($validator->passes()) {
             $subcategory = SubCategory::findOrFail($id);
             $subcategory->name =  $request->name;
-            $subcategory->slug = Str::slug($request->name);
+            $subcategory->slug = generateUniqueSlug($request->name, $subcategory);
             $subcategory->category_id =  $request->category_id;
             $subcategory->save();
             return response()->json([

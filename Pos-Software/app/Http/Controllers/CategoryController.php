@@ -89,7 +89,8 @@ class CategoryController extends Controller
         if ($validator->passes()) {
             $category = Category::findOrFail($id);
             $category->name =  $request->name;
-            $category->slug = Str::slug($request->name);
+            // $category->slug = Str::slug($request->name);
+            $category->slug = generateUniqueSlug($request->name, $category);
             $category->save();
             return response()->json([
                 'status' => 200,
