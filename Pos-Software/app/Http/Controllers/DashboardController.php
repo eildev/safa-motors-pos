@@ -37,22 +37,22 @@ class DashboardController extends Controller
                     ->whereDate('created_at', Carbon::now())->get();
                 $todayExpanse = Expense::where('branch_id', $branchId)
                     ->whereDate('created_at', Carbon::now())->get();
-                $dueCollection = Transaction::where('branch_id', $branchId)
-                    ->where('particulars', 'SaleDue')
-                    ->whereDate('created_at', Carbon::now())
-                    ->get();
-                $otherCollection = Transaction::where('branch_id', $branchId)
-                    ->where('particulars', 'OthersReceive')
-                    ->whereDate('created_at', Carbon::now())
-                    ->get();
-                $otherPaid = Transaction::where('branch_id', $branchId)
-                    ->where('particulars', 'OthersPayment')
-                    ->whereDate('created_at', Carbon::now())
-                    ->get();
-                $purchaseDuePay = Transaction::where('branch_id', $branchId)
-                    ->where('particulars', 'PurchaseDue')
-                    ->whereDate('created_at', Carbon::now())
-                    ->get();
+                // $dueCollection = Transaction::where('branch_id', $branchId)
+                //     ->where('particulars', 'SaleDue')
+                //     ->whereDate('created_at', Carbon::now())
+                //     ->get();
+                // $otherCollection = Transaction::where('branch_id', $branchId)
+                //     ->where('particulars', 'OthersReceive')
+                //     ->whereDate('created_at', Carbon::now())
+                //     ->get();
+                // $otherPaid = Transaction::where('branch_id', $branchId)
+                //     ->where('particulars', 'OthersPayment')
+                //     ->whereDate('created_at', Carbon::now())
+                //     ->get();
+                // $purchaseDuePay = Transaction::where('branch_id', $branchId)
+                //     ->where('particulars', 'PurchaseDue')
+                //     ->whereDate('created_at', Carbon::now())
+                //     ->get();
                 $todayBalance = AccountTransaction::where('branch_id', $branchId)
                     ->whereDate('created_at', Carbon::now())
                     ->latest()
@@ -79,16 +79,16 @@ class DashboardController extends Controller
                     ->get();
                 $todayEmployeeSalary = EmployeeSalary::where('branch_id', $branchId)
                     ->whereDate('created_at', Carbon::now())->get();
-                $adjustDueCollection = Transaction::where('branch_id', $branchId)
-                    ->where('particulars', 'Adjust Due Collection')
-                    ->where('payment_type', 'receive')
-                    ->whereDate('created_at', Carbon::now())
-                    ->sum('credit');
-                $todayReturnAmount = Transaction::where('branch_id', $branchId)
-                    ->where('particulars', 'Return')
-                    ->where('payment_type', 'pay')
-                    ->whereDate('created_at', Carbon::now())
-                    ->sum('debit');
+                // $adjustDueCollection = Transaction::where('branch_id', $branchId)
+                //     ->where('particulars', 'Adjust Due Collection')
+                //     ->where('payment_type', 'receive')
+                //     ->whereDate('created_at', Carbon::now())
+                //     ->sum('credit');
+                // $todayReturnAmount = Transaction::where('branch_id', $branchId)
+                //     ->where('particulars', 'Return')
+                //     ->where('payment_type', 'pay')
+                //     ->whereDate('created_at', Carbon::now())
+                //     ->sum('debit');
                 $viaPayment = AccountTransaction::where('branch_id', $branchId)
                     ->where('purpose', 'Via Payment')
                     ->whereDate('created_at', Carbon::now())
@@ -97,17 +97,15 @@ class DashboardController extends Controller
                 $totalIngoing =
                     $previousDayBalance +
                     $todaySales +
-                    $dueCollection->sum('credit') +
-                    $otherCollection->sum('credit') +
-                    $addBalance->sum('credit') +
-                    $adjustDueCollection;
+                    $addBalance->sum('credit');
+                    // $adjustDueCollection;
                 $totalOutgoing =
                     $todayPurchase->sum('paid') +
                     $todayExpanse->sum('amount') +
                     $todayEmployeeSalary->sum('debit') +
-                    $todayReturnAmount +
-                    $purchaseDuePay->sum('debit') +
-                    $otherPaid->sum('debit') +
+                    // $todayReturnAmount +
+                    // $purchaseDuePay->sum('debit') +
+                    // $otherPaid->sum('debit') +
                     $viaPayment->sum('debit');
                 // Store the data for the current branch
                 $branchData[$branchId] = [
@@ -115,14 +113,12 @@ class DashboardController extends Controller
                     'todaySales' => $todaySales,
                     'todayPurchase' => $todayPurchase->sum('paid'),
                     'todayExpanse' => $todayExpanse->sum('amount'),
-                    'dueCollection' => $dueCollection->sum('credit'),
-                    'otherCollection' => $otherCollection->sum('credit'),
-                    'otherPaid' => $otherPaid->sum('debit'),
-                    'purchaseDuePay' => $purchaseDuePay->sum('debit'),
+                    // 'otherPaid' => $otherPaid->sum('debit'),
+                    // 'purchaseDuePay' => $purchaseDuePay->sum('debit'),
                     'addBalance' => $addBalance->sum('credit'),
                     'todayEmployeeSalary' => $todayEmployeeSalary->sum('debit'),
-                    'todayReturnAmount' => $todayReturnAmount,
-                    'adjustDueCollection' => $adjustDueCollection,
+                    // 'todayReturnAmount' => $todayReturnAmount,
+                    // 'adjustDueCollection' => $adjustDueCollection,
                     'viaSale' => 0,
                     'viaPayment' => $viaPayment->sum('debit'),
                     'branch' => $branch,
@@ -158,10 +154,10 @@ class DashboardController extends Controller
                 ->where('particulars', 'OthersPayment')
                 ->whereDate('created_at', Carbon::now())
                 ->get();
-            $purchaseDuePay = Transaction::where('branch_id', $branchId)
-                ->where('particulars', 'PurchaseDue')
-                ->whereDate('created_at', Carbon::now())
-                ->get();
+            // $purchaseDuePay = Transaction::where('branch_id', $branchId)
+            //     ->where('particulars', 'PurchaseDue')
+            //     ->whereDate('created_at', Carbon::now())
+            //     ->get();
             $todayBalance = AccountTransaction::where('branch_id', $branchId)
                 ->whereDate('created_at', Carbon::now())
                 ->latest()
@@ -192,42 +188,42 @@ class DashboardController extends Controller
                 ->where('purpose', 'Via Payment')
                 ->whereDate('created_at', Carbon::now())
                 ->get();
-            $adjustDueCollection = Transaction::where('branch_id', $branchId)
-                ->where('particulars', 'Adjust Due Collection')
-                ->where('payment_type', 'receive')
-                ->whereDate('created_at', Carbon::now())
-                ->sum('credit');
-            $todayReturnAmount = Transaction::where('branch_id', $branchId)
-                ->where('particulars', 'Return')
-                ->where('payment_type', 'pay')
-                ->whereDate('created_at', Carbon::now())
-                ->sum('debit');
+            // $adjustDueCollection = Transaction::where('branch_id', $branchId)
+            //     ->where('particulars', 'Adjust Due Collection')
+            //     ->where('payment_type', 'receive')
+            //     ->whereDate('created_at', Carbon::now())
+            //     ->sum('credit');
+            // $todayReturnAmount = Transaction::where('branch_id', $branchId)
+            //     ->where('particulars', 'Return')
+            //     ->where('payment_type', 'pay')
+            //     ->whereDate('created_at', Carbon::now())
+            //     ->sum('debit');
 
             $totalIngoing =
                 $previousDayBalance +
                 $todaySales +
                 $dueCollection->sum('credit') +
                 $otherCollection->sum('credit') +
-                $addBalance->sum('credit') +
-                $adjustDueCollection;
+                $addBalance->sum('credit');
+                // $adjustDueCollection;
                 //+ $viaSale->sum('sub_total');
             $totalOutgoing =
                 $todayPurchase->sum('paid') +
                 $todayExpanse->sum('amount') +
                 $todayEmployeeSalary->sum('debit') +
-                $todayReturnAmount +
-                $purchaseDuePay->sum('debit') +
+                // $todayReturnAmount +
+                // $purchaseDuePay->sum('debit') +
                 $otherPaid->sum('debit') +
                 $viaPayment->sum('debit');
         } //End else
 
         // today Total Summary
         // $todayTotalViaSale = ViaSale::whereDate('created_at', Carbon::now())->sum('sub_total');
-        $todaySaleTotal = Sale::whereDate('created_at', Carbon::now())->sum('paid');
+        // $todaySaleTotal = Sale::whereDate('created_at', Carbon::now())->sum('paid');
         // $todayTotalSales = $todaySaleTotal - $todayTotalViaSale;
-        $todayTotalSales = $todaySaleTotal;
+        // $todayTotalSales = $todaySaleTotal;
 
-        $todayTotalPurchase = Purchase::whereDate('created_at', Carbon::now())->sum('paid');
+        // $todayTotalPurchase = Purchase::whereDate('created_at', Carbon::now())->sum('paid');
         $todayTotalExpanse = Expense::whereDate('created_at', Carbon::now())->sum('amount');
         $todayTotalDueCollection = Transaction::where('particulars', 'SaleDue')
             ->whereDate('created_at', Carbon::now())
@@ -277,14 +273,14 @@ class DashboardController extends Controller
 
         $todayTotalIngoing =
             $previousDayTotalBalance +
-            $todayTotalSales +
+            // $todayTotalSales +
             $todayTotalDueCollection +
             $todayTotalOtherCollection +
             $todayTotalAddBalance +
             $todayTotalAdjustDueCollection;
             // $todayTotalViaSale;
         $todayTotalOutgoing =
-            $todayTotalPurchase +
+            // $todayTotalPurchase +
             $todayTotalExpanse +
             $todayTotalEmployeeSalary +
             $todayTotalReturnAmount +
