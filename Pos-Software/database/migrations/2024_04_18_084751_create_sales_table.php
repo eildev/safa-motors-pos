@@ -20,7 +20,7 @@ return new class extends Migration
             $table->date('sale_date')->nullable();
             $table->unsignedBigInteger('sale_by')->nullable();
             $table->foreign('sale_by')->references('id')->on('users');
-            $table->string('invoice_number')->nullable();
+            $table->integer('invoice_number')->unique();
             $table->enum('order_type', ['general', 'online'])->default('general');
             $table->decimal('delivery_charge')->nullable();
             $table->integer('total_quantity')->default(0); //total product quantity

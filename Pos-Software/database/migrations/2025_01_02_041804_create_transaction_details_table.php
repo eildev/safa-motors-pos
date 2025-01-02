@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('branch_id')->unsigned();
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-            $table->unsignedBigInteger('transaction_id')->unsigned();
-            $table->foreign('transaction_id')->references('transaction_id')->on('transactions')->onDelete('cascade');
+            $table->integer('transaction_id');
+            $table->foreign('transaction_id')->references('transaction_id')->on('transactions');
             $table->enum('transaction_type', ['In', 'Out']);
             $table->decimal('amount', 12, 2)->nullable();
             $table->unsignedBigInteger('sell_id')->unsigned()->nullable();
@@ -25,8 +25,6 @@ return new class extends Migration
             $table->foreign('purchase_id')->references('id')->on('purchases');
             $table->unsignedBigInteger('expense_id')->unsigned()->nullable();
             $table->foreign('expense_id')->references('id')->on('expenses');
-            $table->unsignedBigInteger('return_id')->unsigned()->nullable();
-            $table->foreign('return_id')->references('id')->on('returns');
             $table->unsignedBigInteger('return_id')->unsigned()->nullable();
             $table->foreign('return_id')->references('id')->on('returns');
             $table->unsignedBigInteger('salary_id')->unsigned()->nullable();

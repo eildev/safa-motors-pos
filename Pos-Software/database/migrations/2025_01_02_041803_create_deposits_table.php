@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('deposits', function (Blueprint $table) {
             $table->id();
             $table->decimal('amount', 12, 2);
-            $table->unsignedBigInteger('transaction_id')->unsigned();
+            $table->integer('transaction_id');
             $table->foreign('transaction_id')->references('transaction_id')->on('transactions');
             $table->unsignedBigInteger('bank_id')->unsigned();
             $table->foreign('bank_id')->references('id')->on('banks');

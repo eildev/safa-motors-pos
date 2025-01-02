@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('branch_id')->unsigned();
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-            $table->unsignedBigInteger('invoice_number');
+            $table->integer('invoice_number');
             $table->foreign('invoice_number')->references('invoice_number')->on('sales');
             $table->dateTime('return_date');
             $table->integer('total_quantity');
