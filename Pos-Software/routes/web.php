@@ -438,6 +438,7 @@ Route::middleware('auth')->group(function () {
             Route::get('category/view', 'viewSmsCat')->name('sms.category.view');
             Route::post('category/update/{id}', 'updateSmsCat')->name('sms.category.update');
             Route::get('category/delete/{id}', 'deleteSmsCat')->name('sms.category.delete');
+            Route::get('/get-sms-categories', 'fechCategory');
         });
         //Customize Customer CRM
         Route::group(['prefix' => 'custimize-customer'], function () {

@@ -12,6 +12,7 @@ use App\Models\Customer;
 use App\Jobs\SendBulkEmails;
 use App\Models\Sms;
 use Carbon\Carbon;
+use function App\Helper\generateUniqueSlug;
 use Illuminate\Support\Facades\Mail;
 
 class CRMController extends Controller
@@ -121,6 +122,7 @@ class CRMController extends Controller
         ]);
         if ($validator->passes()) {
             $smsCat = new SmsCategory;
+            $smsCat->slug = generateUniqueSlug($request->name, $smsCat);
             $smsCat->name = $request->name;
             $smsCat->save();
 
@@ -210,5 +212,10 @@ class CRMController extends Controller
         // Execute the query
         $customer = $customerQuery->get();
         return view('pos.crm.customize_customer.customize_customer-table', compact('customer'))->render();
+    }
+    public function fechCategory(){
+        // $smsCategory = SmsCategory::all();
+        $smsCategory = SmsCategory::orderBy('created_at', 'desc')->get();
+        return response()->json($smsCategory);
     }
 }

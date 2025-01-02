@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Services\ImageService;
+use function App\Helper\generateUniqueSlug;
 class TagController extends Controller
 {
     public function index(){
@@ -24,8 +25,7 @@ class TagController extends Controller
         if ($validator->passes()) {
             $tags = new Tags();
             $tags->name = $request->name;
-            // $category->slug= generateUniqueSlug($request->name, $category);
-            $tags->slug = Str::slug($request->name);
+            $tags->slug= generateUniqueSlug($request->name, $tags);
             $tags->save();
 
             return response()->json([
