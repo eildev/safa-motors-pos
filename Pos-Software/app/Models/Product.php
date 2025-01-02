@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes; 
+    use HasFactory, SoftDeletes;
     protected $guarded = [];
 
     function category()
@@ -43,5 +43,9 @@ class Product extends Model
     function branch()
     {
         return $this->belongsTo(Branch::class, 'branch_id', 'id');
+    }
+    function product_details()
+    {
+        return $this->hasOne(ProductDetails::class, 'product_id', 'id');
     }
 }

@@ -87,11 +87,7 @@ class EmployeeController extends Controller
         $employee->salary = $request->salary;
         $employee->nid = $request->nid;
         $employee->designation = $request->designation;
-        // if ($request->image) {
-        //     $imageName = rand() . '.' . $request->image->extension();
-        //     $request->image->move(public_path('uploads/employee'), $imageName);
-        //     $employee->pic = $imageName;
-        // }
+       
         if ($request->hasFile('image')) {
             $destinationPath = public_path('uploads/employee');
             $imageName = $imageService->resizeAndOptimize($request->file('image'), $destinationPath);

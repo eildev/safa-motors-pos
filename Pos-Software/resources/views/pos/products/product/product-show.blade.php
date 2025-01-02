@@ -31,21 +31,25 @@
                                     <th>Brand</th>
                                     <th>Cost Price</th>
                                     <th>Sale Price</th>
-                                    <th>Stock</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @if ($products->count() > 0)
                                     @foreach ($products as $key => $product)
+                                    {{-- @dd($product->product_details) --}}
+
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>
-                                                <img src="{{ $product->image ? asset('uploads/product/' . $product->image) : asset('dummy/image.jpg') }}"
+                                                <img src="{{ $product->product_details?->image ?  asset('uploads/products/' . $product->product_details->image) : asset('dummy/image.jpg') }}"
                                                     alt="product image">
                                             </td>
                                             <td>
-                                                <a href="{{ route('product.ledger', $product->id) }}">
+                                                {{-- <a href="{{ route('product.ledger', $product->id) }}">
+                                                    {{ $product->name ?? '' }}
+                                                </a> --}}
+                                                <a href="#">
                                                     {{ $product->name ?? '' }}
                                                 </a>
                                             </td>
@@ -54,9 +58,9 @@
                                             @endif
                                             <td>{{ $product->category->name ?? '' }}</td>
                                             <td>{{ $product->brand->name ?? '' }}</td>
-                                            <td>{{ $product->cost ?? 0 }}</td>
-                                            <td>{{ $product->price ?? 0 }}</td>
-                                            <td>{{ $product->stock ?? 0 }} ({{ $product->unit->name ?? '' }})</td>
+                                            <td>{{ $product->cost_price ?? 0 }}</td>
+                                            <td>{{ $product->base_sell_price ?? 0 }}</td>
+
                                             <td>
                                                 @if (Auth::user()->can('products.edit'))
                                                     <a href="{{ route('product.edit', $product->id) }}"
