@@ -10,6 +10,9 @@ use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Repositories\RepositoryInterfaces\CustomerInterfaces;
+use Illuminate\Support\Facades\Log;
+
+use function App\Helper\generateUniqueSlug;
 
 class CustomerController extends Controller
 {
@@ -21,13 +24,25 @@ class CustomerController extends Controller
     }
     public function AddCustomer()
     {
-        return view('pos.customer.add_customer');
-    } //End Method
+        try {
+            // Attempt to return the view
+            return view('pos.customer.add_customer');
+        } catch (\Exception $e) {
+            // Handle any exceptions that occur
+            // Log the error for debugging purposes
+            Log::error('Error loading AddCustomer view: ' . $e->getMessage());
+
+            // Optionally, return a fallback response, such as an error page or a custom message
+            return response()->view('errors.500', ['message' => 'Failed to load the add customer page. Please try again later.'], 500);
+        }
+    }
+
     public function CustomerStore(Request $request)
     {
         $customer = new Customer;
         $customer->branch_id = Auth::user()->branch_id;
         $customer->name = $request->name;
+        $customer->slug = generateUniqueSlug($request->name, $customer);
         $customer->phone = $request->phone;
         $customer->email = $request->email;
         $customer->address = $request->address;
@@ -36,21 +51,6 @@ class CustomerController extends Controller
         $customer->total_receivable = $request->wallet_balance ?? 0;
         $customer->created_at = Carbon::now();
         $customer->save();
-
-        if ($request->wallet_balance > 0) {
-            $transaction = new Transaction;
-            $transaction->branch_id = Auth::user()->branch_id;
-            $transaction->date = Carbon::now();
-            $transaction->processed_by =  Auth::user()->id;
-            $transaction->particulars = 'Opening Due';
-            $transaction->payment_type = 'receive';
-            $transaction->customer_id = $customer->id;
-            $transaction->credit = 0;
-            $transaction->debit = $request->wallet_balance;
-            $transaction->balance = $request->wallet_balance ?? 0;
-            $transaction->save();
-        }
-
 
         $notification = array(
             'message' => 'Customer Created Successfully',
