@@ -15,18 +15,15 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('branch_id')->unsigned();
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
-            $table->date('date')->nullable();
-            $table->integer('processed_by')->nullable();
-            $table->enum('payment_type', ['receive', 'pay'])->comment('Recieve or Pay');
-            $table->string('particulars')->nullable()->comment('Purchase #12 or Paid to Supplyer/Sale #10 Received from Customer');
-            $table->integer('customer_id')->nullable();
-            $table->integer('supplier_id')->nullable();
-            $table->integer('others_id')->nullable();
-            $table->decimal('debit', 12, 2)->nullable();
-            $table->decimal('credit', 12, 2)->nullable();
-            $table->decimal('balance', 14, 2);
-            $table->integer('payment_method')->nullable();
-            $table->string('note')->nullable();
+            $table->unsignedBigInteger('transaction_ac')->unsigned();
+            $table->foreign('transaction_ac')->references('id')->on('banks');
+            $table->unsignedBigInteger('transaction_by')->nullable();
+            $table->foreign('transaction_by')->references('id')->on('users');
+            $table->integer('transaction_id')->unique();
+            $table->decimal('amount', 12, 2)->nullable();
+            $table->enum('purpose', ['Sell', 'Purchase', 'Expense', 'Return', 'Salary', 'Balance Deposit', 'Balance Withdraw', 'Other'])->comment('Recieve or Pay');
+            $table->enum('transaction_type', ['In', 'Out']);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

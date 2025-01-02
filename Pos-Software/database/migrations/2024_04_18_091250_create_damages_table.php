@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id')->unsigned();
             $table->foreign('product_id')->references('id')->on('products');
             $table->integer('quantity');
-            $table->decimal('damage_cost', 12, 2)->comment('cost_price * qty');
+            $table->decimal('damage_cost', 12, 2);
             $table->date('date');
             $table->text('note')->nullable();
             $table->softDeletes();
