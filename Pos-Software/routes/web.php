@@ -155,6 +155,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/search/{value}', 'globalSearch');
         // product ledger
         Route::get('/product/ledger/{id}', 'productLedger')->name('product.ledger');
+
     });
     // Product  related route(n)
     Route::controller(EmployeeController::class)->group(function () {
