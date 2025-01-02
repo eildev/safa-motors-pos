@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug', 255)->unique();
             $table->string('email', 255)->unique()->nullable();
             $table->string('business_name', 150)->nullable();
-            $table->string('phone', 20)->index(); // Indexed for performance
+            $table->string('phone', 20)->unique()->index(); // Indexed for performance
             $table->text('address')->nullable();
             $table->enum('customer_type', ['Transport_owner', 'Technician', 'Floating'])->comment('Customer Type')->index();
             $table->decimal('due_balance', 12, 2)->default(0);
