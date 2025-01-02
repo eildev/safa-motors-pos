@@ -27,11 +27,11 @@ class DashboardController extends Controller
             $branches = Branch::get();
             foreach ($branches as $branch) {
                 $branchId = $branch->id;
-                $viaSale = ViaSale::where('branch_id', $branchId)
-                    ->whereDate('created_at', Carbon::now())->get();
+                // $viaSale = ViaSale::where('branch_id', $branchId)
+                //     ->whereDate('created_at', Carbon::now())->get();
                 $todaySalesData = Sale::where('branch_id', $branchId)
                     ->whereDate('created_at', Carbon::now())->get();
-                $todaySales = $todaySalesData->sum('paid') - $viaSale->sum('sub_total');
+                $todaySales = $todaySalesData->sum('paid');
 
                 $todayPurchase = Purchase::where('branch_id', $branchId)
                     ->whereDate('created_at', Carbon::now())->get();
@@ -100,8 +100,7 @@ class DashboardController extends Controller
                     $dueCollection->sum('credit') +
                     $otherCollection->sum('credit') +
                     $addBalance->sum('credit') +
-                    $adjustDueCollection +
-                    $viaSale->sum('sub_total');
+                    $adjustDueCollection;
                 $totalOutgoing =
                     $todayPurchase->sum('paid') +
                     $todayExpanse->sum('amount') +
@@ -124,7 +123,7 @@ class DashboardController extends Controller
                     'todayEmployeeSalary' => $todayEmployeeSalary->sum('debit'),
                     'todayReturnAmount' => $todayReturnAmount,
                     'adjustDueCollection' => $adjustDueCollection,
-                    'viaSale' => $viaSale->sum('sub_total'),
+                    'viaSale' => 0,
                     'viaPayment' => $viaPayment->sum('debit'),
                     'branch' => $branch,
                     'totalIngoing' => $totalIngoing,
@@ -136,11 +135,12 @@ class DashboardController extends Controller
         } //end if
         else {
             $branchId = Auth::user()->branch_id;
-            $viaSale = ViaSale::where('branch_id', $branchId)
-                ->whereDate('created_at', Carbon::now())->get();
+            // $viaSale = ViaSale::where('branch_id', $branchId)
+            //     ->whereDate('created_at', Carbon::now())->get();
             $todaySalesData = Sale::where('branch_id', $branchId)
                 ->whereDate('created_at', Carbon::now())->get();
-            $todaySales = $todaySalesData->sum('paid') - $viaSale->sum('sub_total');
+            // $todaySales = $todaySalesData->sum('paid') - $viaSale->sum('sub_total');
+            $todaySales = $todaySalesData->sum('paid');
 
             $todayPurchase = Purchase::where('branch_id', $branchId)
                 ->whereDate('created_at', Carbon::now())->get();
@@ -209,8 +209,8 @@ class DashboardController extends Controller
                 $dueCollection->sum('credit') +
                 $otherCollection->sum('credit') +
                 $addBalance->sum('credit') +
-                $adjustDueCollection +
-                $viaSale->sum('sub_total');
+                $adjustDueCollection;
+                //+ $viaSale->sum('sub_total');
             $totalOutgoing =
                 $todayPurchase->sum('paid') +
                 $todayExpanse->sum('amount') +
@@ -222,9 +222,10 @@ class DashboardController extends Controller
         } //End else
 
         // today Total Summary
-        $todayTotalViaSale = ViaSale::whereDate('created_at', Carbon::now())->sum('sub_total');
+        // $todayTotalViaSale = ViaSale::whereDate('created_at', Carbon::now())->sum('sub_total');
         $todaySaleTotal = Sale::whereDate('created_at', Carbon::now())->sum('paid');
-        $todayTotalSales = $todaySaleTotal - $todayTotalViaSale;
+        // $todayTotalSales = $todaySaleTotal - $todayTotalViaSale;
+        $todayTotalSales = $todaySaleTotal;
 
         $todayTotalPurchase = Purchase::whereDate('created_at', Carbon::now())->sum('paid');
         $todayTotalExpanse = Expense::whereDate('created_at', Carbon::now())->sum('amount');
@@ -280,8 +281,8 @@ class DashboardController extends Controller
             $todayTotalDueCollection +
             $todayTotalOtherCollection +
             $todayTotalAddBalance +
-            $todayTotalAdjustDueCollection +
-            $todayTotalViaSale;
+            $todayTotalAdjustDueCollection;
+            // $todayTotalViaSale;
         $todayTotalOutgoing =
             $todayTotalPurchase +
             $todayTotalExpanse +
