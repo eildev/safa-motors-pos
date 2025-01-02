@@ -26,34 +26,33 @@ class CategoryController extends Controller
     public function store(Request $request, ImageService $imageService)
     {
         try {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:255',
-        ]);
-
-        if ($validator->passes()) {
-            $category = new Category;
-            $category->name = $request->name;
-            // $category->slug= generateUniqueSlug($request->name, $category);
-            $category->slug = Str::slug($request->name);
-            $category->save();
-
-            return response()->json([
-                'status' => 200,
-                'message' => 'Category saved  successfully!',
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|max:255',
             ]);
-        } else {
+
+            if ($validator->passes()) {
+                $category = new Category;
+                $category->name = $request->name;
+                $category->slug = generateUniqueSlug($request->name, $category);
+                $category->save();
+
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Category saved  successfully!',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 500,
+                    'error' => $validator->messages(),
+                ]);
+            }
+        } //end try
+        catch (\Exception $e) {
             return response()->json([
                 'status' => 500,
-                'error' => $validator->messages(),
+                'error' => 'An unexpected error occurred: ' . $e->getMessage(),
             ]);
-        }
-    } //end try
-    catch (\Exception $e) {
-        return response()->json([
-            'status' => 500,
-            'error' => 'An unexpected error occurred: ' . $e->getMessage(),
-        ]);
-    }//end catch
+        } //end catch
     }
 
 
@@ -104,17 +103,17 @@ class CategoryController extends Controller
         }
     }
     public function status($id)
-{
-    $category = Category::findOrFail($id);
-    $newStatus = $category->status === 'inactive' ? 'active' : 'inactive';
-    $category->update(['status' => $newStatus]);
+    {
+        $category = Category::findOrFail($id);
+        $newStatus = $category->status === 'inactive' ? 'active' : 'inactive';
+        $category->update(['status' => $newStatus]);
 
-    return response()->json([
-        'status' => 200,
-        'newStatus' => $newStatus,
-        'message' => 'Status changed successfully.',
-    ]);
-}
+        return response()->json([
+            'status' => 200,
+            'newStatus' => $newStatus,
+            'message' => 'Status changed successfully.',
+        ]);
+    }
 
     public function destroy($id)
     {
