@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Repositories\RepositoryInterfaces\CustomerInterfaces;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 use function App\Helper\generateUniqueSlug;
 
@@ -39,25 +40,33 @@ class CustomerController extends Controller
 
     public function CustomerStore(Request $request)
     {
-        $customer = new Customer;
-        $customer->branch_id = Auth::user()->branch_id;
-        $customer->name = $request->name;
-        $customer->slug = generateUniqueSlug($request->name, $customer);
-        $customer->phone = $request->phone;
-        $customer->email = $request->email;
-        $customer->address = $request->address;
-        $customer->opening_payable = $request->wallet_balance ?? 0;
-        $customer->wallet_balance = $request->wallet_balance ?? 0;
-        $customer->total_receivable = $request->wallet_balance ?? 0;
-        $customer->created_at = Carbon::now();
-        $customer->save();
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'phone' => 'required|max:19',
+            'email' => 'max:200|email|unique:customers,email',
+            'address' => 'string|max:200',
+        ]);
 
-        $notification = array(
-            'message' => 'Customer Created Successfully',
-            'alert-type' => 'info'
-        );
-        return redirect()->route('customer.view')->with($notification);
-        // return redirect()->route('pos.customer.view')->with($notification);
+        if ($validator->passes()) {
+            $customer = new Customer;
+            $customer->branch_id = Auth::user()->branch_id;
+            $customer->name = $request->name;
+            $customer->slug = generateUniqueSlug($request->name, $customer);
+            $customer->phone = $request->phone;
+            $customer->email = $request->email;
+            $customer->address = $request->address;
+            $customer->opening_payable = $request->wallet_balance ?? 0;
+            $customer->wallet_balance = $request->wallet_balance ?? 0;
+            $customer->total_receivable = $request->wallet_balance ?? 0;
+            $customer->created_at = Carbon::now();
+            $customer->save();
+
+            $notification = array(
+                'message' => 'Customer Created Successfully',
+                'alert-type' => 'info'
+            );
+            return redirect()->route('customer.view')->with($notification);
+        }
     } //End Method
     public function CustomerView()
     {
