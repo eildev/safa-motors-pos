@@ -36,7 +36,6 @@ class SupplierController extends Controller
             'phone' => 'required|max:100',
         ]);
 
-
         if ($validator->passes()) {
             $supplier = new Supplier;
             $supplier->name =  $request->name;

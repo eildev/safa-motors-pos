@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Repositories\RepositoryInterfaces\BrandInterface;
 use Illuminate\Support\Facades\Validator;
+use function App\Helper\generateUniqueSlug;
 class BrandController extends Controller
 {
     private $brandRepo;
@@ -26,14 +27,10 @@ class BrandController extends Controller
         ]);
         if ($validator->passes()) {
             $brand = new Brand;
-            // if ($request->image) {
-            //     $imageName = rand() . '.' . $request->image->extension();
-            //     $request->image->move(public_path('uploads/brand/'), $imageName);
-            //     $brand->image = $imageName;
-            // }
             $brand->name =  $request->name;
-            $brand->slug = Str::slug($request->name);
-            // $brand->description = $request->description;
+            $brand->slug = generateUniqueSlug($request->name, $brand);
+
+            // $brand->slug = Str::slug($request->name);
             $brand->save();
             return response()->json([
                 'status' => 200,

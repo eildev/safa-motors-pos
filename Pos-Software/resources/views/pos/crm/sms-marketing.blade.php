@@ -10,13 +10,13 @@
     <div class="row">
         <div class="col-md-12 grid-margin stretch-card d-flex justify-content-end">
             <div class="">
-                <h4 class="text-right"><a href="{{ route('employee.view') }}" class="btn btn-info">SMS To Customer</a></h4>
+                <h4 class="text-right"><a href="{{ route('customer.view') }}" class="btn " style="background-color: #6571FF">SMS To Customer</a></h4>
             </div>
         </div>
         <div class="col-md-12 stretch-card">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="card-title text-info">Add Employee</h6>
+                    <h6 class="card-title ">SMS Marketing</h6>
                     <div class="row">
                         <div class="col-lg-6">
                             <h4>Choose Customer</h4>
@@ -69,14 +69,9 @@
                                     <div class="row">
                                         <div class="col-lg-10">
                                             <label class="form-label">Purpose<span class="text-danger">*</span></label>
-                                            <select name="purpose" id="" class="form-control">
-                                                <option value="">-----Select Purpose-----</option>
-                                                @php
-                                                    $collection = App\Models\SmsCategory::all();
-                                                @endphp
-                                                @foreach ($collection as $item)
-                                                    <option value="{{ $item->name }}">{{ $item->name }}</option>
-                                                @endforeach
+                                            <select name="purpose"  id="purposeDropdown" class="form-control">
+                                                <option  selected disabled>-----Select Purpose-----</option>
+
                                             </select>
                                         </div>
                                         <div class="col-lg-2 mt-4 ps-0">
@@ -224,10 +219,7 @@
                             <tr>
                                 <td colspan='8'>
                                     <div class="text-center text-warning mb-2">Data Not Found</div>
-                                    <div class="text-center">
-                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModalLongScollable">Add
-                                            Category<i data-feather="plus"></i></button>
-                                    </div>
+
                                 </td>
                             </tr>`)
                         }
@@ -255,6 +247,9 @@
                     success: function(res) {
                         // console.log(res);
                         if (res.status == 200) {
+                            $('#smsCategoryModal').modal('hide');
+                            categoryView();
+                            SmsCatView()
                             $('.smsCategoryForm')[0].reset();
                             toastr.success(res.message);
                         } else {
@@ -311,6 +306,7 @@
                         if (res.status == 200) {
                             // console.log(res);
                             $('#smsCategoryModal').modal('hide');
+                            categoryView();
                             $('.smsCategoryForm')[0].reset();
                             categoryView();
                             toastr.success(res.message);
@@ -320,13 +316,10 @@
                     }
                 });
             })
-
-
             // delete category
             $(document).on('click', '.category_delete', function(e) {
                 e.preventDefault();
                 let id = this.getAttribute('data-id');
-
 
                 $.ajaxSetup({
                     headers: {
@@ -372,7 +365,32 @@
             });
 
 
+            function SmsCatView() {
+            $.ajax({
+                url: '/sms/get-sms-categories', // Replace with your route URL
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
 
+                    const dropdown = $('#purposeDropdown');
+                    dropdown.empty(); // Clear existing options
+                    dropdown.append('<option disabled >-----Select Purpose-----</option>'); // Default option
+                    // $.each(data, function (key, category) {
+                    //     dropdown.append(`<option value="${category.id}">${category.name}</option>`);
+                    // });
+                    $.each(data, function (index, category) {
+                    const isSelected = index === 0 ? 'selected' : ''; // Select the first (latest) category
+                    dropdown.append(`<option value="${category.id}" ${isSelected}>${category.name}</option>`);
+                });
+
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching categories:', error);
+                }
+            });
+       };
+       SmsCatView()
         });
+
     </script>
 @endsection
