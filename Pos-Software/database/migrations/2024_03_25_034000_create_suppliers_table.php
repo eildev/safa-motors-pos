@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name', 255);
             $table->string('slug', 255)->unique(); // Updated
+            $table->string('email', 255)->unique()->nullable();
             $table->string('business_name', 255)->nullable();
-            $table->string('address', 255)->nullable();
-            $table->string('phone', 20)->index(); // Indexed
-            $table->tinyInteger('supplier_type')->comment('1: Wholesale, 2: Retailer'); // Changed from enum
+            $table->string('phone', 20)->unique()->index(); // Indexed for performance
+            $table->text('address')->nullable();
+            $table->enum('supplier_type', ['wholesale', 'retailer',])->comment('Supplier Type')->index(); // Changed from enum
             $table->decimal('due_balance', 12, 2)->default(0); // UnsignedDecimal used
             $table->softDeletes(); // Added for soft delete functionality
             $table->timestamps();

@@ -1,10 +1,10 @@
 @extends('master')
-@section('title', '| Product Edit')
+@section('title', '| Add Product')
 @section('admin')
     <nav class="page-breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Update Product</li>
+            <li class="breadcrumb-item active" aria-current="page">New Product</li>
         </ol>
     </nav>
     <form class="productForm" enctype="multipart/form-data">
@@ -13,87 +13,109 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="card-title">Update Product</h6>
+                            <h6 class="card-title">Add Product</h6>
                         </div>
                         <div class="row">
                             <div class="mb-3 col-md-6">
                                 <label for="name" class="form-label">Product Name <span
                                         class="text-danger">*</span></label>
                                 <input class="form-control name" name="name" type="text" onkeyup="errorRemove(this);"
-                                    onblur="errorRemove(this);" value="{{ $product->name ?? '' }}">
+                                    onchange="errorRemove(this);" value="{{$product->name}}">
                                 <span class="text-danger name_error"></span>
                             </div>
                             <div class="mb-3 col-md-6">
-                                <label for="name" class="form-label">Product Code</label>
-                                <input class="form-control" name="barcode" type="number"
-                                    value="{{ $product->barcode ?? '' }}">
-                            </div>
-                            <div class="mb-3 col-md-4">
                                 @php
                                     $categories = App\Models\Category::get();
                                 @endphp
                                 <label for="ageSelect" class="form-label">Category <span
                                         class="text-danger">*</span></label>
-                                <select class="form-select category_id" id="category_name" name="category_id"
-                                    onchange="errorRemove(this);" value="{{ $product->category->name ?? '' }}">
-                                    @foreach ($categories as $category)
-                                        <option value="{{ $category->id }}"
-                                            {{ $category->id == $product->category_id ? 'selected' : '' }}>
-                                            {{ $category->name }}
-                                        </option>
-                                    @endforeach
+                                <select class="js-example-basic-single form-select category_id" id="category_name"
+                                    name="category_id" onchange="errorRemove(this);">
+                                    @if ($categories->count() > 0)
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}"
+                                                {{ $product->category_id  == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}</option>
+                                        @endforeach
+                                    @else
+                                        <option selected disabled>Please Add Category</option>
+                                    @endif
                                 </select>
                                 <span class="text-danger category_id_error"></span>
                             </div>
-                            <div class="mb-3 col-md-4">
-                                @php
-                                    $subcategories = App\Models\SubCategory::get();
-                                @endphp
+                            <div class="mb-3 col-md-6">
                                 <label for="ageSelect" class="form-label">Subcategory <span
                                         class="text-danger">*</span></label>
-                                <select class="form-select subcategory_id" name="subcategory_id"
-                                    onchange="errorRemove(this);">
-                                    @foreach ($subcategories as $subcategory)
-                                        <option value="{{ $subcategory->id }}"
-                                            {{ $subcategory->id == $product->subcategory_id ? 'selected' : '' }}>
-                                            {{ $subcategory->name }}
-                                        </option>
-                                    @endforeach
+                                <select class="js-example-basic-single form-select subcategory_id" name="subcategory_id">
                                 </select>
                             </div>
-                            <div class="mb-3 col-md-4">
+                            <div class="mb-3 col-md-6">
                                 @php
                                     $brands = App\Models\Brand::get();
                                 @endphp
                                 <label for="ageSelect" class="form-label">Brand <span class="text-danger">*</span></label>
-                                <select class="form-select brand_id" name="brand_id" onchange="errorRemove(this);">
-                                    @foreach ($brands as $brand)
-                                        <option value="{{ $brand->id }}"
-                                            {{ $brand->id == $product->brand_id ? 'selected' : '' }}>
-                                            {{ $brand->name }}
-                                        </option>
-                                    @endforeach
+                                <select class="js-example-basic-single form-select brand_id" name="brand_id"
+                                    onchange="errorRemove(this);">
+                                    @if ($brands->count() > 0)
+                                        {{-- <option selected disabled>Select Brand</option> --}}
+                                        @foreach ($brands as $brand)
+                                            <option value="{{ $brand->id }}"
+                                                {{ $product->brand_id == $category->id ? 'selected' : '' }}>{{ $brand->name }}
+                                            </option>
+                                        @endforeach
+                                    @else
+                                        <option selected disabled>Please Add Brand</option>
+                                    @endif
                                 </select>
                                 <span class="text-danger brand_id_error"></span>
                             </div>
+                            <div class="mb-3 col-md-4">
+                                <label for="ageSelect" class="form-label">Size </label>
+                                <select class="js-example-basic-single form-select size_id  size" name="size"  onchange="errorRemove(this);">
+                                    <option selected disabled>Select Size</option>
+                                </select>
+                                <span class="text-danger size_error"></span>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                @php
+                                    $units = App\Models\Unit::where('status','active')->get();
+                                @endphp
+                                <label for="ageSelect" class="form-label">Unit <span class="text-danger">*</span></label>
+                                <select class="js-example-basic-single form-select unit" name="unit"
+                                    onchange="errorRemove(this);">
+                                    @if ($units->count() > 0)
+                                        <option selected disabled>Select Unit</option>
+                                        @foreach ($units as $unit)
+                                            <option {{ $product->product_details->unit ?? ''  === $unit->id ? 'selected' : '  ' }} value="{{ $unit->id }}">{{ $unit->name ?? '' }}
+                                            </option>
+                                        @endforeach
+                                    @else
+                                        <option selected disabled>Please Add Unit</option>
+                                    @endif
+                                </select>
+                                <span class="text-danger unit_error"></span>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                <label for="ageSelect" class="form-label">Model No </label>
+                                <input type="text" class="form-control" value={{$product->product_details->model_no ?? ''}} name="model_no">
+                            </div>
                             <div class="mb-3 col-md-6">
                                 <label for="password" class="form-label">Cost Price</label>
-                                <input class="form-control" name="cost" type='number' placeholder="00.00"
-                                    value="{{ $product->cost ?? 0 }}" />
+                                <input class="form-control" name="cost_price" value={{$product->cost_price ?? ''}}  type='number'
+                                    placeholder="00.00" />
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="password" class="form-label">Sale Price <span
                                         class="text-danger">*</span></label>
-                                <input class="form-control price" name="price" type='number' placeholder="00.00"
-                                    onkeyup="errorRemove(this);" onblur="errorRemove(this);"
-                                    value="{{ $product->price ?? 0 }}" />
-                                <span class="text-danger price_error"></span>
+                                <input class="form-control base_sell_price" name="base_sell_price"
+                                    type='number' placeholder="00.00" value={{$product->base_sell_price ?? ''}}  onkeyup="errorRemove(this);"
+                                    onblur="errorRemove(this);" />
+                                <span class="text-danger base_sell_price_error"></span>
                             </div>
                             <div class="mb-3 col-12">
                                 <label for="" class="form-label">Description</label>
-                                <textarea class="form-control" name="details" id="tinymceExample" rows="5">{{ $product->description ?? '' }}</textarea>
+                                <textarea class="form-control" name="description" rows="3">{{$product->product_details->description ?? ''}} </textarea>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -102,76 +124,59 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            {{-- <div class="mb-3 col-md-6">
-                                <label for="name" class="form-label">Stock</label>
-                                <input class="form-control" name="stock" type="number" placeholder="00"
-                                    value="{{ $product->stock ?? '' }}">
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="name" class="form-label">Main Unit Stock</label>
-                                <input class="form-control" name="main_unit_stock" type="number" placeholder="00"
-                                    value="{{ $product->main_unit_stock ?? '' }}">
-                            </div> --}}
-                            {{-- <div class="mb-3 col-md-6">
-                                <label for="name" class="form-label">Total Sold</label>
-                                <input class="form-control" name="total_sold" type="number" placeholder="00"
-                                    value="{{ $product->total_sold ?? '' }}">
-                            </div> --}}
+
                             <div class="mb-3 col-md-6">
                                 <label for="ageSelect" class="form-label">Color</label>
-                                {{-- <div id="pickr_1"></div> --}}
-                                <input type="color" class="form-control" name="color" id=""
-                                    value="{{ $product->color ?? '#000' }}">
+
+                                <input type="color" {{$product->product_details->color ?? ''}}  class="form-control"  name="color"
+                                    id="">
                             </div>
                             <div class="mb-3 col-md-6">
-                                @php
-                                    $sizes = App\Models\Psize::get();
-                                @endphp
-                                <label for="ageSelect" class="form-label">Size </label>
-                                <select class="form-select size_id" name="size_id">
-                                    @foreach ($sizes as $size)
-                                        <option value="{{ $size->id }}"
-                                            {{ $size->id == $product->size_id ? 'selected' : '' }}>
-                                            {{ $size->size }}
-                                        </option>
-                                    @endforeach
+                                <label for="ageSelect" class="form-label">Quality</label>
+                                <select class="form-control js-example-basic-single "name="quality">
+                                    <option selected disabled>Select Quality</option>
+                                    <option value="grade-a" {{ $product->product_details->quality   == 'grade-a' ? 'selected' : '' }}>Grade A</option>
+                                    <option value="grade-b" {{ $product->product_details->quality  == 'grade-b' ? 'selected' : '' }}>Grade B</option>
+                                    <option value="grade-c" {{ $product->product_details->quality == 'grade-c' ? 'selected' : '' }}>Grade C</option>
                                 </select>
                             </div>
                             <div class="mb-3 col-md-12">
                                 @php
-                                    $units = App\Models\Unit::get();
-                                @endphp
-                                <label for="ageSelect" class="form-label">Unit <span class="text-danger">*</span></label>
-                                <select class="form-select unit_id" name="unit_id" onchange="errorRemove(this);">
-                                    @foreach ($units as $unit)
-                                        <option value="{{ $unit->id }}"
-                                            {{ $unit->id == $product->unit_id ? 'selected' : '' }}>
-                                            {{ $unit->name }}
+                                    $tags = App\Models\Tags::where('status','active')->get();
+                                    $tagsEdit = App\Models\ProductTags::where('product_id', $product->id)->pluck('tag_id')->toArray();                                @endphp
+                                <label class="form-label">Tags </label>
+
+                                <select name="tag_id[]" class="compose-multiple-select form-select form-control"
+                                    multiple="multiple">
+                                    @if ($tags->count() > 0)
+                                        @foreach ($tags as $tag)
+                                        <option value="{{ $tag->id }}" {{ in_array($tag->id, $tagsEdit) ? 'selected' : '' }}>
+                                            {{ $tag->name }}
                                         </option>
-                                    @endforeach
+                                        @endforeach
+                                    @else
+                                        <option selected disabled>Please Add Tags</option>
+                                    @endif
+
                                 </select>
-                                <span class="text-danger unit_id_error"></span>
+
+                                <span class="text-danger tag_id_error"></span>
                             </div>
                             <div class="mb-3 col-12">
                                 <div class="card">
                                     <div class="card-body">
                                         <h6 class="card-title">Product Image</h6>
-                                        {{-- <div style="height:150px;position:relative">
-                                            <button class="btn btn-info edit_upload_img"
-                                                style="position: absolute;top:50%;left:50%;transform:translate(-50%,-50%)">Browse</button>
-                                            <img class="img-fluid showEditImage"
-                                                src="{{ $product->image ? asset('uploads/images/' . $product->image) : asset('dummy/image.jpg') }}"
-                                                style="height:100%; object-fit:cover">
-                                        </div> --}}
-                                        <input type="file" class="productImage"
-                                            data-default-file="{{ $product->image ? asset('uploads/images/' . $product->image) : asset('dummy/image.jpg') }}"
-                                            name="image" id="myDropify" />
+                                        <p class="mb-3 text-warning">Note: <span class="fst-italic">Image not
+                                                required. If you
+                                                add
+                                                a category image
+                                                please add a 400 X 400 size image.</span></p>
+                                        <input type="file" class="categoryImage" name="image" id="myDropify" />
                                     </div>
                                 </div>
                             </div>
                             <div>
-                                <button class="btn btn-primary w-full update_product" type="submit"
-                                    value="{{ $product->id }}">Update</button>
+                                <input class="btn btn-primary w-full save_product" type="submit" value="Submit">
                             </div>
                         </div>
                     </div>
@@ -182,6 +187,7 @@
 
 
     <script>
+        // remove error
         function errorRemove(element) {
             tag = element.tagName.toLowerCase();
             if (element.value != '') {
@@ -194,6 +200,7 @@
                 }
             }
         }
+
         $(document).ready(function() {
             // show error
             function showError(name, message) {
@@ -202,71 +209,69 @@
                 $(`${name}_error`).show().text(message); // Show error message
             }
 
-
-            // image onload when category edit
-            // const edit_upload_img = document.querySelector('.edit_upload_img');
-            // const edit_image = document.querySelector('.edit_image');
-            // edit_upload_img.addEventListener('click', function(e) {
-            //     e.preventDefault();
-            //     edit_image.click();
-
-            //     edit_image.addEventListener('change', function(e) {
-            //         var reader = new FileReader();
-            //         reader.onload = function(e) {
-            //             document.querySelector('.showEditImage').src = e.target.result;
-            //         }
-            //         reader.readAsDataURL(this.files[0]);
-            //     });
-            // });
-
             // when select category
-            const category = document.querySelector('#category_name');
-            category.addEventListener('change', function() {
-                let category_id = $(this).val();
-                // alert(category_id);
-                // console.log(category_id);
-                if (category_id) {
-                    $.ajax({
-                        url: '/subcategory/find/' + category_id,
-                        type: 'GET',
-                        dataType: 'JSON',
-                        success: function(res) {
-                            if (res.status == 200) {
+            subCategory($('.category_id').val());
+            $('.category_id').change(function() {
+                let id = $(this).val();
+                // alert(id);
+                if (id) {
+                    subCategory(id);
+                }
+            })
+
+            function subCategory(categoryId) {
+                $.ajax({
+                    url: '/subcategory/find/' + categoryId,
+                    type: 'GET',
+                    dataType: 'JSON',
+                    success: function(res) {
+                        if (res.status == 200) {
+                            $('.subcategory_id').empty();
+                            // $('.subcategory_id').size_id();
+                            // console.log(res);
+
+                            // show subcategory
+                            if (res.data.length > 0) {
+
                                 // console.log(res.data)
-                                // subcategory data
-                                $('select[name="subcategory_id"]').html(
-                                    '<option selected disabled>Select a Sub-Category</option>'
-                                );
+                                // $('.subcategory_id').html(
+                                //     '<option selected disabled>Select a SubCategory</option>'
+                                // );
                                 $.each(res.data, function(key, item) {
-                                    $('select[name="subcategory_id"]').append(
-                                        '<option myid="' + item.id +
-                                        '" value="' + item.id +
-                                        '">' + item
-                                        .name + '</option>');
+                                    $('.subcategory_id').append(
+                                        `<option value="${item.id}">${item.name}</option>`
+                                    );
                                 })
+                            } else {
+                                $('.subcategory_id').html(`
+                                        <option selected disable>Please add Subcategory</option>`)
+                            }
 
-                                // size selcet
-                                $('select[name="size_id"]').html(
-                                    '<option selected disabled>Select a Size</option>');
+                            // show Size
+                            if (res.size.length > 0) {
+                                // console.log(res.size);
+                                $('.size_id').html(
+                                    '<option selected disabled>Select a Size</option>'
+                                );
                                 $.each(res.size, function(key, item) {
-                                    $('select[name="size_id"]').append(
-                                        '<option myid="' + item.id +
-                                        '" value="' + item.id +
-                                        '">' + item
-                                        .size + '</option>');
-                                })
 
+                                    $('.size_id').append(
+                                        `<option value="${item.id}">${item.size}</option>`
+                                    );
+                                })
+                            } else {
+                                $('.size_id').html(`
+                                        <option selected disabled>Please add Size</option>`)
                             }
                         }
-                    });
-                }
-            });
+                    }
+                });
+            }
 
-
-            // update_product
-            $('.update_product').click(function(e) {
+            // product save
+            $('.save_product').click(function(e) {
                 e.preventDefault();
-                let id = $(this).val();
+                // alert('ok')
                 let formData = new FormData($('.productForm')[0]);
                 $.ajaxSetup({
                     headers: {
@@ -274,7 +279,7 @@
                     }
                 });
                 $.ajax({
-                    url: '/product/update/' + id,
+                    url: '/product/store',
                     type: 'POST',
                     data: formData,
                     processData: false,
@@ -295,14 +300,15 @@
                             if (error.category_id) {
                                 showError('.category_id', error.category_id);
                             }
-                            if (error.brand_id) {
-                                showError('.brand_id', error.brand_id);
+
+                            if (error.base_sell_price) {
+                                showError('.base_sell_price', error.base_sell_price);
                             }
-                            if (error.price) {
-                                showError('.price', error.price);
+                            if (error.unit) {
+                                showError('.unit', error.unit);
                             }
-                            if (error.unit_id) {
-                                showError('.unit_id', error.unit_id);
+                            if (error.size) {
+                                showError('.size', error.size);
                             }
                         }
                     }

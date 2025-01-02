@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tags', function (Blueprint $table) {
+        Schema::create('withdraws', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->enum('status',['active','inactive'])->default('active');
+            $table->decimal('amount', 12, 2);
+            $table->integer('transaction_id');
+            $table->foreign('transaction_id')->references('transaction_id')->on('transactions');
+            $table->unsignedBigInteger('bank_id')->unsigned();
+            $table->foreign('bank_id')->references('id')->on('banks');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tags');
+        Schema::dropIfExists('withdraws');
     }
 };

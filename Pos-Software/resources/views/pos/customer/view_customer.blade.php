@@ -22,9 +22,9 @@
                                     <th>SN</th>
                                     <th>Name</th>
                                     <th>Phone</th>
-                                    <th>Branch</th>
+                                    <th>Bussiness Name</th>
                                     <th>Due</th>
-                                    <th>Wallet Balance</th>
+                                    <th>Customer Type</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -34,43 +34,28 @@
                                         <tr>
                                             <td>{{ $key + 1 }}</td>
                                             <td>
-                                                <a href="{{ route('customer.profile', $customer->id) }}">
+                                                <a href="{{ route('customer.profile', $customer->slug) }}">
                                                     {{ $customer->name ?? '' }}
                                                 </a>
                                             </td>
                                             <td>{{ $customer->phone ?? '' }}</td>
-                                            <td>{{ $customer['branch']['name'] ?? '' }}</td>
+                                            <td>{{ $customer->business_name ?? '' }}</td>
                                             <td>
-                                                {{-- @dd($customer->wallet_balance) --}}
-                                                @if ($customer->wallet_balance > 0)
-                                                    <span class="text-danger">৳
-                                                        {{ $customer->wallet_balance ?? 0 }}</span>
-                                                @else
-                                                    <span>৳ 0</span>
-                                                @endif
+                                                <span>
+                                                    {{ abs($customer->due_balance) ?? 0 }}<br>
+                                                    @if ($customer->due_balance > 0)
+                                                        আপনি কাস্টমার থেকে পাবেন।
+                                                    @elseif ($customer->due_balance < 0)
+                                                        আপনার থেকে কাস্টমার পাবেন।
+                                                    @else
+                                                        --
+                                                    @endif
+                                                </span>
                                             </td>
-                                            <td>
-                                                @if ($customer->wallet_balance > 0)
-                                                    <span>
-                                                        {{ $customer->wallet_balance ?? 0 }}
-                                                        <br>
-                                                        আপনি কাস্টমার <br> থেকে পাবেন।
-                                                    </span>
-                                                @elseif ($customer->wallet_balance < 0)
-                                                    <span>
-                                                        {{ -$customer->wallet_balance ?? 0 }}
-                                                        <br>
-                                                        আপনার থেকে <br> কাস্টমার পাবেন।
-                                                    </span>
-                                                @else
-                                                    <span>
-                                                        {{ $customer->wallet_balance ?? 0 }}
-                                                    </span>
-                                                @endif
-                                            </td>
+                                            <td>{{ $customer->customer_type ?? '' }}</td>
                                             <td>
                                                 @if (Auth::user()->can('customer.edit'))
-                                                    <a href="{{ route('customer.edit', $customer->id) }}"
+                                                    <a href="{{ route('customer.edit', $customer->slug) }}"
                                                         class="btn btn-sm btn-primary btn-icon">
                                                         <i data-feather="edit"></i>
                                                     </a>

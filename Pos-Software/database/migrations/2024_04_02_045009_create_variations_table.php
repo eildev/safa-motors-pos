@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('model_no', 100)->nullable();
             $table->string('quality', 100)->nullable();
             $table->string('image', 255)->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

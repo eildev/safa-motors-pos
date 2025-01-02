@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('quality', 100)->nullable();
             $table->string('image', 255)->nullable();
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Psize;
+use App\Models\Size;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use function App\Helper\generateUniqueSlug;
 use App\Repositories\RepositoryInterfaces\SubCategoryInterface;
 // use Validator;
 use Illuminate\Support\Facades\Validator;
@@ -35,11 +37,11 @@ class SubCategoryController extends Controller
 
         if ($validator->passes()) {
             try {
-            $data = $request->only(['name', 'category_id']);
-
-            $data['slug'] = Str::slug($request->name);
-
-            $this->subCategory->create($data);
+            $subcategory =  new SubCategory();
+            $subcategory->name = $request->name;
+            $subcategory->category_id  = $request->category_id;
+            $subcategory->slug = generateUniqueSlug($request->name, $subcategory);
+            $subcategory->save();
             return response()->json([
                 'status' => 200,
                 'message' => 'Sub Category Saved Successfully',
@@ -96,7 +98,7 @@ class SubCategoryController extends Controller
         if ($validator->passes()) {
             $subcategory = SubCategory::findOrFail($id);
             $subcategory->name =  $request->name;
-            $subcategory->slug = Str::slug($request->name);
+            $subcategory->slug = generateUniqueSlug($request->name, $subcategory);
             $subcategory->category_id =  $request->category_id;
             $subcategory->save();
             return response()->json([
@@ -141,7 +143,7 @@ class SubCategoryController extends Controller
     public function find($id)
     {
         $subcategory = SubCategory::where('category_id', $id)->get();
-        $size = Psize::where('category_id', $id)->get();
+        $size = Size::where('category_id', $id)->get();
         return response()->json([
             'status' => 200,
             'data' => $subcategory,

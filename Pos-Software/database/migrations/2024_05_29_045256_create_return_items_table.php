@@ -14,13 +14,16 @@ return new class extends Migration
         Schema::create('return_items', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('return_id');
-            $table->unsignedBigInteger('product_id');
-            $table->integer('quantity');
-            $table->decimal('return_price');
-            $table->decimal('product_total');
-            $table->decimal('return_profit')->nullable();
             $table->foreign('return_id')->references('id')->on('returns')->onDelete('cascade');
+            $table->unsignedBigInteger('product_id')->nullable();
             $table->foreign('product_id')->references('id')->on('products');
+            $table->unsignedBigInteger('variation_id')->nullable();
+            $table->foreign('variation_id')->references('id')->on('variations');
+            $table->unsignedBigInteger('dropshipping_products_id')->nullable();
+            $table->foreign('dropshipping_products_id')->references('id')->on('drop_shipping_products');
+            $table->integer('quantity');
+            $table->decimal('price');
+            $table->decimal('total_price');
             $table->softDeletes();
             $table->timestamps();
         });

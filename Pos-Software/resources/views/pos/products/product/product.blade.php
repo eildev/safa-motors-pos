@@ -19,19 +19,11 @@
                             <div class="mb-3 col-md-6">
                                 <label for="name" class="form-label">Product Name <span
                                         class="text-danger">*</span></label>
-                                <input class="form-control name" onblur="generateCode(this);" name="name" type="text"
-                                    onkeyup="errorRemove(this);" onchange="errorRemove(this);" value="{{ old('name') }}">
+                                <input class="form-control name" name="name" type="text" onkeyup="errorRemove(this);"
+                                    onchange="errorRemove(this);" value="{{ old('name') }}">
                                 <span class="text-danger name_error"></span>
                             </div>
                             <div class="mb-3 col-md-6">
-                                <label for="name" class="form-label">Product Code</label>
-                                <input class="form-control @error('barcode') is-invalid @enderror" name="barcode"
-                                    type="number" value="{{ old('barcode') }}" readonly>
-                                @error('barcode')
-                                    <div class="alert alert-danger">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="mb-3 col-md-4">
                                 @php
                                     $categories = App\Models\Category::get();
                                 @endphp
@@ -51,14 +43,13 @@
                                 </select>
                                 <span class="text-danger category_id_error"></span>
                             </div>
-                            <div class="mb-3 col-md-4">
+                            <div class="mb-3 col-md-6">
                                 <label for="ageSelect" class="form-label">Subcategory <span
                                         class="text-danger">*</span></label>
                                 <select class="js-example-basic-single form-select subcategory_id" name="subcategory_id">
-                                    {{-- <option selected disabled>Select Subcategory</option> --}}
                                 </select>
                             </div>
-                            <div class="mb-3 col-md-4">
+                            <div class="mb-3 col-md-6">
                                 @php
                                     $brands = App\Models\Brand::get();
                                 @endphp
@@ -78,21 +69,52 @@
                                 </select>
                                 <span class="text-danger brand_id_error"></span>
                             </div>
+                            <div class="mb-3 col-md-4">
+                                <label for="ageSelect" class="form-label">Size </label>
+                                <select class="js-example-basic-single form-select size_id  size" name="size"  onchange="errorRemove(this);">
+                                    <option selected disabled>Select Size</option>
+                                </select>
+                                <span class="text-danger size_error"></span>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                @php
+                                    $units = App\Models\Unit::where('status','active')->get();
+                                @endphp
+                                <label for="ageSelect" class="form-label">Unit <span class="text-danger">*</span></label>
+                                <select class="js-example-basic-single form-select unit" name="unit"
+                                    onchange="errorRemove(this);">
+                                    @if ($units->count() > 0)
+                                        <option selected disabled>Select Unit</option>
+                                        @foreach ($units as $unit)
+                                            <option value="{{ $unit->id }}">{{ $unit->name }}
+                                            </option>
+                                        @endforeach
+                                    @else
+                                        <option selected disabled>Please Add Unit</option>
+                                    @endif
+                                </select>
+                                <span class="text-danger unit_error"></span>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                <label for="ageSelect" class="form-label">Model No </label>
+                                <input type="text" class="form-control" name="model_no">
+                            </div>
                             <div class="mb-3 col-md-6">
                                 <label for="password" class="form-label">Cost Price</label>
-                                <input class="form-control" name="cost" value="{{ old('cost') }}" type='number'
+                                <input class="form-control" name="cost_price"  type='number'
                                     placeholder="00.00" />
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="password" class="form-label">Sale Price <span
                                         class="text-danger">*</span></label>
-                                <input class="form-control price" name="price" value="{{ old('price') }}" type='number'
-                                    placeholder="00.00" onkeyup="errorRemove(this);" onblur="errorRemove(this);" />
-                                <span class="text-danger price_error"></span>
+                                <input class="form-control base_sell_price" name="base_sell_price"
+                                    type='number' placeholder="00.00" onkeyup="errorRemove(this);"
+                                    onblur="errorRemove(this);" />
+                                <span class="text-danger base_sell_price_error"></span>
                             </div>
                             <div class="mb-3 col-12">
                                 <label for="" class="form-label">Description</label>
-                                <textarea class="form-control" value="{{ old('details') }}" name="details" id="tinymceExample" rows="5"></textarea>
+                                <textarea class="form-control" name="description" rows="3"></textarea>
                             </div>
                         </div>
                     </div>
@@ -102,49 +124,43 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            {{-- <div class="mb-3 col-md-6">
-                                <label for="name" class="form-label">Stock</label>
-                                <input class="form-control" name="stock" type="number" placeholder="00">
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="name" class="form-label">Main Unit Stock</label>
-                                <input class="form-control" name="main_unit_stock" type="number" placeholder="00">
-                            </div> --}}
-                            {{-- <div class="mb-3 col-md-6">
-                                <label for="name" class="form-label">Total Sold</label>
-                                <input class="form-control" name="total_sold" type="number" placeholder="00">
-                            </div> --}}
+
                             <div class="mb-3 col-md-6">
                                 <label for="ageSelect" class="form-label">Color</label>
-                                {{-- <div id="pickr_1"></div> --}}
-                                <input type="color" class="form-control" value="{{ old('color') }}" name="color"
+
+                                <input type="color" class="form-control"  name="color"
                                     id="">
                             </div>
                             <div class="mb-3 col-md-6">
-                                <label for="ageSelect" class="form-label">Size </label>
-                                <select class="js-example-basic-single form-select size_id" name="size_id">
-                                    <option selected disabled>Select Size</option>
+                                <label for="ageSelect" class="form-label">Quality</label>
+                                <select class="form-control js-example-basic-single " name="quality">
+                                    <option selected disabled>Select Quality</option>
+                                    <option value="grade-a">Grade A</option>
+                                    <option value="grade-b">Grade B</option>
+                                    <option value="grade-c">Grade C</option>
                                 </select>
                             </div>
                             <div class="mb-3 col-md-12">
                                 @php
-                                    $units = App\Models\Unit::get();
+                                    $tags = App\Models\Tags::where('status','active')->get();
                                 @endphp
-                                <label for="ageSelect" class="form-label">Unit <span class="text-danger">*</span></label>
-                                <select class="js-example-basic-single form-select unit_id" name="unit_id"
-                                    onchange="errorRemove(this);">
-                                    @if ($units->count() > 0)
-                                        <option selected disabled>Select Unit</option>
-                                        @foreach ($units as $unit)
-                                            <option value="{{ $unit->id }}"
-                                                {{ old('unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->name }}
+                                <label class="form-label">Tags </label>
+
+                                <select name="tag_id[]" class="compose-multiple-select form-select form-control"
+                                    multiple="multiple">
+                                    @if ($tags->count() > 0)
+
+                                        @foreach ($tags as $tag)
+                                            <option value="{{ $tag->id }}">{{ $tag->name }}
                                             </option>
                                         @endforeach
                                     @else
-                                        <option selected disabled>Please Add Unit</option>
+                                        <option selected disabled>Please Add Tags</option>
                                     @endif
+
                                 </select>
-                                <span class="text-danger unit_id_error"></span>
+
+                                <span class="text-danger tag_id_error"></span>
                             </div>
                             <div class="mb-3 col-12">
                                 <div class="card">
@@ -245,7 +261,7 @@
                                 })
                             } else {
                                 $('.size_id').html(`
-                                        <option selected disable>Please add Size</option>`)
+                                        <option selected disabled>Please add Size</option>`)
                             }
                         }
                     }
@@ -272,7 +288,6 @@
                         if (res.status == 200) {
                             // console.log(res);
                             $('.productForm')[0].reset();
-
                             toastr.success(res.message);
                             window.location.href = "{{ route('product.view') }}";
                         } else {
@@ -285,32 +300,20 @@
                             if (error.category_id) {
                                 showError('.category_id', error.category_id);
                             }
-                            if (error.brand_id) {
-                                showError('.brand_id', error.brand_id);
+
+                            if (error.base_sell_price) {
+                                showError('.base_sell_price', error.base_sell_price);
                             }
-                            if (error.price) {
-                                showError('.price', error.price);
+                            if (error.unit) {
+                                showError('.unit', error.unit);
                             }
-                            if (error.unit_id) {
-                                showError('.unit_id', error.unit_id);
+                            if (error.size) {
+                                showError('.size', error.size);
                             }
                         }
                     }
                 });
             })
         });
-
-        function generateCode(input) {
-            var nameInput = input.value.trim();
-            if (nameInput !== "") {
-                var codeInput = input.parentElement.nextElementSibling.querySelector('input[name="barcode"]');
-                var randomNumber = Math.floor(Math.random() * 1000000) +
-                    20; // Generate a random number between 1 and 1000000
-                var generatedCode = nameInput.replace(/\s+/g, '').toUpperCase() + randomNumber;
-                var generatedNumber = randomNumber; // Extract the generated number
-
-                codeInput.value = generatedNumber; // Set the generated number directly in the input field
-            }
-        }
     </script>
 @endsection

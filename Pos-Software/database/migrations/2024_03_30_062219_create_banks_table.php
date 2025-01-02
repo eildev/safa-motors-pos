@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('bank_branch_name', 150)->nullable();
             $table->string('bank_branch_manager_name', 150)->nullable();
             $table->string('bank_branch_phone', 20)->nullable();
-            $table->string('bank_account_number', 20)->unique();
+            $table->string('bank_account_number', 20)->nullable();
             $table->string('bank_branch_email', 200)->nullable();
             $table->decimal('opening_balance', 12, 2)->default(0);
             $table->decimal('cash_in', 12, 2)->default(0);

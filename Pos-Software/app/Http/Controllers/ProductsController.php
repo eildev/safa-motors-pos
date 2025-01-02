@@ -5,72 +5,79 @@ namespace App\Http\Controllers;
 use App\Models\PosSetting;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductDetails;
+use App\Models\ProductTags;
 use App\Models\PromotionDetails;
 use App\Models\PurchaseItem;
 use App\Models\SaleItem;
-// use Validator;
+use App\Models\Tags;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-
+use App\Services\ImageService;
+use function App\Helper\generateUniqueSlug;
+use Illuminate\Support\Str;
 class ProductsController extends Controller
 {
     public function index()
     {
         return view('pos.products.product.product');
     }
-    public function store(Request $request)
+    public function store(Request $request,ImageService $imageService)
     {
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
             'category_id' => 'required|integer',
-            'brand_id' => 'required|integer',
-            'price' => 'required|max:7',
-            'unit_id' => 'required|max:11',
-            'barcode' => [
-                'required',
-                Rule::unique('products', 'barcode')->where(function ($query) use ($request) {
-                    return $query->where('barcode', $request->barcode);
-                }),
-            ],
+            'base_sell_price' => 'required|max:7',
+            'unit' => 'required',
+            'size' => 'required',
         ]);
 
         if ($validator->passes()) {
             $product = new Product;
             $product->name =  $request->name;
-            $product->branch_id =  Auth::user()->branch_id;
-            $product->barcode =  $request->barcode;
+            $product->slug = generateUniqueSlug($request->name, $product);
+            $barcodePrefix = strtoupper(substr($request->name, 0, 2)); // Take the first 2 characters and convert to uppercase
+            $uniquePart = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT); // Generate a 6-digit number with leading zeros if needed
+
+            $product->barcode = $barcodePrefix . $uniquePart;
             $product->category_id =  $request->category_id;
-            $product->subcategory_id =  $request->subcategory_id;
-            if ($request->subcategory_id != 'Please add Subcategory') {
-                // dd($request->subcategory_id);
-                $product->subcategory_id  =  $request->subcategory_id;
-            } else {
-                $product->subcategory_id  =  null;
-            }
+            $product->subcategory_id  =  $request->subcategory_id ?? null;
             $product->brand_id  =  $request->brand_id;
-            $product->cost  =  $request->cost;
-            $product->price  =  $request->price;
-            $product->details  =  $request->details;
-            $product->color  =  $request->color;
-            $product->unit_id  =  $request->unit_id;
-            if ($request->size_id !== 'Please add Size') {
-                $product->size_id  =  $request->size_id;
-            }
-            if ($request->stock) {
-                $product->stock  =  $request->stock;
-            }
-            if ($request->main_unit_stock) {
-                $product->main_unit_stock  =  $request->main_unit_stock;
-            }
-            if ($request->image) {
-                $imageName = rand() . '.' . $request->image->extension();
-                $request->image->move(public_path('uploads/product/'), $imageName);
-                $product->image = $imageName;
-            }
+            $product->cost_price  =  $request->cost_price;
+            $product->base_sell_price  =  $request->base_sell_price;
             $product->save();
+            //Dertails
+            $productDetails = new ProductDetails();
+            $productDetails->product_id =$product->id;
+            $productDetails->description  =  $request->description ;
+            $productDetails->color  =  $request->color;
+            $productDetails->unit  =  $request->unit;
+            $productDetails->size  =  $request->size;
+            $productDetails->model_no  =  $request->model_no;
+            $productDetails->quality  =  $request->quality;
+            if ($request->hasFile('image')) {
+                $destinationPath = public_path('uploads/products');
+                $imageName = $imageService->resizeAndOptimize($request->file('image'), $destinationPath);
+                $productDetails->image = $imageName;
+            }
+            $productDetails->save();
+
+            if ($request->tag_id && is_array($request->tag_id)) {
+                $tags = [];
+                foreach ($request->tag_id as $tag) {
+                    $tags[] = [
+                        'tag_id' => $tag,
+                        'product_id' => $product->id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+
+                ProductTags::insert($tags); // Batch insert the tags
+            }
             return response()->json([
                 'status' => 200,
                 'message' => 'Product Save Successfully',
@@ -82,26 +89,22 @@ class ProductsController extends Controller
             ]);
         }
     }
-     // product manage 
+     // product manage
     public function view()
     {
         $category = Category::where('slug', 'via-sell')->first();
-        $query = Product::orderBy('stock', 'asc');
-
-        if (Auth::user()->id != 1) {
-            $query->where('branch_id', Auth::user()->branch_id);
-        }
+        $query = Product::orderBy('id', 'asc')->with('product_details');
 
         if ($category) {
             $query->where('category_id', '!=', $category->id);
         }
-
+        // $products = Product::with('product_details')->get();
         $products = $query->get();
 
         return view('pos.products.product.product-show', compact('products'));
     }
 
-    // via product 
+    // via product
     public function viaProductsView()
     {
         $category = Category::where('slug', 'via-sell')->first();
@@ -116,7 +119,7 @@ class ProductsController extends Controller
 
         return view('pos.products.product.via_products', compact('products'));
     }
-    
+
     public function edit($id)
     {
         $product = Product::findOrFail($id);
