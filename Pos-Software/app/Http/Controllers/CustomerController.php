@@ -38,36 +38,101 @@ class CustomerController extends Controller
         }
     }
 
+    // public function CustomerStore(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'name' => 'required|string|max:255',
+    //         'phone' => 'required|max:19',
+    //         'email' => 'max:200|email|unique:customers,email',
+    //         'address' => 'string|max:200',
+    //         'business_name' => 'string|max:120',
+    //         'customer_type' => 'required|string|max:120',
+    //         'wallet_balance' => [
+    //             'numeric',
+    //             'regex:/^\d{1,10}(\.\d{1,2})?$/',
+    //         ],
+    //     ]);
+
+    //     if ($validator->passes()) {
+    //         $customer = new Customer;
+    //         $customer->name = $request->name;
+    //         $customer->slug = generateUniqueSlug($request->name, $customer);
+    //         $customer->phone = $request->phone;
+    //         $customer->email = $request->email;
+    //         $customer->address = $request->address;
+    //         $customer->customer_type = $request->customer_type;
+    //         $customer->due_balance = $request->wallet_balance ?? 0;
+    //         $customer->created_at = Carbon::now();
+    //         $customer->save();
+
+    //         $notification = array(
+    //             'message' => 'Customer Created Successfully',
+    //             'alert-type' => 'info'
+    //         );
+    //         return redirect()->route('customer.view')->with($notification);
+    //     }
+    // } //End Method
+
+    // customer Store 
     public function CustomerStore(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'phone' => 'required|max:19',
-            'email' => 'max:200|email|unique:customers,email',
-            'address' => 'string|max:200',
-        ]);
+        try {
+            // Validation
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'phone' => 'required|max:19',
+                'email' => 'max:200|email|unique:customers,email',
+                'address' => 'string|max:200',
+                'business_name' => 'string|max:120',
+                'customer_type' => 'required|string|max:120',
+                'wallet_balance' => [
+                    'numeric',
+                    'regex:/^\d{1,10}(\.\d{1,2})?$/',
+                ],
+            ]);
 
-        if ($validator->passes()) {
+            // If validation fails
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput()
+                    ->with([
+                        'message' => 'Validation Failed. Please check the input fields.',
+                        'alert-type' => 'error'
+                    ]);
+            }
+
+            // Store customer data
             $customer = new Customer;
-            $customer->branch_id = Auth::user()->branch_id;
             $customer->name = $request->name;
             $customer->slug = generateUniqueSlug($request->name, $customer);
             $customer->phone = $request->phone;
             $customer->email = $request->email;
             $customer->address = $request->address;
-            $customer->opening_payable = $request->wallet_balance ?? 0;
-            $customer->wallet_balance = $request->wallet_balance ?? 0;
-            $customer->total_receivable = $request->wallet_balance ?? 0;
+            $customer->customer_type = $request->customer_type;
+            $customer->due_balance = $request->wallet_balance ?? 0;
             $customer->created_at = Carbon::now();
             $customer->save();
 
-            $notification = array(
+            // Success notification
+            $notification = [
                 'message' => 'Customer Created Successfully',
-                'alert-type' => 'info'
-            );
+                'alert-type' => 'info',
+            ];
             return redirect()->route('customer.view')->with($notification);
+        } catch (\Exception $e) {
+            // Log the exception for debugging
+            Log::error('Error occurred in CustomerStore: ' . $e->getMessage());
+
+            // Failure notification
+            $notification = [
+                'message' => 'An error occurred while creating the customer. Please try again.',
+                'alert-type' => 'error',
+            ];
+            return redirect()->back()->withInput()->with($notification);
         }
-    } //End Method
+    }
+
     public function CustomerView()
     {
         $customers = $this->customer_repo->ViewAllCustomer();
