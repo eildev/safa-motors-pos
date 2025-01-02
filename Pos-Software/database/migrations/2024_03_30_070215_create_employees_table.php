@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('pic', 50)->nullable();
             $table->string('designation', 50)->nullable();
             $table->decimal('salary', 12, 2)->default(0.00);
+            $table->date('joining_date')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->softDeletes();
             $table->timestamps();

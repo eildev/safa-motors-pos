@@ -16,12 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('branch_id')->unsigned();
             $table->foreign('branch_id')->references('id')->on('branches')->onDelete('cascade');
             $table->unsignedBigInteger('employee_id')->unsigned();
-            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
+            $table->foreign('employee_id')->references('id')->on('employees');
             $table->date('date');
-            $table->decimal('debit', 12, 2)->nullable()->comment('Submit Salary');
-            $table->decimal('creadit', 12, 2)->nullable()->comment('Employee Salary on Employee Salary Table');
-            $table->decimal('balance', 12, 2)->comment('creadit - debit');
-            $table->bigInteger('payment_method');
+            $table->decimal('amount', 12, 2)->nullable()->comment('Submit Salary');
+            $table->enum('status', ['paid', 'processing', 'error', 'cancelled']);
             $table->text('note')->nullable();
             $table->softDeletes();
             $table->timestamps();

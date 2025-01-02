@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 150);
             $table->string('slug', 255)->unique();
+            $table->string('email', 255)->unique()->nullable();
             $table->string('business_name', 150)->nullable();
             $table->string('phone', 20)->index(); // Indexed for performance
             $table->text('address')->nullable();

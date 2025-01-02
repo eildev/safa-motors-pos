@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 255);
             $table->string('slug', 255)->unique(); // Updated
+            $table->string('email', 255)->unique()->nullable();
             $table->string('business_name', 255)->nullable();
             $table->string('address', 255)->nullable();
             $table->string('phone', 20)->index(); // Indexed
