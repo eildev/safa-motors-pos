@@ -15,71 +15,58 @@
                         @csrf
                         <div class="row">
                             <!-- Col -->
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <div class="mb-3 form-valid-groups">
                                     <label class="form-label"> Name <span class="text-danger">*</span></label>
                                     <input type="text" name="name" value="{{ $customer->name }}"
                                         class="form-control field_required" placeholder="Enter Customer name">
                                 </div>
                             </div><!-- Col -->
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <div class="mb-3 form-valid-groups">
                                     <label class="form-label">Phone<span class="text-danger">*</span></label>
                                     <input type="text" name="phone" value="{{ $customer->phone }}" class="form-control"
                                         placeholder="Enter Customer Phone">
                                 </div>
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
+                                <div class="mb-3 form-valid-groups">
+                                    <label class="form-label">Business Name</label>
+                                    <input type="text" name="business_name" class="form-control"
+                                        placeholder="Enter Business Name" value="{{ $customer->business_name }}">
+                                </div>
+                            </div><!-- Col -->
+                            <div class="col-sm-4">
                                 <div class="mb-3">
                                     <label class="form-label">Email address</label>
                                     <input type="email" name="email" value="{{ $customer->email }}" class="form-control"
                                         placeholder="Enter Customer email">
                                 </div>
                             </div><!-- Col -->
-                            {{-- <div class="col-sm-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Wallet Balance</label>
-                                    <input type="number" class="form-control" value="{{ $customer->wallet_balance }}"
-                                        name="wallet_balance" placeholder="0.00" readonly>
-                                </div>
-                            </div><!-- Col --> --}}
-                            <div class="col-sm-6">
+                            <div class="col-sm-4">
                                 <div class="mb-3">
                                     <label class="form-label">Customer Address</label>
                                     <input name="address" class="form-control" placeholder="Write Customer Address"
                                         value="{{ $customer->address }}" />
                                 </div>
                             </div><!-- Col -->
-                        </div><!-- Row -->
-                        <div class="row">
-                            {{-- <div class="col-sm-4">
-						<div class="mb-3">
-							<label class="form-label">Opening Receivable</label>
-							<input type="number" class="form-control" value="{{$customer->opening_receivable}}" name="opening_receivable"  placeholder="0.00">
-						</div>
-					</div><!-- Col -->
-					<div class="col-sm-4">
-						<div class="mb-3">
-							<label class="form-label">Opening Payable</label>
-							<input type="number" name="opening_payable" value="{{$customer->opening_payable}}" class="form-control" placeholder="0.00">
-						</div>
-					</div><!-- Col -->
-
-				</div><!-- Row -->
-				<div class="row">
-				<div class="col-sm-6">
-						<div class="mb-3">
-							<label class="form-label">Total Receivable</label>
-							<input type="number" class="form-control" value="{{$customer->total_receivable}}" name="total_receivable"  placeholder="0.00">
-						</div>
-					</div><!-- Col -->
-					<div class="col-sm-6">
-						<div class="mb-3 ">
-							<label class="form-label">Total Payable</label>
-							<input type="number" class="form-control" value="{{$customer->total_payable}}" name="total_payable" placeholder="0.00">
-						</div>
-					</div><!-- Col --> --}}
-                            <!-- Col -->
+                            <div class="col-sm-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Customer Type <span
+                                            class="text-danger">*</span></label></label>
+                                    <select name="customer_type" class="form-control">
+                                        <option value="">Select Customer Type</option>
+                                        <option value="transport_owner"
+                                            {{ $customer->customer_type == 'transport_owner' ? 'selected' : '' }}>Transport
+                                            Owner</option>
+                                        <option value="technician"
+                                            {{ $customer->customer_type == 'technician' ? 'selected' : '' }}>Technician
+                                        </option>
+                                        <option value="floating"
+                                            {{ $customer->customer_type == 'floating' ? 'selected' : '' }}>Floating</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div><!-- Row -->
                         <input type="submit" class="btn btn-primary submit" value="Update">
                     </form>
@@ -97,6 +84,9 @@
                     phone: {
                         required: true,
                     },
+                    customer_type: {
+                        required: true,
+                    },
                 },
                 messages: {
                     name: {
@@ -104,6 +94,9 @@
                     },
                     phone: {
                         required: 'Please Enter Customer Phone Number',
+                    },
+                    customer_type: {
+                        required: 'Please Select Customer Type',
                     },
                 },
                 errorElement: 'span',

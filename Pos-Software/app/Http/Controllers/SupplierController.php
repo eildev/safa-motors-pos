@@ -6,12 +6,13 @@ use App\Models\Bank;
 use App\Models\Branch;
 use App\Models\Supplier;
 use App\Models\Transaction;
-use App\Models\User;
-use App\Models\ViaSale;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Exception;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
 
 use function App\Helper\generateUniqueSlug;
 
@@ -31,119 +32,183 @@ class SupplierController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:250',
-            'phone' => 'required|max:100',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'phone' => 'required|max:19',
+                'email' => 'nullable|max:200|email|unique:suppliers,email',
+                'address' => 'nullable|string|max:200',
+                'business_name' => 'nullable|string|max:120',
+                'supplier_type' => 'required|string|max:120',
+                'due_balance' => [
+                    'nullable',
+                    'numeric',
+                    'regex:/^\d{1,10}(\.\d{1,2})?$/',
+                ],
+            ]);
 
-        if ($validator->passes()) {
-            $supplier = new Supplier;
-            $supplier->name =  $request->name;
-            $supplier->slug =  generateUniqueSlug($request->name, $supplier);
-            $supplier->branch_id =  Auth::user()->branch_id;
-            $supplier->email = $request->email;
-            $supplier->phone = $request->phone;
-            $supplier->address = $request->address;
-            $supplier->opening_receivable = 0;
-            $opening_receivable = $request->opening_receivable ?? 0;
-            $supplier->total_receivable = $opening_receivable;
-            $supplier->wallet_balance = $opening_receivable;
-            $supplier->opening_payable = $opening_receivable;
-            $supplier->total_payable = 0;
-            $supplier->save();
-
-            if ($request->opening_receivable > 0) {
-                $transaction = new Transaction;
-                $transaction->branch_id = Auth::user()->branch_id;
-                $transaction->processed_by =  Auth::user()->id;
-                $transaction->date = Carbon::now();
-                $transaction->particulars = 'Opening Due';
-                $transaction->payment_type = 'pay';
-                $transaction->supplier_id = $supplier->id;
-                $transaction->credit = 0;
-                $transaction->debit = $request->opening_receivable ?? 0;
-                $transaction->balance = $request->opening_receivable ?? 0;
-                $transaction->save();
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 400,
+                    'error' => $validator->messages()
+                ]);
             }
 
+            $supplier = new Supplier;
+            $supplier->name = $request->name;
+            $supplier->slug = generateUniqueSlug($request->name, $supplier);
+            $supplier->phone = $request->phone;
+            $supplier->business_name = $request->business_name;
+            $supplier->email = $request->email;
+            $supplier->address = $request->address;
+            $supplier->supplier_type = $request->supplier_type;
+            $supplier->due_balance = $request->due_balance ?? 0;
+            $supplier->created_at = Carbon::now();
+            $supplier->save();
+
             return response()->json([
                 'status' => 200,
-                'message' => 'Supplier Save Successfully',
+                'message' => 'Supplier Saved Successfully',
             ]);
-        } else {
-            return response()->json([
-                'status' => '500',
-                'error' => $validator->messages()
-            ]);
-        }
-    }
-    public function view()
-    {
-        $suppliers = Supplier::get();
-        return response()->json([
-            "status" => 200,
-            "data" => $suppliers
-        ]);
-    }
-    public function edit($id)
-    {
-        $supplier = Supplier::findOrFail($id);
-        if ($supplier) {
-            return response()->json([
-                'status' => 200,
-                'supplier' => $supplier
-            ]);
-        } else {
+        } catch (\Exception $e) {
+            Log::error('Error saving supplier: ' . $e->getMessage());
+
             return response()->json([
                 'status' => 500,
-                'message' => "Data Not Found"
-            ]);
+                'message' => 'An unexpected error occurred while saving the supplier. Please try again.',
+            ], 500);
         }
     }
+
+
+    public function view()
+    {
+        try {
+            // Retrieve all suppliers
+            $suppliers = Supplier::get();
+
+            // Return response with suppliers data
+            return response()->json([
+                "status" => 200,
+                "data" => $suppliers
+            ]);
+        } catch (\Exception $e) {
+            // Log the exception message for debugging
+            Log::error('Error occurred in Supplier view: ' . $e->getMessage());
+
+            // Return error response
+            return response()->json([
+                "status" => 500,
+                "message" => 'Failed to retrieve suppliers. Please try again.'
+            ], 500);
+        }
+    }
+
+    public function edit($id)
+    {
+        try {
+            $supplier = Supplier::findOrFail($id);
+
+            return response()->json([
+                'status' => 200,
+                'supplier' => $supplier,
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Supplier not found.',
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('Error fetching supplier: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 500,
+                'message' => 'An unexpected error occurred. Please try again.',
+            ], 500);
+        }
+    }
+
     public function update(Request $request, $id)
     {
-        // dd($request->all());
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:250',
-            'phone' => 'required|max:100',
-        ]);
-        if ($validator->passes()) {
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'phone' => 'required|max:19',
+                'email' => 'nullable|max:200|email',
+                'address' => 'nullable|string|max:200',
+                'business_name' => 'nullable|string|max:120',
+                'supplier_type' => 'required|string|max:120',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 400,
+                    'error' => $validator->messages()
+                ]);
+            }
+
             $supplier = Supplier::findOrFail($id);
-            $supplier->name =  $request->name;
-            $supplier->branch_id =  Auth::user()->branch_id;
-            $supplier->email = $request->email;
+            $supplier->name = $request->name;
+            $supplier->slug = generateUniqueSlug($request->name, $supplier);
             $supplier->phone = $request->phone;
+            $supplier->business_name = $request->business_name;
+            $supplier->email = $request->email;
             $supplier->address = $request->address;
+            $supplier->supplier_type = $request->supplier_type;
             $supplier->save();
             return response()->json([
                 'status' => 200,
                 'message' => 'Supplier Update Successfully',
             ]);
-        } else {
+        } catch (\Exception $e) {
+            Log::error('Error saving supplier: ' . $e->getMessage());
+
             return response()->json([
-                'status' => '500',
-                'error' => $validator->messages()
-            ]);
+                'status' => 500,
+                'message' => 'An unexpected error occurred while saving the supplier. Please try again.',
+            ], 500);
         }
     }
     public function destroy($id)
     {
-        $supplier = Supplier::findOrFail($id);
-        $supplier->delete();
-        return response()->json([
-            'status' => 200,
-            'message' => 'Supplier Deleted Successfully',
-        ]);
+        try {
+            $supplier = Supplier::findOrFail($id);
+            $supplier->delete();
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Supplier Deleted Successfully',
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Supplier not found.',
+            ], 404);
+        } catch (\Exception $e) {
+            Log::error('Error while deleting supplier: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 500,
+                'message' => 'An error occurred while trying to delete the supplier. Please try again later.',
+            ], 500);
+        }
     }
+
 
     public function SupplierProfile($id)
     {
-        $data = Supplier::findOrFail($id);
-        $viaSales = ViaSale::where('supplier_name', $data->id)->get();
-        $transactions = Transaction::where('supplier_id', $data->id)->get();
-        $branch = Branch::findOrFail($data->branch_id);
-        $banks = Bank::latest()->get();
-        $isCustomer = false;
-        return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer', 'banks', 'viaSales'));
+        try {
+            $data = Supplier::where('slug', $id)->firstOrFail();
+            $transactions = Transaction::where('supplier_id', $data->id)->get();
+            $branch = Branch::findOrFail($data->branch_id);
+            $banks = Bank::latest()->get();
+            $isCustomer = false;
+
+            return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer', 'banks'));
+        } catch (ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Supplier not found.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'An unexpected error occurred.');
+        }
     }
 }//End

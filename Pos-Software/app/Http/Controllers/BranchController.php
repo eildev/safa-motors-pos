@@ -66,18 +66,12 @@ class BranchController extends Controller
         }
     }
 
-
-
-
     public function BranchView()
     {
         try {
-            $branches = $this->branchrepo->getAllBranch(); // ডেটা ফেচ করার চেষ্টা
-
-            // ভিউতে ডেটা পাঠানো
+            $branches = $this->branchrepo->getAllBranch();
             return view('pos.branches.all_branches', compact('branches'));
         } catch (\Exception $e) {
-            // যদি কোনো এরর হয়, তাহলে ব্যাকএন্ডের একটি এরর বার্তা শো করবে
             return back()->withErrors(['error' => 'Failed to retrieve branches: ' . $e->getMessage()]);
         }
     } //End Method
@@ -86,15 +80,11 @@ class BranchController extends Controller
     public function BranchEdit($id)
     {
         try {
-            // ব্রাঞ্চ ডেটা ফেচ করার চেষ্টা
             $branch = Branch::where('slug', $id)->first();
-            // যদি সফল হয়, ভিউতে ডেটা পাঠানো
             return view('pos.branches.edit-branch', compact('branch'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            // যদি ব্রাঞ্চ আইডি না পাওয়া যায়
             return redirect()->route('branch.view')->withErrors(['error' => 'Branch not found.']);
         } catch (\Exception $e) {
-            // অন্য কোনো এরর হ্যান্ডলিং
             return redirect()->route('branch.view')->withErrors(['error' => 'An unexpected error occurred: ' . $e->getMessage()]);
         }
     } //End Method

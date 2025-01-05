@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Customer;
 use App\Models\Branch;
 use App\Models\Transaction;
-use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Repositories\RepositoryInterfaces\CustomerInterfaces;
 use Illuminate\Support\Facades\Log;
@@ -38,54 +37,21 @@ class CustomerController extends Controller
         }
     }
 
-    // public function CustomerStore(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         'name' => 'required|string|max:255',
-    //         'phone' => 'required|max:19',
-    //         'email' => 'max:200|email|unique:customers,email',
-    //         'address' => 'string|max:200',
-    //         'business_name' => 'string|max:120',
-    //         'customer_type' => 'required|string|max:120',
-    //         'wallet_balance' => [
-    //             'numeric',
-    //             'regex:/^\d{1,10}(\.\d{1,2})?$/',
-    //         ],
-    //     ]);
-
-    //     if ($validator->passes()) {
-    //         $customer = new Customer;
-    //         $customer->name = $request->name;
-    //         $customer->slug = generateUniqueSlug($request->name, $customer);
-    //         $customer->phone = $request->phone;
-    //         $customer->email = $request->email;
-    //         $customer->address = $request->address;
-    //         $customer->customer_type = $request->customer_type;
-    //         $customer->due_balance = $request->wallet_balance ?? 0;
-    //         $customer->created_at = Carbon::now();
-    //         $customer->save();
-
-    //         $notification = array(
-    //             'message' => 'Customer Created Successfully',
-    //             'alert-type' => 'info'
-    //         );
-    //         return redirect()->route('customer.view')->with($notification);
-    //     }
-    // } //End Method
-
     // customer Store 
     public function CustomerStore(Request $request)
     {
+        // dd($request->all());
         try {
             // Validation
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'phone' => 'required|max:19',
-                'email' => 'max:200|email|unique:customers,email',
-                'address' => 'string|max:200',
-                'business_name' => 'string|max:120',
+                'email' => 'nullable|max:200|email|unique:customers,email',
+                'address' => 'nullable|string|max:200',
+                'business_name' => 'nullable|string|max:120',
                 'customer_type' => 'required|string|max:120',
                 'wallet_balance' => [
+                    'nullable', // 
                     'numeric',
                     'regex:/^\d{1,10}(\.\d{1,2})?$/',
                 ],
@@ -97,7 +63,7 @@ class CustomerController extends Controller
                     ->withErrors($validator)
                     ->withInput()
                     ->with([
-                        'message' => 'Validation Failed. Please check the input fields.',
+                        'error' => 'Validation Failed. Please check the input fields.',
                         'alert-type' => 'error'
                     ]);
             }
@@ -107,6 +73,7 @@ class CustomerController extends Controller
             $customer->name = $request->name;
             $customer->slug = generateUniqueSlug($request->name, $customer);
             $customer->phone = $request->phone;
+            $customer->business_name = $request->business_name;
             $customer->email = $request->email;
             $customer->address = $request->address;
             $customer->customer_type = $request->customer_type;
@@ -126,7 +93,7 @@ class CustomerController extends Controller
 
             // Failure notification
             $notification = [
-                'message' => 'An error occurred while creating the customer. Please try again.',
+                'error' => 'An error occurred while creating the customer. Please try again.',
                 'alert-type' => 'error',
             ];
             return redirect()->back()->withInput()->with($notification);
@@ -135,52 +102,170 @@ class CustomerController extends Controller
 
     public function CustomerView()
     {
-        $customers = $this->customer_repo->ViewAllCustomer();
-        return view('pos.customer.view_customer', compact('customers'));
-    } //
+        try {
+            // Retrieve all customers using repository
+            $customers = $this->customer_repo->ViewAllCustomer();
+
+            // Return view with customers data
+            return view('pos.customer.view_customer', compact('customers'));
+        } catch (\Exception $e) {
+            // Log the exception for debugging
+            Log::error('Error occurred in CustomerView: ' . $e->getMessage());
+
+            // Redirect back with an error notification
+            $notification = [
+                'error' => 'Failed to load customer data. Please try again later.',
+                'alert-type' => 'error',
+            ];
+            return redirect()->back()->with($notification);
+        }
+    }
+
     public function CustomerEdit($id)
     {
-        $customer = $this->customer_repo->EditCustomer($id);
-        return view('pos.customer.edit_customer', compact('customer'));
-    } //
+        try {
+            // Retrieve customer by slug
+            $customer = Customer::where('slug', $id)->first();
+
+            // If customer not found, throw an exception
+            if (!$customer) {
+                throw new \Exception('Customer not found.');
+            }
+
+            // Return edit view with customer data
+            return view('pos.customer.edit_customer', compact('customer'));
+        } catch (\Exception $e) {
+            // Log the exception for debugging
+            Log::error('Error occurred in CustomerEdit: ' . $e->getMessage());
+
+            // Redirect back with an error notification
+            $notification = [
+                'error' => 'Failed to load customer details. Please try again.',
+                'alert-type' => 'error',
+            ];
+            return redirect()->back()->with($notification);
+        }
+    }
+
     public function CustomerUpdate(Request $request, $id)
     {
-        $customer = Customer::find($id);
-        $customer->branch_id = Auth::user()->branch_id;
-        $customer->name = $request->name;
-        $customer->phone = $request->phone;
-        $customer->email = $request->email;
-        $customer->address = $request->address;
-        // $customer->opening_receivable = $request->opening_receivable ?? 0;
-        // $customer->opening_payable = $request->opening_payable ?? 0;
-        // $customer->wallet_balance = $request->wallet_balance ?? 0;
-        // $customer->total_receivable = $request->total_receivable ?? 0;
-        // $customer->total_payable = $request->total_payable ?? 0;
-        $customer->updated_at = Carbon::now();
-        $customer->save();
-        $notification = array(
-            'message' => 'Customer Updated Successfully',
-            'alert-type' => 'info'
-        );
-        return redirect()->route('customer.view')->with($notification);
-    } //End Method
+        try {
+            // Validation
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'phone' => 'required|max:19',
+                'email' => 'nullable|max:200|email|unique:customers,email,' . $id, // To allow update of own email
+                'address' => 'nullable|string|max:200',
+                'business_name' => 'nullable|string|max:120',
+                'customer_type' => 'required|string|max:120',
+            ]);
+
+            // If validation fails
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput()
+                    ->with([
+                        'error' => 'Validation Failed. Please check the input fields.',
+                        'alert-type' => 'error'
+                    ]);
+            }
+
+            // Find the customer and update
+            $customer = Customer::findOrFail($id); // Will throw an exception if customer is not found
+            $customer->name = $request->name;
+            $customer->slug = generateUniqueSlug($request->name, $customer);
+            $customer->phone = $request->phone;
+            $customer->business_name = $request->business_name;
+            $customer->email = $request->email;
+            $customer->address = $request->address;
+            $customer->customer_type = $request->customer_type;
+            $customer->updated_at = Carbon::now();
+            $customer->save();
+
+            // Success notification
+            $notification = array(
+                'message' => 'Customer Updated Successfully',
+                'alert-type' => 'info'
+            );
+
+            return redirect()->route('customer.view')->with($notification);
+        } catch (\Exception $e) {
+            // Log the exception
+            Log::error('Error occurred in CustomerUpdate: ' . $e->getMessage());
+
+            // Error notification
+            $notification = array(
+                'error' => 'Failed to update customer. Please try again.',
+                'alert-type' => 'error'
+            );
+
+            // Redirect back with error notification
+            return redirect()->back()->with($notification);
+        }
+    }
+
     public function CustomerDelete($id)
     {
-        Customer::findOrFail($id)->delete();
-        $notification = array(
-            'message' => 'Customer Deleted Successfully',
-            'alert-type' => 'info'
-        );
-        return redirect()->back()->with($notification);
+        try {
+            // Find and delete customer by id
+            $customer = Customer::findOrFail($id); // Will throw an exception if customer not found
+            $customer->delete();
+
+            // Success notification
+            $notification = array(
+                'message' => 'Customer Deleted Successfully',
+                'alert-type' => 'info'
+            );
+
+            return redirect()->back()->with($notification);
+        } catch (\Exception $e) {
+            // Log the exception for debugging
+            Log::error('Error occurred in CustomerDelete: ' . $e->getMessage());
+
+            // Error notification
+            $notification = array(
+                'error' => 'Failed to delete customer. Please try again.',
+                'alert-type' => 'error'
+            );
+
+            // Redirect back with error notification
+            return redirect()->back()->with($notification);
+        }
     }
+
     public function CustomerProfile($id)
     {
-        $data = Customer::findOrFail($id);
-        $transactions = Transaction::where('customer_id', $data->id)->get();
-        $branch = Branch::findOrFail($data->branch_id);
-        $banks = Bank::latest()->get();
-        $isCustomer = true;
+        try {
+            // Retrieve customer data using slug
+            $data = Customer::where('slug', $id)->firstOrFail(); // Will throw exception if not found
 
-        return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer', 'banks'));
+            // Retrieve related transactions
+            $transactions = Transaction::where('customer_id', $data->id)->get();
+
+            // Retrieve branch details
+            $branch = Branch::findOrFail($data->branch_id); // Will throw exception if not found
+
+            // Retrieve bank details
+            $banks = Bank::latest()->get();
+
+            // Set flag to identify customer profile
+            $isCustomer = true;
+
+            // Return view with customer profile data
+            return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer', 'banks'));
+        } catch (\Exception $e) {
+            // Log the exception message for debugging
+            Log::error('Error occurred in CustomerProfile: ' . $e->getMessage());
+
+            // Error notification
+            $notification = array(
+                'error' => 'Failed to retrieve customer profile. Please try again.',
+                'alert-type' => 'error'
+            );
+
+            // Redirect back with error notification
+            return redirect()->back()->with($notification);
+        }
     }
 }
