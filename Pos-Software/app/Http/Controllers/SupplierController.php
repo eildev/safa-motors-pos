@@ -7,11 +7,12 @@ use App\Models\Branch;
 use App\Models\Supplier;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Log;
-use App\Models\ViaSale;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Exception;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
 
 use function App\Helper\generateUniqueSlug;
 
@@ -196,11 +197,18 @@ class SupplierController extends Controller
 
     public function SupplierProfile($id)
     {
-        $data = Supplier::where('slug', $id)->first();
-        $transactions = Transaction::where('supplier_id', $data->id)->get();
-        $branch = Branch::findOrFail($data->branch_id);
-        $banks = Bank::latest()->get();
-        $isCustomer = false;
-        return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer', 'banks',));
+        try {
+            $data = Supplier::where('slug', $id)->firstOrFail();
+            $transactions = Transaction::where('supplier_id', $data->id)->get();
+            $branch = Branch::findOrFail($data->branch_id);
+            $banks = Bank::latest()->get();
+            $isCustomer = false;
+
+            return view('pos.profiling.profiling', compact('data', 'transactions', 'branch', 'isCustomer', 'banks'));
+        } catch (ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Supplier not found.');
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', 'An unexpected error occurred.');
+        }
     }
 }//End
