@@ -123,49 +123,71 @@ class ProductsController extends Controller
     public function edit($id)
     {
         $product = Product::findOrFail($id);
+
         return view('pos.products.product.product-edit', compact('product'));
     }
-    public function update(Request $request, $id)
+    public function update(Request $request, $id,ImageService $imageService)
     {
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
             'category_id' => 'required|integer',
-            'brand_id' => 'required|integer',
-            'price' => 'required|max:7',
-            'unit_id' => 'required|max:11',
+            'base_sell_price' => 'required|max:9',
+            'unit' => 'required',
+            'size' => 'required',
         ]);
+
         if ($validator->passes()) {
             $product = Product::findOrFail($id);
             $product->name =  $request->name;
-            $product->branch_id =  Auth::user()->branch_id;
-            $product->barcode =  $request->barcode;
+            $product->slug = generateUniqueSlug($request->name, $product);
+            $barcodePrefix = strtoupper(substr($request->name, 0, 2)); // Take the first 2 characters and convert to uppercase
+            $uniquePart = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT); // Generate a 6-digit number with leading zeros if needed
+
+            $product->barcode = $barcodePrefix . $uniquePart;
             $product->category_id =  $request->category_id;
-            if ($request->subcategory_id != 'Please add Subcategory') {
-                // dd($request->subcategory_id);
-                $product->subcategory_id  =  $request->subcategory_id;
-            } else {
-                $product->subcategory_id  =  null;
-            }
+            $product->subcategory_id  =  $request->subcategory_id ?? null;
             $product->brand_id  =  $request->brand_id;
-            $product->cost  =  $request->cost;
-            $product->price  =  $request->price;
-            $product->details  =  $request->details;
-            $product->color  =  $request->color;
-            $product->size_id  =  $request->size_id;
-            $product->unit_id  =  $request->unit_id;
-            if ($request->stock) {
-                $product->stock  =  $request->stock;
-            }
-            if ($request->main_unit_stock) {
-                $product->main_unit_stock  =  $request->main_unit_stock;
-            }
-            if ($request->image) {
-                $imageName = rand() . '.' . $request->image->extension();
-                $request->image->move(public_path('uploads/product/'), $imageName);
-                $product->image = $imageName;
-            }
+            $product->cost_price  =  $request->cost_price;
+            $product->base_sell_price  =  $request->base_sell_price;
             $product->save();
+            //Dertails
+            $productDetails = ProductDetails::where('product_id',$product->id)->first();
+            // dd($productDetails);
+            $productDetails->product_id = $product->id;
+            $productDetails->description  =  $request->description ;
+            $productDetails->color  =  $request->color;
+            $productDetails->unit  =  $request->unit;
+            $productDetails->size  =  $request->size;
+            $productDetails->model_no  =  $request->model_no;
+            $productDetails->quality  =  $request->quality;
+            if ($request->hasFile('image')) {
+                if ($productDetails->image) {
+                    // If the old image exists, unlink it from the filesystem
+                    $oldImagePath = public_path('uploads/products/' . $productDetails->image);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+                $destinationPath = public_path('uploads/products');
+                $imageName = $imageService->resizeAndOptimize($request->file('image'), $destinationPath);
+                $productDetails->image = $imageName;
+            }
+            $productDetails->save();
+
+            if ($request->tag_id && is_array($request->tag_id)) {
+                ProductTags::where('product_id', $product->id)->delete();
+                $tags = [];
+                foreach ($request->tag_id as $tag) {
+                    $tags[] = [
+                        'tag_id' => $tag,
+                        'product_id' => $product->id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+
+                ProductTags::insert($tags); // Batch insert the tags
+            }
             return response()->json([
                 'status' => 200,
                 'message' => 'Product Update Successfully',
@@ -176,18 +198,24 @@ class ProductsController extends Controller
                 'error' => $validator->messages()
             ]);
         }
+
     }
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
-        if ($product->image) {
-            $previousImagePath = public_path('uploads/product/') . $product->image;
+        $product->delete();
+        $productDetailse = ProductDetails::where('product_id', $id)->first();
+        if ($productDetailse->image || '') {
+            $previousImagePath = public_path('uploads/product/') . $productDetailse->image;
             if (file_exists($previousImagePath)) {
                 unlink($previousImagePath);
             }
         }
-        $product->delete();
+        $productDetailse->delete();
+        ProductTags::where('product_id', $id)->delete();;
+
         return back()->with('message', "Product deleted successfully");
+
     }
     public function find($id)
     {

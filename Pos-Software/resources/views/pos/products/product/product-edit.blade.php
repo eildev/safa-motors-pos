@@ -19,8 +19,8 @@
                             <div class="mb-3 col-md-6">
                                 <label for="name" class="form-label">Product Name <span
                                         class="text-danger">*</span></label>
-                                <input class="form-control name" name="name" type="text" onkeyup="errorRemove(this);"
-                                    onchange="errorRemove(this);" value="{{$product->name}}">
+                                <input class="form-control name product_id" name="name" type="text" onkeyup="errorRemove(this);"
+                                    onchange="errorRemove(this);" value="{{$product->name }}">
                                 <span class="text-danger name_error"></span>
                             </div>
                             <div class="mb-3 col-md-6">
@@ -60,7 +60,7 @@
                                         {{-- <option selected disabled>Select Brand</option> --}}
                                         @foreach ($brands as $brand)
                                             <option value="{{ $brand->id }}"
-                                                {{ $product->brand_id == $category->id ? 'selected' : '' }}>{{ $brand->name }}
+                                                {{ $product->brand_id == $brand->id ? 'selected' : '' }}>{{ $brand->name }}
                                             </option>
                                         @endforeach
                                     @else
@@ -86,7 +86,7 @@
                                     @if ($units->count() > 0)
                                         <option selected disabled>Select Unit</option>
                                         @foreach ($units as $unit)
-                                            <option {{ $product->product_details->unit ?? ''  === $unit->id ? 'selected' : '  ' }} value="{{ $unit->id }}">{{ $unit->name ?? '' }}
+                                            <option value="{{ $unit->id }}"  {{ optional($product->product_details)->unit === $unit->id ? 'selected' : '' }}>{{ $unit->name ?? '' }}
                                             </option>
                                         @endforeach
                                     @else
@@ -95,10 +95,12 @@
                                 </select>
                                 <span class="text-danger unit_error"></span>
                             </div>
+
                             <div class="mb-3 col-md-4">
                                 <label for="ageSelect" class="form-label">Model No </label>
-                                <input type="text" class="form-control" value={{$product->product_details->model_no ?? ''}} name="model_no">
+                                <input type="text" class="form-control"  name="model_no" value={{$product->product_details->model_no ?? ''}}>
                             </div>
+
                             <div class="mb-3 col-md-6">
                                 <label for="password" class="form-label">Cost Price</label>
                                 <input class="form-control" name="cost_price" value={{$product->cost_price ?? ''}}  type='number'
@@ -127,19 +129,19 @@
 
                             <div class="mb-3 col-md-6">
                                 <label for="ageSelect" class="form-label">Color</label>
-
-                                <input type="color" {{$product->product_details->color ?? ''}}  class="form-control"  name="color"
+                                <input type="color" value="{{$product->product_details->color ?? ''}}"  class="form-control"  name="color"
                                     id="">
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="ageSelect" class="form-label">Quality</label>
                                 <select class="form-control js-example-basic-single "name="quality">
                                     <option selected disabled>Select Quality</option>
-                                    <option value="grade-a" {{ $product->product_details->quality   == 'grade-a' ? 'selected' : '' }}>Grade A</option>
-                                    <option value="grade-b" {{ $product->product_details->quality  == 'grade-b' ? 'selected' : '' }}>Grade B</option>
-                                    <option value="grade-c" {{ $product->product_details->quality == 'grade-c' ? 'selected' : '' }}>Grade C</option>
+                                    <option value="grade-a" {{ isset($product->product_details) && $product->product_details->quality == 'grade-a' ? 'selected' : '' }}>Grade A</option>
+                                    <option value="grade-b" {{ isset($product->product_details) && $product->product_details->quality == 'grade-b' ? 'selected' : '' }}>Grade B</option>
+                                    <option value="grade-c" {{ isset($product->product_details) && $product->product_details->quality == 'grade-c' ? 'selected' : '' }}>Grade C</option>
                                 </select>
                             </div>
+
                             <div class="mb-3 col-md-12">
                                 @php
                                     $tags = App\Models\Tags::where('status','active')->get();
@@ -157,7 +159,6 @@
                                     @else
                                         <option selected disabled>Please Add Tags</option>
                                     @endif
-
                                 </select>
 
                                 <span class="text-danger tag_id_error"></span>
@@ -171,12 +172,17 @@
                                                 add
                                                 a category image
                                                 please add a 400 X 400 size image.</span></p>
-                                        <input type="file" class="categoryImage" name="image" id="myDropify" />
+                                        {{-- <input type="file" class="categoryImage" name="image" id="myDropify" /> --}}
+                                        <input type="file"
+                                        data-default-file="{{ $product->product_details? asset('uploads/products/' . $product->product_details->image) : '' }}"
+                                        class="categoryImage" name="image" id="myDropify" />
                                     </div>
                                 </div>
                             </div>
                             <div>
-                                <input class="btn btn-primary w-full save_product" type="submit" value="Submit">
+                                <button class="btn btn-primary w-full update_product" type="submit"
+                                value="{{ $product->id }}">Update</button>
+                                {{-- <input class="btn btn-primary w-full save_product" type="submit" value="Submit"> --}}
                             </div>
                         </div>
                     </div>
@@ -210,19 +216,21 @@
             }
 
             // when select category
+
+
             subCategory($('.category_id').val());
             $('.category_id').change(function() {
-                let id = $(this).val();
-                // alert(id);
-                if (id) {
-                    subCategory(id);
-                }
+                let categoryId  = $(this).val();
+                    if (categoryId) {
+                        subCategory(categoryId); // Use the injected product ID
+                    }
             })
 
             function subCategory(categoryId) {
                 $.ajax({
                     url: '/subcategory/find/' + categoryId,
                     type: 'GET',
+
                     dataType: 'JSON',
                     success: function(res) {
                         if (res.status == 200) {
@@ -280,6 +288,55 @@
                 });
                 $.ajax({
                     url: '/product/store',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        if (res.status == 200) {
+                            // console.log(res);
+                            $('.productForm')[0].reset();
+                            toastr.success(res.message);
+                            window.location.href = "{{ route('product.view') }}";
+                        } else {
+                            // console.log(res.error);
+                            const error = res.error;
+                            // console.log(error)
+                            if (error.name) {
+                                showError('.name', error.name);
+                            }
+                            if (error.category_id) {
+                                showError('.category_id', error.category_id);
+                            }
+
+                            if (error.base_sell_price) {
+                                showError('.base_sell_price', error.base_sell_price);
+                            }
+                            if (error.unit) {
+                                showError('.unit', error.unit);
+                            }
+                            if (error.size) {
+                                showError('.size', error.size);
+                            }
+                        }
+                    }
+                });
+            })
+
+
+            ///Update
+            // update_product
+            $('.update_product').click(function(e) {
+                e.preventDefault();
+                let id = $(this).val();
+                let formData = new FormData($('.productForm')[0]);
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: '/product/update/' + id,
                     type: 'POST',
                     data: formData,
                     processData: false,
