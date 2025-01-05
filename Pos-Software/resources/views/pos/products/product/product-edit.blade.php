@@ -43,13 +43,13 @@
                                 </select>
                                 <span class="text-danger category_id_error"></span>
                             </div>
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-4">
                                 <label for="ageSelect" class="form-label">Subcategory <span
                                         class="text-danger">*</span></label>
                                 <select class="js-example-basic-single form-select subcategory_id" name="subcategory_id">
                                 </select>
                             </div>
-                            <div class="mb-3 col-md-6">
+                            <div class="mb-3 col-md-4">
                                 @php
                                     $brands = App\Models\Brand::get();
                                 @endphp
@@ -70,7 +70,8 @@
                                 <span class="text-danger brand_id_error"></span>
                             </div>
                             <div class="mb-3 col-md-4">
-                                <label for="ageSelect" class="form-label">Size </label>
+                                <label for="ageSelect" class="form-label">Size <span
+                                    class="text-danger">*</span></label>
                                 <select class="js-example-basic-single form-select size_id  size" name="size"  onchange="errorRemove(this);">
                                     <option selected disabled>Select Size</option>
                                 </select>
@@ -80,25 +81,41 @@
                                 @php
                                     $units = App\Models\Unit::where('status','active')->get();
                                 @endphp
-                                <label for="ageSelect" class="form-label">Unit <span class="text-danger">*</span></label>
-                                <select class="js-example-basic-single form-select unit" name="unit"
+                                <label for="ageSelect" class="form-label">Purchase Unit <span class="text-danger">*</span></label>
+                                <select class="js-example-basic-single form-select purchase_unit" name="purchase_unit"
                                     onchange="errorRemove(this);">
                                     @if ($units->count() > 0)
-                                        <option selected disabled>Select Unit</option>
+                                        <option selected disabled>Select Purchase  Unit</option>
                                         @foreach ($units as $unit)
-                                            <option value="{{ $unit->id }}"  {{ optional($product->product_details)->unit === $unit->id ? 'selected' : '' }}>{{ $unit->name ?? '' }}
+                                            <option value="{{ $unit->id }}" {{ $product->purchase_unit  === $unit->id ? 'selected' : '' }}>{{ $unit->name }}
                                             </option>
                                         @endforeach
                                     @else
-                                        <option selected disabled>Please Add Unit</option>
+                                        <option selected disabled>Please Add Purchase Unit</option>
                                     @endif
                                 </select>
-                                <span class="text-danger unit_error"></span>
+                                <span class="text-danger purchase_unit_error"></span>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                <label for="ageSelect" class="form-label">Sale Unit <span class="text-danger">*</span></label>
+                                <select class="js-example-basic-single form-select sale_unit" name="sale_unit"
+                                    onchange="errorRemove(this);">
+                                    @if ($units->count() > 0)
+                                        <option selected disabled>Select Sale Unit</option>
+                                        @foreach ($units as $unit)
+                                            <option value="{{ $unit->id }}" {{ $product->sale_unit  === $unit->id ? 'selected' : '' }}>{{ $unit->name }}
+                                            </option>
+                                        @endforeach
+                                    @else
+                                        <option selected disabled>Please Add Sale Unit</option>
+                                    @endif
+                                </select>
+                                <span class="text-danger sale_unit_error"></span>
                             </div>
 
                             <div class="mb-3 col-md-4">
                                 <label for="ageSelect" class="form-label">Model No </label>
-                                <input type="text" class="form-control"  name="model_no" value={{$product->product_details->model_no ?? ''}}>
+                                <input type="text" class="form-control"  name="model_no" value={{$product->variation->model_no ?? ''}}>
                             </div>
 
                             <div class="mb-3 col-md-6">
@@ -116,7 +133,7 @@
                             </div>
                             <div class="mb-3 col-12">
                                 <label for="" class="form-label">Description</label>
-                                <textarea class="form-control" name="description" rows="3">{{$product->product_details->description ?? ''}} </textarea>
+                                <textarea class="form-control" name="description" rows="3">{{$product->description ?? ''}} </textarea>
                             </div>
                         </div>
                     </div>
@@ -126,7 +143,6 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-
                             <div class="mb-3 col-md-6">
                                 <label for="ageSelect" class="form-label">Color</label>
                                 <input type="color" value="{{$product->product_details->color ?? ''}}"  class="form-control"  name="color"
@@ -136,9 +152,9 @@
                                 <label for="ageSelect" class="form-label">Quality</label>
                                 <select class="form-control js-example-basic-single "name="quality">
                                     <option selected disabled>Select Quality</option>
-                                    <option value="grade-a" {{ isset($product->product_details) && $product->product_details->quality == 'grade-a' ? 'selected' : '' }}>Grade A</option>
-                                    <option value="grade-b" {{ isset($product->product_details) && $product->product_details->quality == 'grade-b' ? 'selected' : '' }}>Grade B</option>
-                                    <option value="grade-c" {{ isset($product->product_details) && $product->product_details->quality == 'grade-c' ? 'selected' : '' }}>Grade C</option>
+                                    <option value="grade-a" {{ isset($product->variation) && $product->variation->quality == 'grade-a' ? 'selected' : '' }}>Grade A</option>
+                                    <option value="grade-b" {{ isset($product->variation) && $product->variation->quality == 'grade-b' ? 'selected' : '' }}>Grade B</option>
+                                    <option value="grade-c" {{ isset($product->variation) && $product->variation->quality == 'grade-c' ? 'selected' : '' }}>Grade C</option>
                                 </select>
                             </div>
 
@@ -174,7 +190,7 @@
                                                 please add a 400 X 400 size image.</span></p>
                                         {{-- <input type="file" class="categoryImage" name="image" id="myDropify" /> --}}
                                         <input type="file"
-                                        data-default-file="{{ $product->product_details? asset('uploads/products/' . $product->product_details->image) : '' }}"
+                                        data-default-file="{{ $product->variation? asset('uploads/products/' . $product->variation->image) : '' }}"
                                         class="categoryImage" name="image" id="myDropify" />
                                     </div>
                                 </div>

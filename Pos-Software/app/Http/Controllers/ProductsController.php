@@ -11,6 +11,7 @@ use App\Models\PromotionDetails;
 use App\Models\PurchaseItem;
 use App\Models\SaleItem;
 use App\Models\Tags;
+use App\Models\Variation;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +32,8 @@ class ProductsController extends Controller
             'name' => 'required|max:255',
             'category_id' => 'required|integer',
             'base_sell_price' => 'required|max:7',
-            'unit' => 'required',
+            'sale_unit' => 'required',
+            'purchase_unit' => 'required',
             'size' => 'required',
         ]);
 
@@ -46,28 +48,32 @@ class ProductsController extends Controller
             $product->category_id =  $request->category_id;
             $product->subcategory_id  =  $request->subcategory_id ?? null;
             $product->brand_id  =  $request->brand_id;
+            $product->sale_unit  =  $request->sale_unit;
+            $product->purchase_unit  =  $request->purchase_unit;
             $product->cost_price  =  $request->cost_price;
             $product->base_sell_price  =  $request->base_sell_price;
+            $product->description  =  $request->description ;
             $product->save();
-            //Dertails
-            $productDetails = new ProductDetails();
-            $productDetails->product_id =$product->id;
-            $productDetails->description  =  $request->description ;
-            $productDetails->color  =  $request->color;
-            $productDetails->unit  =  $request->unit;
-            $productDetails->size  =  $request->size;
-            $productDetails->model_no  =  $request->model_no;
-            $productDetails->quality  =  $request->quality;
+            // product variations
+            $productvariations = new Variation();
+            $productvariations->product_id = $product->id;
+            $productvariations->color  =  $request->color;
+            $productvariations->price  =  $request->base_sell_price;
+            $productvariations->size  =  $request->size;
+            $productvariations->model_no  =  $request->model_no;
+            $productvariations->quality  =  $request->quality;
+            $productvariations->status  = 'default';
             if ($request->hasFile('image')) {
                 $destinationPath = public_path('uploads/products');
                 $imageName = $imageService->resizeAndOptimize($request->file('image'), $destinationPath);
-                $productDetails->image = $imageName;
+                $productvariations->image = $imageName;
             }
-            $productDetails->save();
+            $productvariations->save();
 
             if ($request->tag_id && is_array($request->tag_id)) {
                 $tags = [];
                 foreach ($request->tag_id as $tag) {
+
                     $tags[] = [
                         'tag_id' => $tag,
                         'product_id' => $product->id,
@@ -93,7 +99,7 @@ class ProductsController extends Controller
     public function view()
     {
         $category = Category::where('slug', 'via-sell')->first();
-        $query = Product::orderBy('id', 'asc')->with('product_details');
+        $query = Product::orderBy('id', 'asc')->with('variation');
 
         if ($category) {
             $query->where('category_id', '!=', $category->id);
@@ -131,11 +137,11 @@ class ProductsController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
             'category_id' => 'required|integer',
-            'base_sell_price' => 'required|max:9',
-            'unit' => 'required',
+            'base_sell_price' => 'required|max:7',
+            'sale_unit' => 'required',
+            'purchase_unit' => 'required',
             'size' => 'required',
         ]);
-
         if ($validator->passes()) {
             $product = Product::findOrFail($id);
             $product->name =  $request->name;
@@ -147,32 +153,38 @@ class ProductsController extends Controller
             $product->category_id =  $request->category_id;
             $product->subcategory_id  =  $request->subcategory_id ?? null;
             $product->brand_id  =  $request->brand_id;
+            $product->sale_unit  =  $request->sale_unit;
+            $product->purchase_unit  =  $request->purchase_unit;
             $product->cost_price  =  $request->cost_price;
             $product->base_sell_price  =  $request->base_sell_price;
+            $product->description  =  $request->description ;
             $product->save();
+
             //Dertails
-            $productDetails = ProductDetails::where('product_id',$product->id)->first();
-            // dd($productDetails);
-            $productDetails->product_id = $product->id;
-            $productDetails->description  =  $request->description ;
-            $productDetails->color  =  $request->color;
-            $productDetails->unit  =  $request->unit;
-            $productDetails->size  =  $request->size;
-            $productDetails->model_no  =  $request->model_no;
-            $productDetails->quality  =  $request->quality;
+            $productvariations = Variation::where('product_id', $product->id)
+            ->where('status', 'default')
+            ->first();
+
+            $productvariations->product_id = $product->id;
+            $productvariations->color  =  $request->color;
+            $productvariations->price  =  $request->base_sell_price;
+            $productvariations->size  =  $request->size;
+            $productvariations->model_no  =  $request->model_no;
+            $productvariations->quality  =  $request->quality;
+            $productvariations->status  = 'default';
             if ($request->hasFile('image')) {
-                if ($productDetails->image) {
+                if ($productvariations->image) {
                     // If the old image exists, unlink it from the filesystem
-                    $oldImagePath = public_path('uploads/products/' . $productDetails->image);
+                    $oldImagePath = public_path('uploads/products/' . $productvariations->image);
                     if (file_exists($oldImagePath)) {
                         unlink($oldImagePath);
                     }
                 }
                 $destinationPath = public_path('uploads/products');
                 $imageName = $imageService->resizeAndOptimize($request->file('image'), $destinationPath);
-                $productDetails->image = $imageName;
+                $productvariations->image = $imageName;
             }
-            $productDetails->save();
+            $productvariations->save();
 
             if ($request->tag_id && is_array($request->tag_id)) {
                 ProductTags::where('product_id', $product->id)->delete();
@@ -206,13 +218,13 @@ class ProductsController extends Controller
         $product->delete();
         $productDetailse = ProductDetails::where('product_id', $id)->first();
         if ($productDetailse->image || '') {
-            $previousImagePath = public_path('uploads/product/') . $productDetailse->image;
+            $previousImagePath = public_path('uploads/products/') . $productDetailse->image;
             if (file_exists($previousImagePath)) {
                 unlink($previousImagePath);
             }
         }
         $productDetailse->delete();
-        ProductTags::where('product_id', $id)->delete();;
+        ProductTags::where('product_id', $id)->delete();
 
         return back()->with('message', "Product deleted successfully");
 
