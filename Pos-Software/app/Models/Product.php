@@ -48,5 +48,4 @@ class Product extends Model
     {
         return $this->hasOne(Variation::class, 'product_id', 'id')->where('status', 'default');
     }
-
 }
