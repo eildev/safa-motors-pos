@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Product;
+use App\Models\ProductDetails;
 use App\Models\Psize;
 use App\Models\Size;
 use App\Models\SubCategory;
@@ -144,6 +146,7 @@ class SubCategoryController extends Controller
     {
         $subcategory = SubCategory::where('category_id', $id)->get();
         $size = Size::where('category_id', $id)->get();
+
         return response()->json([
             'status' => 200,
             'data' => $subcategory,

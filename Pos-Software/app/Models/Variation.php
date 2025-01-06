@@ -10,4 +10,9 @@ class Variation extends Model
 {
     use HasFactory, SoftDeletes; 
     protected $guarded = [];
+
+    public function stocks()
+    {
+        return $this->hasMany(Stocks::class, 'variation_id');
+    }
 }

@@ -138,7 +138,6 @@
                 modalBodyContent + '</body></html>');
             printWindow.document.close();
             printWindow.print();
-
         }
     </script>
     <style>

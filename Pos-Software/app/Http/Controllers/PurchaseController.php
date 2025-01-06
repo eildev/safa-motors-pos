@@ -5,12 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\AccountTransaction;
 use App\Models\ActualPayment;
 use App\Models\Branch;
-use App\Models\Category;
 use App\Models\Expense;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
-use App\Models\Stock;
 use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Models\User;
@@ -24,18 +22,8 @@ class PurchaseController extends Controller
 {
     public function index()
     {
-        $category = Category::where('slug', 'via-sell')->first();
-        $query = Product::orderBy('stock', 'asc');
 
-        if (Auth::user()->id != 1) {
-            $query->where('branch_id', Auth::user()->branch_id);
-        }
-
-        if ($category) {
-            $query->where('category_id', '!=', $category->id);
-        }
-
-        $products = $query->get();
+        $products = Product::get();
 
         return view('pos.purchase.purchase', compact('products'));
     }
