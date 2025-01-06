@@ -23,17 +23,18 @@ class Product extends Model
     {
         return $this->belongsTo(Brand::class, 'brand_id', 'id');
     }
-    function unit()
+
+    function saleUnit()
     {
-        return $this->belongsTo(Unit::class, 'unit_id', 'id');
+        return $this->belongsTo(Unit::class, 'sale_unit', 'id');
     }
-    function size()
+    function purchaseUnit()
     {
-        return $this->belongsTo(Size::class, 'size_id', 'id');
+        return $this->belongsTo(Unit::class, 'purchase_unit', 'id');
     }
     function damage()
     {
-        return $this->hasMany(Damage::class);
+        return $this->hasMany(Damage::class, 'product_id');
     }
     //
     public function purchaseItems()
@@ -48,5 +49,8 @@ class Product extends Model
     {
         return $this->hasOne(Variation::class, 'product_id', 'id')->where('status', 'default');
     }
-
+    public function variations()
+    {
+        return $this->hasMany(Variation::class, 'product_id');
+    }
 }

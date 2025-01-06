@@ -19,7 +19,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="card-title"> Purchase Products</h6>
+                            <h6 class="card-title">Purchase Products</h6>
                         </div>
                         <div class="row">
                             <div class="mb-3 col-md-6">
@@ -51,8 +51,8 @@
                                         <option selected disabled>Select Products</option>
                                         @foreach ($products as $product)
                                             <option value="{{ $product->id }}">{{ $product->name ?? '' }}
-                                                ({{ $product->stock ?? 0 }}
-                                                {{ $product->unit->name ?? '' }})
+                                                ({{ $product->variation->stocks->sum('quantity') ?? 0 }}
+                                                {{ $product->purchaseUnit->name ?? '' }})
                                             </option>
                                         @endforeach
                                     @else
