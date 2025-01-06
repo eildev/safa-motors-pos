@@ -143,13 +143,12 @@
                                 </li>
                             @endif
                             {{-- @if (Auth::user()->can('products-size.menu')) --}}
-                                <li class="nav-item">
-                                    <a href="{{ route('tag') }}"
-                                        class="nav-link {{ request()->routeIs('tag') ? 'nav_active' : '' }}">Tag
-                                        </a>
-                                </li>
+                            <li class="nav-item">
+                                <a href="{{ route('tag') }}"
+                                    class="nav-link {{ request()->routeIs('tag') ? 'nav_active' : '' }}">Tag
+                                </a>
+                            </li>
                             {{-- @endif --}}
-
                         </ul>
                     </div>
                 </li>
@@ -195,14 +194,14 @@
                     </div>
                 </li>
             @endif
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a href="{{ route('via.sale') }}"
                     class="nav-link {{ request()->routeIs('via.sale') ? 'nav_active' : '' }}">
                     <i class="ms-2 link-icon" data-feather="columns"></i>
                     <span class="link-title">Via Sale</span>
                 </a>
-            </li>
-            @if (Auth::user()->can('promotion.menu'))
+            </li> --}}
+            {{-- @if (Auth::user()->can('promotion.menu'))
                 <li class="nav-item">
                     <a href="{{ route('promotion.view') }}"
                         class="nav-link {{ request()->routeIs('promotion.view') ? 'nav_active' : '' }}">
@@ -219,7 +218,7 @@
                         <span class="link-title">Promotion Details</span>
                     </a>
                 </li>
-            @endif
+            @endif --}}
             @if (Auth::user()->can('damage.menu'))
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('damage') ? 'nav_active' : '' }}"
