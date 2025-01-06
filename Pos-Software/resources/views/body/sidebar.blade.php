@@ -156,6 +156,14 @@
 
             <li class="nav-item nav-category">Inventory</li>
 
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('stock') ? 'nav_active' : '' }}"
+                    href="{{ route('stock') }}" role="button" aria-controls="general-pages">
+                    <i class="ms-2 fa-solid fa-handshake link-icon"></i>
+                    <span class="link-title">Stock</span>
+                </a>
+            </li>
+
             @if (Auth::user()->can('supplier.menu'))
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('supplier') ? 'nav_active' : '' }}"

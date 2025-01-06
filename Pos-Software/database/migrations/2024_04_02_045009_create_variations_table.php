@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id')->unsigned();
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->decimal('price', 12, 2);
-            $table->unsignedBigInteger('size');
+            $table->unsignedBigInteger('size')->nullable();
             $table->foreign('size')->references('id')->on('sizes');
             $table->string('color', 50)->nullable();
             $table->string('model_no', 100)->nullable();
