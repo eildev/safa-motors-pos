@@ -44,8 +44,9 @@ class Product extends Model
     {
         return $this->belongsTo(Branch::class, 'branch_id', 'id');
     }
-    function product_details()
+    public function variation()
     {
-        return $this->hasOne(ProductDetails::class, 'product_id', 'id');
+        return $this->hasOne(Variation::class, 'product_id', 'id')->where('status', 'default');
     }
+
 }
