@@ -29,6 +29,7 @@ use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\CompanyBalanceController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StockController;
 use App\Http\Controllers\ViaSaleController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
@@ -157,7 +158,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/product/ledger/{id}', 'productLedger')->name('product.ledger');
 
     });
-    // Product  related route(n)
+    // Product related route(n) End
+    // Stock related route(n) start
+    Route::controller(StockController::class)->group(function(){
+        Route::get('/stock', 'index')->name('stock');
+        Route::post('/stock/store', 'store')->name('stock.store');
+        Route::get('/stock/view', 'view')->name('stock.view');
+        Route::get('/stock/edit/{id}', 'edit')->name('stock.edit');
+        Route::post('/stock/update/{id}', 'update')->name('stock.update');
+        Route::get('/stock/destroy/{id}', 'destroy')->name('stock.destroy');
+        Route::get('/stock/find/{id}', 'find')->name('stock.find');
+        Route::post('/stock/update-status/{id}/{status}', 'updateStatus')->name('stock.update.status');
+        Route::get('/stock/barcode/{id}', 'productBarcode')->name('stock.barcode');
+        Route::get('/stock/transfer/{id}', 'productTransfer')->name('stock.transfer');
+    });
+    // Stock related route(n) End
+    // Employee related route(n) start
     Route::controller(EmployeeController::class)->group(function () {
         Route::get('/employee/add', 'EmployeeAdd')->name('employee.add');
         Route::post('/employee/store', 'EmployeeStore')->name('employee.store');
@@ -168,6 +184,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/employee/details/{id}', 'EmployeeDetails')->name('employee.details');
         Route::post('/update-status/{id}/{status}', 'updateStatus')->name('update.status');
     });
+    // Employee related route(n) End
 
     // Banks related route
     Route::controller(BankController::class)->group(function () {
