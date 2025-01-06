@@ -43,13 +43,13 @@
                                 </select>
                                 <span class="text-danger category_id_error"></span>
                             </div>
-                            <div class="mb-3 col-md-4">
+                            <div class="mb-3 col-md-6">
                                 <label for="ageSelect" class="form-label">Subcategory <span
                                         class="text-danger">*</span></label>
                                 <select class="js-example-basic-single form-select subcategory_id" name="subcategory_id">
                                 </select>
                             </div>
-                            <div class="mb-3 col-md-4">
+                            <div class="mb-3 col-md-6">
                                 @php
                                     $brands = App\Models\Brand::get();
                                 @endphp
@@ -81,37 +81,22 @@
                                 @php
                                     $units = App\Models\Unit::where('status','active')->get();
                                 @endphp
-                                <label for="ageSelect" class="form-label">Purchase Unit <span class="text-danger">*</span></label>
-                                <select class="js-example-basic-single form-select purchase_unit" name="purchase_unit"
+                                <label for="ageSelect" class="form-label"> Unit <span class="text-danger">*</span></label>
+                                <select class="js-example-basic-single form-select unit" name="unit"
                                     onchange="errorRemove(this);">
                                     @if ($units->count() > 0)
-                                        <option selected disabled>Select Purchase  Unit</option>
+                                        <option selected disabled>Select Unit</option>
                                         @foreach ($units as $unit)
-                                            <option value="{{ $unit->id }}" {{ $product->purchase_unit  === $unit->id ? 'selected' : '' }}>{{ $unit->name }}
+                                            <option value="{{ $unit->id }}" {{ $product->unit  === $unit->id ? 'selected' : '' }}>{{ $unit->name }}
                                             </option>
                                         @endforeach
                                     @else
                                         <option selected disabled>Please Add Purchase Unit</option>
                                     @endif
                                 </select>
-                                <span class="text-danger purchase_unit_error"></span>
+                                <span class="text-danger unit_error"></span>
                             </div>
-                            <div class="mb-3 col-md-4">
-                                <label for="ageSelect" class="form-label">Sale Unit <span class="text-danger">*</span></label>
-                                <select class="js-example-basic-single form-select sale_unit" name="sale_unit"
-                                    onchange="errorRemove(this);">
-                                    @if ($units->count() > 0)
-                                        <option selected disabled>Select Sale Unit</option>
-                                        @foreach ($units as $unit)
-                                            <option value="{{ $unit->id }}" {{ $product->sale_unit  === $unit->id ? 'selected' : '' }}>{{ $unit->name }}
-                                            </option>
-                                        @endforeach
-                                    @else
-                                        <option selected disabled>Please Add Sale Unit</option>
-                                    @endif
-                                </select>
-                                <span class="text-danger sale_unit_error"></span>
-                            </div>
+
 
                             <div class="mb-3 col-md-4">
                                 <label for="ageSelect" class="form-label">Model No </label>

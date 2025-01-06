@@ -43,13 +43,13 @@
                                 </select>
                                 <span class="text-danger category_id_error"></span>
                             </div>
-                            <div class="mb-3 col-md-4">
+                            <div class="mb-3 col-md-6">
                                 <label for="ageSelect" class="form-label">Subcategory <span
                                         class="text-danger">*</span></label>
                                 <select class="js-example-basic-single form-select subcategory_id" name="subcategory_id">
                                 </select>
                             </div>
-                            <div class="mb-3 col-md-4">
+                            <div class="mb-3 col-md-6">
                                 @php
                                     $brands = App\Models\Brand::get();
                                 @endphp
@@ -81,9 +81,9 @@
                                 @php
                                     $units = App\Models\Unit::where('status', 'active')->get();
                                 @endphp
-                                <label for="ageSelect" class="form-label">Purchase Unit <span
+                                <label for="ageSelect" class="form-label"> Unit <span
                                         class="text-danger">*</span></label>
-                                <select class="js-example-basic-single form-select purchase_unit" name="purchase_unit"
+                                <select class="js-example-basic-single form-select unit" name="unit"
                                     onchange="errorRemove(this);">
                                     @if ($units->count() > 0)
                                         <option selected disabled>Select Purchase Unit</option>
@@ -95,25 +95,9 @@
                                         <option selected disabled>Please Add Unit</option>
                                     @endif
                                 </select>
-                                <span class="text-danger purchase_unit_error"></span>
+                                <span class="text-danger unit_error"></span>
                             </div>
-                            <div class="mb-3 col-md-4">
-                                <label for="ageSelect" class="form-label">Sale Unit <span
-                                        class="text-danger">*</span></label>
-                                <select class="js-example-basic-single form-select sale_unit" name="sale_unit"
-                                    onchange="errorRemove(this);">
-                                    @if ($units->count() > 0)
-                                        <option selected disabled>Select Sale Unit</option>
-                                        @foreach ($units as $unit)
-                                            <option value="{{ $unit->id }}">{{ $unit->name }}
-                                            </option>
-                                        @endforeach
-                                    @else
-                                        <option selected disabled>Please Add Sale Unit</option>
-                                    @endif
-                                </select>
-                                <span class="text-danger sale_unit_error"></span>
-                            </div>
+
                             <div class="mb-3 col-md-4">
                                 <label for="ageSelect" class="form-label">Model No </label>
                                 <input type="text" class="form-control" name="model_no">
@@ -398,12 +382,10 @@
                             if (error.base_sell_price) {
                                 showError('.base_sell_price', error.base_sell_price);
                             }
-                            if (error.purchase_unit) {
-                                showError('.purchase_unit', error.purchase_unit);
+                            if (error.unit) {
+                                showError('.unit', error.unit);
                             }
-                            if (error.sale_unit) {
-                                showError('.sale_unit', error.sale_unit);
-                            }
+
                             if (error.size) {
                                 showError('.size', error.size);
                             }
