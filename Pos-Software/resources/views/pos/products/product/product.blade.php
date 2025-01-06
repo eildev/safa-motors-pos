@@ -211,7 +211,7 @@
                                         <div class="example w-100">
                                             <div class="tab-content border border-top-0 p-3" id="myTabContent">
                                                 <div class="tab-pane fade show active" id="serviceSale" role="tabpanel"
-                                                    aria-labelledby="serviceSale-tab">
+                                                    aria-labelledby="serviceSale-tab" style="padding-bottom: 30px">
                                                     <div class="col-md-12 serviceSale">
                                                         <table id="variationTable">
                                                             <thead>
@@ -240,7 +240,7 @@
                                                             <tfoot>
                                                             </tfoot>
                                                         </table>
-                                                        <button type="submit" class="btn btn-md float-end variationStoreAdd"
+                                                        <button type="submit" class="btn mt-1 btn-md float-end variationStoreAdd"
                                                         style="border:1px solid #6587ff ">Submit</button>
                                                     </div>
 
@@ -449,58 +449,52 @@
             let tableHead = table.querySelectorAll('.dynamic-head');
             let tableBody = table.querySelector('tbody');
 
-
-            if (tableBody.children.length === 0) {
-                tableHead.forEach((headCell) => {
-                    headCell.style.display = ''; // Show each header cell
-                });
-            }
             // Create a new row
             let newRow = document.createElement('tr');
             newRow.innerHTML = `
-        <td>
-            <button type="button" class="removeVariationRowBtn form-control text-danger btn-xs btn-danger">
-                <i class="fa-solid fa-trash-can"></i>
-            </button>
-        </td>
-        <td><input type="number" class="form-control" name="base_price[]" placeholder="Price"></td>
-        <td>
-               <select class="form-control" id="variation_size" name="variation_size[]">
-                    <option selected disabled value=''>Select Size</option>
-               </select>
+                <td>
+                    <button type="button" class="removeVariationRowBtn form-control text-danger btn-xs btn-danger">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </td>
+                <td><input type="number" class="form-control" name="base_price[]" placeholder="Price"></td>
+                <td>
+                    <select class="form-control" id="variation_size" name="variation_size[]">
+                            <option selected disabled value=''>Select Size</option>
+                    </select>
 
-            </td>
-        <td><input type="color" class="form-control" name="color[]"></td>
-        <td><input type="text" class="form-control" name="model_no[]" placeholder="Model No"></td>
-        <td>
-            <select class="form-control" name="quality[]">
-                <option selected disabled>Select Quality</option>
-                <option value="grade-a">Grade A</option>
-                <option value="grade-b">Grade B</option>
-                <option value="grade-c">Grade C</option>
-            </select>
-        </td>
-        <td><input type="file" class="form-control" name="image[]"></td>
-    `;
+                    </td>
+                <td><input type="color" class="form-control" name="color[]"></td>
+                <td><input type="text" class="form-control" name="model_no[]" placeholder="Model No"></td>
+                <td>
+                    <select class="form-control" name="quality[]">
+                        <option selected disabled>Select Quality</option>
+                        <option value="grade-a">Grade A</option>
+                        <option value="grade-b">Grade B</option>
+                        <option value="grade-c">Grade C</option>
+                    </select>
+                </td>
+                <td><input type="file" class="form-control" name="image[]"></td>
+            `;
             // Append the new row to the table body
             tableBody.appendChild(newRow);
             latestSize();
+            tableHead.forEach(function (head) {
+                head.style.display = 'table-cell';
+            });
 
             // Add event listener for the remove button in the new row
             newRow.querySelector('.removeVariationRowBtn').addEventListener('click', function() {
                 newRow.remove();
-
-                // Hide the header cells if there are no rows in the table body
-                if (tableBody.children.length === 0) {
-                    tableHead.forEach((headCell) => {
-                        headCell.style.display = 'none'; // Hide the header cells
-                    });
-                }
+                if (tableBody.querySelectorAll('tr').length === 0) {
+            tableHead.forEach(function (head) {
+                head.style.display = 'none';
             });
+        }
+            });
+
         });
-        document.querySelectorAll('.dynamic-head').forEach((headCell) => {
-            headCell.style.display = 'none';
-        });
+
         ///End of Variation
 
         const variationStoreAdd = document.querySelector('.variationStoreAdd');
@@ -563,7 +557,7 @@
                     contentType: false,
                     success: function(response) {
                         if (response.status === 200) {
-                            // variationForm.reset();
+                            variationForm.reset();
                             // $('#variationTable tbody').empty();
                             toastr.success(response.message);
                             // Optionally reload the page
