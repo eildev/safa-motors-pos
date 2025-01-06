@@ -25,7 +25,7 @@
                             </div>
                             <div class="mb-3 col-md-6">
                                 @php
-                                    $categories = App\Models\Category::get();
+                                    $categories = App\Models\Category::where('status','active')->get();
                                 @endphp
                                 <label for="ageSelect" class="form-label">Category <span
                                         class="text-danger">*</span></label>
@@ -51,7 +51,7 @@
                             </div>
                             <div class="mb-3 col-md-6">
                                 @php
-                                    $brands = App\Models\Brand::get();
+                                    $brands = App\Models\Brand::where('status','active')->get();
                                 @endphp
                                 <label for="ageSelect" class="form-label">Brand <span class="text-danger">*</span></label>
                                 <select class="js-example-basic-single form-select brand_id" name="brand_id"
@@ -91,7 +91,7 @@
                                             </option>
                                         @endforeach
                                     @else
-                                        <option selected disabled>Please Add Purchase Unit</option>
+                                        <option selected disabled>Please Add  Unit</option>
                                     @endif
                                 </select>
                                 <span class="text-danger unit_error"></span>
