@@ -563,7 +563,7 @@
                     contentType: false,
                     success: function(response) {
                         if (response.status === 200) {
-                            variationForm.reset();
+                            // variationForm.reset();
                             // $('#variationTable tbody').empty();
                             toastr.success(response.message);
                             // Optionally reload the page
