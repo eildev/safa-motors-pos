@@ -5,12 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\AccountTransaction;
 use App\Models\ActualPayment;
 use App\Models\Branch;
-use App\Models\Category;
 use App\Models\Expense;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\PurchaseItem;
-use App\Models\Stock;
 use App\Models\Supplier;
 use App\Models\Transaction;
 use App\Models\User;
@@ -24,7 +22,7 @@ class PurchaseController extends Controller
 {
     public function index()
     {
-    
+
         $products = Product::get();
 
         return view('pos.purchase.purchase', compact('products'));

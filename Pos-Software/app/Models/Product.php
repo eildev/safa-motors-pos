@@ -48,4 +48,8 @@ class Product extends Model
     {
         return $this->hasOne(Variation::class, 'product_id', 'id')->where('status', 'default');
     }
+    public function variations()
+    {
+        return $this->hasMany(Variation::class, 'product_id');
+    }
 }
