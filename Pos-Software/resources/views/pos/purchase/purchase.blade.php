@@ -25,10 +25,20 @@
                             <div class="mb-3 col-md-6">
                                 <label for="ageSelect" class="form-label">Supplier <span
                                         class="text-danger">*</span></label>
-                                <select class="js-example-basic-single form-select select-supplier supplier_id"
-                                    data-width="100%" onchange="errorRemove(this);" name="supplier_id">
-                                </select>
-                                <span class="text-danger supplier_id_error"></span>
+                                <div class="row d-flex justify-content-center align-items-center">
+                                    <div class="col-md-8">
+                                        <select class="js-example-basic-single form-select select-supplier supplier_id"
+                                            data-width="100%" onchange="errorRemove(this);" name="supplier_id">
+                                        </select>
+                                        <span class="text-danger supplier_id_error"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#exampleModalLongScollable">
+                                            Add Supplier
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mb-3 col-md-6">
@@ -61,6 +71,15 @@
                                     @endif
                                 </select>
                                 <span class="text-danger product_select_error"></span>
+                            </div>
+
+                            <div class="mb-3 col-md-6">
+                                <label for="ageSelect" class="form-label">Product Varient<span
+                                        class="text-danger">*</span></label>
+                                <select class="js-example-basic-single form-select select-varient varient_id"
+                                    data-width="100%" onchange="errorRemove(this);" name="varient_id">
+                                </select>
+                                <span class="text-danger varient_id_error"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -131,7 +150,8 @@
                                                 </div>
                                                 <div class="col-md-8">
                                                     <input type="number" class="form-control carrying_cost"
-                                                        name="carrying_cost" onkeyup="calculateTotal();" value="0.00" />
+                                                        name="carrying_cost" onkeyup="calculateTotal();"
+                                                        value="0.00" />
                                                 </div>
                                             </div>
                                             <div class="row align-items-center">
@@ -158,8 +178,10 @@
                     </div>
                 </div>
             </div>
-
         </div>
+
+
+
 
 
 
@@ -255,7 +277,11 @@
                     </div>
                 </div>
             </div>
+        </div>
     </form>
+
+    {{-- supplier Add Modal  --}}
+    @include('pos.supplier.add-modal')
 
 
 
@@ -357,6 +383,54 @@
             }
             supplierView();
 
+            // save supplier
+            const saveSupplier = document.querySelector('.save_supplier');
+            saveSupplier.addEventListener('click', function(e) {
+                e.preventDefault();
+                let formData = new FormData($('.supplierForm')[0]);
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: '/supplier/store',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        if (res.status == 200) {
+                            $('#exampleModalLongScollable').modal('hide');
+                            $('.supplierForm')[0].reset();
+                            supplierView();
+                            toastr.success(res.message);
+                        } else if (res.status == 400) {
+                            if (res.error.name) {
+                                showError('.supplier_name', res.error.name);
+                            }
+                            if (res.error.phone) {
+                                showError('.phone', res.error.phone);
+                            }
+                            if (res.error.email) {
+                                showError('.email', res.error.email);
+                            }
+                            if (res.error.address) {
+                                showError('.address', res.error.address);
+                            }
+                            if (res.error.business_name) {
+                                showError('.business_name', res.error.business_name);
+                            }
+                            if (res.error.due_balance) {
+                                showError('.due_balance', res.error.due_balance);
+                            }
+                        } else {
+                            toastr.error(res.message);
+                        }
+                    }
+                });
+            })
+
             //Supplier Data find
             function fetchSupplierDetails(supplierId) {
                 $.ajax({
@@ -417,45 +491,59 @@
                             dataType: 'JSON',
                             success: function(res) {
                                 if (res.status == 200) {
-                                    const product = res.data;
-                                    $('.showData').append(
-                                        `<tr class="data_row${product.id}">
-                                        <td>
+                                    const varients = res.varients;
+                                    $('.select-varient').empty();
+                                    if (varients.length > 0) {
+                                        $('.select-varient').html(
+                                            `<option selected disabled>Select a varients</option>`
+                                        );
+                                        $.each(varients, function(index, varient) {
+                                            $('.select-varient').append(
+                                                `<option value="${varient.id}">${varient.model_no ?? ""}</option>`
+                                            );
+                                        })
+                                    } else {
+                                        $('.select-varient').html(`
+                                    <option selected disable>Please add supplier</option>`)
+                                    }
+                                    // $('.showData').append(
+                                    //     `<tr class="data_row${product.id}">
+                                //     <td>
 
-                                        </td>
-                                        <td>
-                                            <input type="text" class="form-control product_name${product.id} border-0 "  name="product_name[]" readonly value="${product.name ?? ""}" />
-                                        </td>
-                                        <td>
-                                            <input type="hidden" class="product_id" name="product_id[]" readonly value="${product.id ?? 0}" />
-                                            <input type="number" class="form-control product_price${product.id} input-small"  name="unit_price[]" onkeyup="calculateTotal();" value="${Math.round(product.cost) ?? 0}" />
-                                        </td>
-                                        <td>
-                                            <input type="number" class="form-control sell_price${product.id} input-small mb-0" name="sell_price[]" onkeyup="checkSellPrice();" value="${Math.round(product.price) ?? 0}" />
-                                           
-                                            <span class="text-danger sell_price${product.id}_error" style="font-size: 10px;"></span>
-                                        </td>
-                                        <td class="text-satrt">
-                                           <div class="d-flex justify-content-center align-items-center ">
-                                             <input type="number" product-id="${product.id}" class="form-control input-small quantity me-3" onkeyup="calculateTotal();" name="quantity[]"  value="1"   /> <span>${res.unit}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <input type="number" class="form-control product_subtotal${product.id} border-0 "  name="total_price[]" readonly value="00.00" />
-                                        </td>
-                                        <td>
-                                            <a href="#" class="btn btn-danger btn-icon purchase_delete" data-id=${product.id}>
-                                                <i class="fa-solid fa-trash-can"></i>
-                                            </a>
-                                        </td>
-                                    </tr>`
-                                    );
+                                //     </td>
+                                //     <td>
+                                //         <input type="text" class="form-control product_name${product.id} border-0 "  name="product_name[]" readonly value="${product.name ?? ""}" />
+                                //     </td>
+                                //     <td>
+                                //         <input type="hidden" class="product_id" name="product_id[]" readonly value="${product.id ?? 0}" />
+                                //         <input type="number" class="form-control product_price${product.id} input-small"  name="unit_price[]" onkeyup="calculateTotal();" value="${Math.round(product.cost) ?? 0}" />
+                                //     </td>
+                                //     <td>
+                                //         <input type="number" class="form-control sell_price${product.id} input-small mb-0" name="sell_price[]" onkeyup="checkSellPrice();" value="${Math.round(product.price) ?? 0}" />
+
+                                //         <span class="text-danger sell_price${product.id}_error" style="font-size: 10px;"></span>
+                                //     </td>
+                                //     <td class="text-satrt">
+                                //        <div class="d-flex justify-content-center align-items-center ">
+                                //          <input type="number" product-id="${product.id}" class="form-control input-small quantity me-3" onkeyup="calculateTotal();" name="quantity[]"  value="1"   /> <span>${res.unit}</span>
+                                //         </div>
+                                //     </td>
+                                //     <td>
+                                //         <input type="number" class="form-control product_subtotal${product.id} border-0 "  name="total_price[]" readonly value="00.00" />
+                                //     </td>
+                                //     <td>
+                                //         <a href="#" class="btn btn-danger btn-icon purchase_delete" data-id=${product.id}>
+                                //             <i class="fa-solid fa-trash-can"></i>
+                                //         </a>
+                                //     </td>
+                                // </tr>`
+                                    // );
                                     // Update SL numbers
-                                    updateSLNumbers();
-                                    calculateTotal();
-                                    updateTotalQuantity();
+                                    // updateSLNumbers();
+                                    // calculateTotal();
+                                    // updateTotalQuantity();
 
-                                    $('.payment_btn').prop('disabled', false);
+                                    // $('.payment_btn').prop('disabled', false);
                                 } else {
                                     toastr.warning(res.message);
                                 }

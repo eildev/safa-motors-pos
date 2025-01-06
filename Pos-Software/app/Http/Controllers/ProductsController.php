@@ -231,31 +231,14 @@ class ProductsController extends Controller
     }
     public function find($id)
     {
-        $status = 'active';
-        // Fetch product with its related unit
-        $product = Product::with('unit')->findOrFail($id);
-
-        // Check for active promotion details for the product
-        $promotionDetails = PromotionDetails::whereHas('promotion', function ($query) use ($status) {
-            return $query->where('status', '=', $status);
-        })->where('promotion_type', 'products')->where('logic', 'like', '%' . $id . "%")->latest()->first();
-
-        // If promotion details exist, return them along with the product and unit
-        if ($promotionDetails) {
-            return response()->json([
-                'status' => '200',
-                'data' => $product,
-                'promotion' => $promotionDetails->promotion,
-                'unit' => $product->unit->name,  // Include unit in the response
-            ]);
-        } else {
+        // $product = Product::with('unit')->findOrFail($id);
+        $varients = Variation::where('product_id', $id)->get();
+        
             // If no promotion details exist, still return the product with the unit
             return response()->json([
                 'status' => '200',
-                'data' => $product,
-                'unit' => $product->unit->name,  // Include unit here as well
+                'varients' => $varients,
             ]);
-        }
     }
     //
     public function ProductBarcode($id)
