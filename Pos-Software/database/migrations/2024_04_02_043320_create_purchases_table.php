@@ -28,6 +28,7 @@ return new class extends Migration
             $table->enum('status', ['Purchased', 'Processing', 'Canceled']);
             $table->enum('payment_status', ['Paid', 'Partial_Paid', 'Processing', 'Due']);
             $table->string('note')->nullable();
+            $table->string('file')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
