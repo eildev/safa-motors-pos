@@ -35,7 +35,6 @@ class ProductsController extends Controller
             'category_id' => 'required|integer',
             'base_sell_price' => 'required|max:7',
             'unit' => 'required',
-
             'size' => 'required',
         ]);
 
@@ -141,7 +140,6 @@ class ProductsController extends Controller
             'category_id' => 'required|integer',
             'base_sell_price' => 'required|max:7',
             'unit' => 'required',
-
             'size' => 'required',
         ]);
         if ($validator->passes()) {
@@ -156,7 +154,6 @@ class ProductsController extends Controller
             $product->subcategory_id  =  $request->subcategory_id ?? null;
             $product->brand_id  =  $request->brand_id;
             $product->unit  =  $request->unit;
-            $product->purchase_unit  =  $request->purchase_unit;
             $product->cost_price  =  $request->cost_price;
             $product->base_sell_price  =  $request->base_sell_price;
             $product->description  =  $request->description;
