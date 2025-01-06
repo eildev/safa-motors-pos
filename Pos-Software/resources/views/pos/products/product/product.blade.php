@@ -70,22 +70,23 @@
                                 <span class="text-danger brand_id_error"></span>
                             </div>
                             <div class="mb-3 col-md-4">
-                                <label for="ageSelect" class="form-label">Size <span
-                                    class="text-danger">*</span></label>
-                                <select class="js-example-basic-single form-select size_id  size" name="size"  onchange="errorRemove(this);">
+                                <label for="ageSelect" class="form-label">Size <span class="text-danger">*</span></label>
+                                <select class="js-example-basic-single form-select size_id  size" name="size"
+                                    onchange="errorRemove(this);">
                                     <option selected disabled>Select Size</option>
                                 </select>
                                 <span class="text-danger size_error"></span>
                             </div>
                             <div class="mb-3 col-md-4">
                                 @php
-                                    $units = App\Models\Unit::where('status','active')->get();
+                                    $units = App\Models\Unit::where('status', 'active')->get();
                                 @endphp
-                                <label for="ageSelect" class="form-label">Purchase Unit <span class="text-danger">*</span></label>
+                                <label for="ageSelect" class="form-label">Purchase Unit <span
+                                        class="text-danger">*</span></label>
                                 <select class="js-example-basic-single form-select purchase_unit" name="purchase_unit"
                                     onchange="errorRemove(this);">
                                     @if ($units->count() > 0)
-                                        <option selected disabled>Select Purchase  Unit</option>
+                                        <option selected disabled>Select Purchase Unit</option>
                                         @foreach ($units as $unit)
                                             <option value="{{ $unit->id }}">{{ $unit->name }}
                                             </option>
@@ -97,7 +98,8 @@
                                 <span class="text-danger purchase_unit_error"></span>
                             </div>
                             <div class="mb-3 col-md-4">
-                                <label for="ageSelect" class="form-label">Sale Unit <span class="text-danger">*</span></label>
+                                <label for="ageSelect" class="form-label">Sale Unit <span
+                                        class="text-danger">*</span></label>
                                 <select class="js-example-basic-single form-select sale_unit" name="sale_unit"
                                     onchange="errorRemove(this);">
                                     @if ($units->count() > 0)
@@ -118,15 +120,13 @@
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="password" class="form-label">Cost Price</label>
-                                <input class="form-control" name="cost_price"  type='number'
-                                    placeholder="00.00" />
+                                <input class="form-control" name="cost_price" type='number' placeholder="00.00" />
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="password" class="form-label">Sale Price <span
                                         class="text-danger">*</span></label>
-                                <input class="form-control base_sell_price" name="base_sell_price"
-                                    type='number' placeholder="00.00" onkeyup="errorRemove(this);"
-                                    onblur="errorRemove(this);" />
+                                <input class="form-control base_sell_price" name="base_sell_price" type='number'
+                                    placeholder="00.00" onkeyup="errorRemove(this);" onblur="errorRemove(this);" />
                                 <span class="text-danger base_sell_price_error"></span>
                             </div>
                             <div class="mb-3 col-12">
@@ -145,8 +145,7 @@
                             <div class="mb-3 col-md-6">
                                 <label for="ageSelect" class="form-label">Color</label>
 
-                                <input type="color" class="form-control"  name="color"
-                                    id="">
+                                <input type="color" class="form-control" name="color" id="">
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="ageSelect" class="form-label">Quality</label>
@@ -159,7 +158,7 @@
                             </div>
                             <div class="mb-3 col-md-12">
                                 @php
-                                    $tags = App\Models\Tags::where('status','active')->get();
+                                    $tags = App\Models\Tags::where('status', 'active')->get();
                                 @endphp
                                 <label class="form-label">Tags </label>
 
@@ -172,7 +171,7 @@
                                             </option>
                                         @endforeach
                                     @else
-                                        <option  disabled>Please Add Tags</option>
+                                        <option disabled>Please Add Tags</option>
                                     @endif
 
                                 </select>
@@ -201,107 +200,83 @@
             </div>
         </div>
     </form>
-{{-- ///////////////////////////////////////////////Variation Create Code ///////////////////////////////// --}}
-<div>
-    <div class="row">
+    {{-- ///////////////////////////////////////////////Variation Create Code ///////////////////////////////// --}}
+    <div>
+        <div class="row">
 
-        <div class="col-md-12 grid-margin stretch-card">
-            <div class="card">
-                <div class="card-body">
-                    <form action="" id="serviceForm">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="card-title">New Variation Add </h6>
+            <div class="col-md-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="" id="variationForm">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="card-title"> Add New Variation</h6>
 
-                        </div>
-                        <div id="" class="table-responsive">
-                            <div class="bill-header">
-                                <div class="row no-gutters">
-                                    {{-- <div class="col-md-2">
-                                        <strong>Customer Name:</strong>
-                                    </div> --}}
-
-                                    {{-- <div class="col-md-4">
-                                        <select class="form-control js-example-basic-single " name="customer_id"
-                                            id="customer-select">
-                                            <option selected disabled>Select Name</option>
-                                            @foreach ($customers as $customer)
-                                                <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div> --}}
-
-                                </div>
                             </div>
-
-                            <!-- /////////Tabing Start//// -->
-                            <div class="row">
-                                <div class="col-md-12 grid-margin stretch-card">
-                                    <div class="example w-100">
-                                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                            <!---First li--->
-                                            {{-- <li class="nav-item">
-                                        <a class="nav-link active" id="serviceSale-tab" data-bs-toggle="tab"
-                                            href="#serviceSale" role="tab" aria-controls="serviceSale"
-                                            aria-selected="true">Movement Costs
-                                        </a>
-                                         </li> --}}
-
-                                        </ul>
-                                        <!--First Tab  Start-->
-
-                                        <div class="tab-content border border-top-0 p-3" id="myTabContent">
-
-                                            <div class="tab-pane fade show active" id="serviceSale" role="tabpanel"
-                                                aria-labelledby="serviceSale-tab">
-                                                <div class="col-md-12 serviceSale">
-
-                                                    <table id="variationTable">
-                                                        <thead>
-                                                            <tr>
-                                                                <th><button type="button" class="form-control"
-                                                                        id="addVariationRowBtn">+
-                                                                    </button></th>
-                                                                <th>Price</th>
-                                                                <th>Size</th>
-                                                                <th>Color</th>
-                                                                <th>Model No</th>
-                                                                <th>Quality</th>
-                                                                <th>Image</th>
-
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-
-                                                        </tbody>
-                                                        <tfoot>
-                                                            <tr>
-                                                                <td colspan="4" class="text-end"><strong>Total
-                                                                        Amount</strong>
-                                                                </td>
-                                                                <td><strong id="totalAmount">00</strong></td>
-
-                                                            </tr>
-                                                        </tfoot>
-                                                    </table>
-                                                </div>
-                                                <button type="submit" class="btn btn-md float-end serviceSaleAdd"
-                                                    style="border:1px solid #6587ff ">Submit</button>
-
-                                            </div>
-                                            <!--First Tab End -->
+                            <div id="" class="table-responsive">
+                                <div class="bill-header">
+                                    <div class="row no-gutters">
+                                        <div>
+                                            <p> Product Name : <span id="latestProductName"> <input type="text"
+                                                        value="" style="display: none"></span></p>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                                <div class="row">
+                                    <div class="col-md-12 grid-margin stretch-card">
+                                        <div class="example w-100">
+                                            <div class="tab-content border border-top-0 p-3" id="myTabContent">
 
-                        </div>
-                    </form>
+                                                <div class="tab-pane fade show active" id="serviceSale" role="tabpanel"
+                                                    aria-labelledby="serviceSale-tab">
+                                                    <div class="col-md-12 serviceSale">
+
+                                                        <table id="variationTable">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th><button type="button" class="form-control"
+                                                                            id="addVariationRowBtn">+
+                                                                        </button></th>
+
+                                                                    <th class="dynamic-head" style="display: none;">Price
+                                                                    </th>
+                                                                    <th class="dynamic-head" style="display: none;">Size
+                                                                    </th>
+                                                                    <th class="dynamic-head" style="display: none;">Color
+                                                                    </th>
+                                                                    <th class="dynamic-head" style="display: none;">Model
+                                                                        No</th>
+                                                                    <th class="dynamic-head" style="display: none;">
+                                                                        Quality</th>
+                                                                    <th class="dynamic-head" style="display: none;">Image
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <input value="" type="hidden" name="productId">
+                                                            </tbody>
+                                                            <tfoot>
+                                                            </tfoot>
+                                                        </table>
+                                                        <button type="submit" class="btn btn-md float-end variationStoreAdd"
+                                                        style="border:1px solid #6587ff ">Submit</button>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{{-- ///////////////////////////////////////////////Variation Create Code ///////////////////////////////// --}}
+
+    {{-- - //////////////////////////////////////////////// Variation Create Code //////////////////////////////////// -- --}}
 
     <script>
         // remove error
@@ -404,6 +379,8 @@
                     success: function(res) {
                         if (res.status == 200) {
                             // console.log(res);
+                            latestProduct();
+                            // latestSize();
                             // $('.productForm')[0].reset();
                             toastr.success(res.message);
                             // window.location.href = "{{ route('product.view') }}";
@@ -436,127 +413,192 @@
             })
         });
         /////////////////////////////////////////////////Variation Create Code ///////////////////////////////////
+        function latestProduct() {
+            $.ajax({
+                url: '/latest-product', // Your API endpoint
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    if (data.product) { // Check if a product is returned
+                        let nameData = data.product.name;
+                        let productId = data.product.id;
+                        $('#latestProductName').text(nameData);
+                        $('input[name="productId"]').val(productId);
+                    } else {
+                        $('#latestProductName').text('No products available.'); // Handle empty data
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching latest product:', error);
+                    $('#latestProductName').text('Error fetching product.');
+                }
+            });
+        }
+        latestProduct()
+
+        function latestSize() {
+            $.ajax({
+                url: '/latest-product-size', // Your API endpoint
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    let sizes = response.sizes;
+                    // console.log(sizes);
+
+                    document.querySelectorAll('select[name="variation_size[]"]').forEach(function(
+                        dropdown) {
+                        dropdown.innerHTML =
+                            `<option selected disabled>Select Size</option>`; // Reset the dropdown
+                        sizes.forEach(function(size) {
+                            let option = document.createElement('option');
+                            option.value = size.id;
+                            option.textContent = size
+                                .size; // e.g., "large", "medium"
+                            dropdown.appendChild(option);
+                        });
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching latest product Size:', error);
+                }
+            });
+        } //
+
         document.getElementById('addVariationRowBtn').addEventListener('click', function() {
-            let tableBody = document.querySelector('#variationTable tbody');
-            let totalAmountElement = document.getElementById('totalAmount');
-            let grandTotalAmountElement = document.getElementById('grandTotalDisplay');
+            let table = document.getElementById('variationTable');
+            let tableHead = table.querySelectorAll('.dynamic-head');
+            let tableBody = table.querySelector('tbody');
+
+
+            // Show the table header cells (except the button column) when adding the first row
+            if (tableBody.children.length === 0) {
+                tableHead.style.display = ''; // Show the entire table head section
+            }
+            // Create a new row
             let newRow = document.createElement('tr');
-
-            // Create new row with input fields
             newRow.innerHTML = `
-              <td><button type="button" class="removeVariationRowBtn form-control text-danger btn-xs btn-danger">
-                <i class="fa-solid fa-trash-can "></i></button></td>
-                <td> <input type="number" class="input-group flatpickr form-control" name="price[]" placeholder="Service Name" value=""></td>
+        <td>
+            <button type="button" class="removeVariationRowBtn form-control text-danger btn-xs btn-danger">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        </td>
+        <td><input type="number" class="form-control" name="base_price[]" placeholder="Price"></td>
+        <td>
+               <select class="form-control" id="variation_size" name="variation_size[]">
+                    <option selected disabled>Select Size</option>
+               </select>
 
-                <td>
-                    <input type="number" class="form-control volume-input"  name="volume[]" placeholder="Volume">
-                    </td>
-
-                <td>
-                   <input type="color" class="form-control"  name="color" >
-                </td>
-                <td><input type="text" class="form-control  total-input" readonly name="model_no[]" value=""  placeholder="Model No"></td>
-                <td>
-                    <select class="form-control js-example-basic-single " name="quality">
-                                    <option selected disabled>Select Quality</option>
-                                    <option value="grade-a">Grade A</option>
-                                    <option value="grade-b">Grade B</option>
-                                    <option value="grade-c">Grade C</option>
-                                </select>
-
-                </td>
-                <td><input type="file" class="form-control  total-input" readonly name="image[]" value=""  ></td>
-
-            `;
+            </td>
+        <td><input type="color" class="form-control" name="color[]"></td>
+        <td><input type="text" class="form-control" name="model_no[]" placeholder="Model No"></td>
+        <td>
+            <select class="form-control" name="quality[]">
+                <option selected disabled>Select Quality</option>
+                <option value="grade-a">Grade A</option>
+                <option value="grade-b">Grade B</option>
+                <option value="grade-c">Grade C</option>
+            </select>
+        </td>
+        <td><input type="file" class="form-control" name="image[]"></td>
+    `;
             // Append the new row to the table body
             tableBody.appendChild(newRow);
+            latestSize();
 
-            let volumeInput = newRow.querySelector('.volume-input');
-            let priceInput = newRow.querySelector('.price-input');
-            let totalInput = newRow.querySelector('.total-input');
-            [volumeInput, priceInput].forEach(input => {
-                input.addEventListener('input', function() {
-                    if (this.value < 0) {
-                        this.value = '';
-                        toastr.warning('⚠️ Negative values are not allowed.');
-                    }
-                });
-            });
-
-            function calculateTotal() {
-                let volume = parseFloat(volumeInput.value) || 0;
-                let price = parseFloat(priceInput.value) || 0;
-                totalInput.value = (volume * price).toFixed(2);
-                calculateTotalSum();
-            }
-            volumeInput.addEventListener('input', calculateTotal);
-            priceInput.addEventListener('input', calculateTotal);
-
-            function calculateTotalSum() {
-                let totalInputs = document.querySelectorAll('.total-input');
-                let grandTotal = 0;
-
-                totalInputs.forEach(input => {
-                    grandTotal += parseFloat(input.value) || 0;
-                });
-
-                totalAmountElement.textContent = grandTotal.toFixed(2);
-                grandTotalAmountElement.textContent = grandTotal.toFixed(2);
-            }
+            // Add event listener for the remove button in the new row
             newRow.querySelector('.removeVariationRowBtn').addEventListener('click', function() {
                 newRow.remove();
-                calculateTotalSum();
+
+                // Hide the header cells if there are no rows in the table body
+                if (tableBody.children.length === 0) {
+                    tableHead.forEach((headCell) => {
+                        headCell.style.display = 'none'; // Hide the header cells
+                    });
+                }
             });
         });
-        //Validate
-        const serviceSaleAdd = document.querySelector('.serviceSaleAdd');
-        const serviceForm = document.getElementById('serviceForm');
-        serviceSaleAdd.addEventListener('click', function(e) {
+        document.querySelectorAll('.dynamic-head').forEach((headCell) => {
+            headCell.style.display = 'none';
+        });
+        ///End of Variation
+
+        const variationStoreAdd = document.querySelector('.variationStoreAdd');
+        const variationForm = document.getElementById('variationForm');
+        variationStoreAdd.addEventListener('click', function(e) {
             e.preventDefault();
             ///////////////Validation Start /////////////
             const rows = document.querySelectorAll('#variationTable tbody tr');
-
-            // Initialize validation variables
             let allFieldsFilled = true;
             let errorMessages = [];
 
+            // If no rows are present
+            if (rows.length === 0) {
+                toastr.warning('⚠️ Please add at least one variation before submitting.');
+                return;
+            }
+
             // Loop through each row and validate inputs
-            rows.forEach(function(row) {
-                let serviceName = row.querySelector('input[name="serviceName[]"]').value.trim();
-                let volume = row.querySelector('input[name="volume[]"]').value.trim();
-                let price = row.querySelector('input[name="price[]"]').value.trim();
+            rows.forEach(function(row, index) {
+                let priceVari = row.querySelector('input[name="base_price[]"]').value.trim();
+                let sizeVari = row.querySelector('select[name="variation_size[]"]').value;
 
-                // Validate Service Name
-                if (!serviceName) {
-                    errorMessages.push('⚠️ Service Name field is required.');
+                if (!priceVari) {
+                    errorMessages.push(`⚠️ Row ${index + 1}: Price field is required.`);
                     allFieldsFilled = false;
                 }
-
-                // Validate Volume
-                if (!volume) {
-                    errorMessages.push('⚠️ Volume field is required.');
-                    allFieldsFilled = false;
-                } else if (isNaN(volume) || volume <= 0) {
-                    errorMessages.push('⚠️ Volume must be a positive number.');
-                    allFieldsFilled = false;
-                }
-
-                // Validate Price
-                if (!price) {
-                    errorMessages.push('⚠️ Price field is required.');
-                    allFieldsFilled = false;
-                } else if (isNaN(price) || price <= 0) {
-                    errorMessages.push('⚠️ Price must be a positive number.');
+                if (!sizeVari) {
+                    errorMessages.push(`⚠️ Row ${index + 1}: Size field is required.`);
                     allFieldsFilled = false;
                 }
             });
 
-            // If validation fails, display error messages
+            // Display error messages if validation fails
             if (!allFieldsFilled) {
                 toastr.warning(errorMessages.join('<br>'));
                 return;
             }
 
+            ///////////////Validation End /////////////
+            if (rows.length > 0) {
+
+                // AJAX Submission
+                let formData = new FormData(variationForm);
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                $.ajax({
+                    url: '/store-variation',
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.status === 200) {
+                            variationForm.reset();
+                            // $('#variationTable tbody').empty();
+                            toastr.success(response.message);
+                            // Optionally reload the page
+                            // window.location.href = '/service/sale/view';
+                        } else {
+                            toastr.error(response.error || 'Something went wrong.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 422) { // Validation error from server
+                            let errors = xhr.responseJSON.errors;
+                            let errorList = Object.values(errors).flat().join('<br>');
+                            toastr.error(errorList);
+                        } else {
+                            toastr.warning('An unexpected error occurred.');
+                        }
+                    }
+                });
+            } else {
+                // toastr.error('⚠️ Please Add a Service First.');
+            }
 
         });
         /////////////////////////////////////////////////Variation Create Code ///////////////////////////////////

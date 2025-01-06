@@ -29,7 +29,7 @@ return new class extends Migration
             $table->decimal('cost_price', 12, 2)->nullable();
             $table->decimal('base_sell_price', 12, 2);
             $table->text('description')->nullable();
-            $table->enum('status', ['active', 'inactive', 'stock-out'])->default('active');
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->softDeletes();
             $table->timestamps();
         });

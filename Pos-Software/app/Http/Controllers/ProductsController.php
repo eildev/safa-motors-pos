@@ -10,6 +10,7 @@ use App\Models\ProductTags;
 use App\Models\PromotionDetails;
 use App\Models\PurchaseItem;
 use App\Models\SaleItem;
+use App\Models\Size;
 use App\Models\Tags;
 use App\Models\Variation;
 use Illuminate\Support\Facades\Validator;
@@ -19,13 +20,14 @@ use Illuminate\Validation\Rule;
 use App\Services\ImageService;
 use function App\Helper\generateUniqueSlug;
 use Illuminate\Support\Str;
+
 class ProductsController extends Controller
 {
     public function index()
     {
         return view('pos.products.product.product');
     }
-    public function store(Request $request,ImageService $imageService)
+    public function store(Request $request, ImageService $imageService)
     {
         // dd($request->all());
         $validator = Validator::make($request->all(), [
@@ -52,7 +54,7 @@ class ProductsController extends Controller
             $product->purchase_unit  =  $request->purchase_unit;
             $product->cost_price  =  $request->cost_price;
             $product->base_sell_price  =  $request->base_sell_price;
-            $product->description  =  $request->description ;
+            $product->description  =  $request->description;
             $product->save();
             // product variations
             $productvariations = new Variation();
@@ -95,7 +97,7 @@ class ProductsController extends Controller
             ]);
         }
     }
-     // product manage
+    // product manage
     public function view()
     {
         $category = Category::where('slug', 'via-sell')->first();
@@ -132,7 +134,7 @@ class ProductsController extends Controller
 
         return view('pos.products.product.product-edit', compact('product'));
     }
-    public function update(Request $request, $id,ImageService $imageService)
+    public function update(Request $request, $id, ImageService $imageService)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
@@ -157,13 +159,13 @@ class ProductsController extends Controller
             $product->purchase_unit  =  $request->purchase_unit;
             $product->cost_price  =  $request->cost_price;
             $product->base_sell_price  =  $request->base_sell_price;
-            $product->description  =  $request->description ;
+            $product->description  =  $request->description;
             $product->save();
 
             //Dertails
             $productvariations = Variation::where('product_id', $product->id)
-            ->where('status', 'default')
-            ->first();
+                ->where('status', 'default')
+                ->first();
 
             $productvariations->product_id = $product->id;
             $productvariations->color  =  $request->color;
@@ -210,7 +212,6 @@ class ProductsController extends Controller
                 'error' => $validator->messages()
             ]);
         }
-
     }
     public function destroy($id)
     {
@@ -227,36 +228,35 @@ class ProductsController extends Controller
         ProductTags::where('product_id', $id)->delete();
 
         return back()->with('message', "Product deleted successfully");
-
     }
-    public function find($id)
-    {
-        $status = 'active';
-        // Fetch product with its related unit
-        $product = Product::with('unit')->findOrFail($id);
+    // public function find($id)
+    // {
+    //     $status = 'active';
+    //     // Fetch product with its related unit
+    //     $product = Product::with('unit')->findOrFail($id);
 
-        // Check for active promotion details for the product
-        $promotionDetails = PromotionDetails::whereHas('promotion', function ($query) use ($status) {
-            return $query->where('status', '=', $status);
-        })->where('promotion_type', 'products')->where('logic', 'like', '%' . $id . "%")->latest()->first();
+    //     // Check for active promotion details for the product
+    //     $promotionDetails = PromotionDetails::whereHas('promotion', function ($query) use ($status) {
+    //         return $query->where('status', '=', $status);
+    //     })->where('promotion_type', 'products')->where('logic', 'like', '%' . $id . "%")->latest()->first();
 
-        // If promotion details exist, return them along with the product and unit
-        if ($promotionDetails) {
-            return response()->json([
-                'status' => '200',
-                'data' => $product,
-                'promotion' => $promotionDetails->promotion,
-                'unit' => $product->unit->name,  // Include unit in the response
-            ]);
-        } else {
-            // If no promotion details exist, still return the product with the unit
-            return response()->json([
-                'status' => '200',
-                'data' => $product,
-                'unit' => $product->unit->name,  // Include unit here as well
-            ]);
-        }
-    }
+    //     // If promotion details exist, return them along with the product and unit
+    //     if ($promotionDetails) {
+    //         return response()->json([
+    //             'status' => '200',
+    //             'data' => $product,
+    //             'promotion' => $promotionDetails->promotion,
+    //             'unit' => $product->unit->name,  // Include unit in the response
+    //         ]);
+    //     } else {
+    //         // If no promotion details exist, still return the product with the unit
+    //         return response()->json([
+    //             'status' => '200',
+    //             'data' => $product,
+    //             'unit' => $product->unit->name,  // Include unit here as well
+    //         ]);
+    //     }
+    // }
     //
     public function ProductBarcode($id)
     {
@@ -351,5 +351,60 @@ class ProductsController extends Controller
         }
 
         return view('pos.products.product-ledger.product-ledger', compact('data', 'reports'));
+    }
+    public function latestProduct()
+    {
+        $product = Product::latest()->first(); // Fetch the latest product
+        return response()->json([
+            'product' => $product, // Return as 'product', not 'products'
+            'status' => 200
+        ]);
+    }
+    public function latestProductSize()
+    {
+        $product = Product::latest()->first();
+        $variation  = Variation::where('product_id', $product->id)->where('status', 'default')->first();
+        $sizesIdGet = Size::where('id', $variation->size)->first(); // Fetch the size based on the variation
+        $categoryId = $sizesIdGet->category_id;
+        $sizes = Size::where('category_id', $categoryId)->get();
+        // dd( $sizes);
+        return response()->json([
+            'sizes' => $sizes,
+            'status' => 200
+        ]);
+    }
+    public function storeVariation(Request $request, ImageService $imageService)
+    {
+        // dd($request->all());
+        $color = $request->input('color', []);
+        $base_price = $request->input('base_price', []);
+        $model_no = $request->input('model_no', []);
+        $quality = $request->input('quality', []);
+        $size = $request->input('variation_size', []);
+        $images = $request->file('image', []);
+
+        // Loop through the arrays and insert each service
+        foreach ($base_price as $key => $price) {
+            $imageName = null;
+
+            // Handle image upload for this variation
+            if (isset($images[$key]) && $images[$key]->isValid()) {
+                $destinationPath = public_path('uploads/products');
+                $imageName = $imageService->resizeAndOptimize($images[$key], $destinationPath);
+            }
+            Variation::create([
+                'product_id' => $request->productId,
+                'color' => $color[$key] ?? null,
+                'price' => $price ?? 0, // Default to 0 if price is missing
+                'size' => $size[$key] ?? null,
+                'model_no' => $model_no[$key] ?? null,
+                'quality' => $quality[$key] ?? null,
+                'image' => $imageName,
+            ]);
+        }
+        return response()->json([
+            'status' => 200,
+            'message' => 'Variation added successfully!',
+        ]);
     }
 }

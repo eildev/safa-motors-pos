@@ -155,6 +155,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/search/{value}', 'globalSearch');
         // product ledger
         Route::get('/product/ledger/{id}', 'productLedger')->name('product.ledger');
+        Route::get('/latest-product', 'latestProduct');
+        Route::get('/latest-product-size', 'latestProductSize');
+        Route::post('/store-variation', 'storeVariation');
 
     });
     // Product  related route(n)
