@@ -4,14 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Stocks;
 use Illuminate\Http\Request;
+use App\Models\Product;
 
 class StockController extends Controller
 {
     public function index()
     {
         try {
+
+            $products = Product::get();
+
             // Attempt to load the view
-            return view('pos.stock.index');
+            return view('pos.stock.index', compact('products'));
         } catch (\Exception $e) {
             // Handle any exceptions
 

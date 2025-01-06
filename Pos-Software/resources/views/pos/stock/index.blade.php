@@ -51,7 +51,7 @@
                     <div class="tab-pane fade" id="add_stock" role="tabpanel" aria-labelledby="add-stock">
                         <div class="card">
                             <div class="card-body">
-                                {{-- @include('all_modules.bank.cash') --}}
+                                @include('pos.stock.add')
                             </div>
                         </div>
                     </div>

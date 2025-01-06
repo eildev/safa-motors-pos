@@ -22,10 +22,8 @@ return new class extends Migration
             $table->foreign('subcategory_id')->references('id')->on('sub_categories')->onDelete('cascade');
             $table->unsignedBigInteger('brand_id')->nullable();
             $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade');
-            $table->unsignedBigInteger('sale_unit');
-            $table->foreign('sale_unit')->references('id')->on('units');
-            $table->unsignedBigInteger('purchase_unit');
-            $table->foreign('purchase_unit')->references('id')->on('units');
+            $table->unsignedBigInteger('unit');
+            $table->foreign('unit')->references('id')->on('units');
             $table->decimal('cost_price', 12, 2)->nullable();
             $table->decimal('base_sell_price', 12, 2);
             $table->text('description')->nullable();
