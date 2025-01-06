@@ -49,6 +49,7 @@
                                 <select class="js-example-basic-single form-select subcategory_id" name="subcategory_id">
                                 </select>
                             </div>
+
                             <div class="mb-3 col-md-6">
                                 @php
                                     $brands = App\Models\Brand::where('status','active')->get();
@@ -209,11 +210,9 @@
                                     <div class="col-md-12 grid-margin stretch-card">
                                         <div class="example w-100">
                                             <div class="tab-content border border-top-0 p-3" id="myTabContent">
-
                                                 <div class="tab-pane fade show active" id="serviceSale" role="tabpanel"
                                                     aria-labelledby="serviceSale-tab">
                                                     <div class="col-md-12 serviceSale">
-
                                                         <table id="variationTable">
                                                             <thead>
                                                                 <tr>
@@ -320,7 +319,7 @@
                                 })
                             } else {
                                 $('.subcategory_id').html(`
-                                        <option selected disable>Please add Subcategory</option>`)
+                                        <option selected disabled>Please add Subcategory</option>`)
                             }
 
                             // show Size
@@ -385,7 +384,6 @@
                             if (error.unit) {
                                 showError('.unit', error.unit);
                             }
-
                             if (error.size) {
                                 showError('.size', error.size);
                             }
@@ -430,7 +428,7 @@
                     document.querySelectorAll('select[name="variation_size[]"]').forEach(function(
                         dropdown) {
                         dropdown.innerHTML =
-                            `<option selected disabled>Select Size</option>`; // Reset the dropdown
+                            `<option selected disabled value=''>Select Size</option>`; // Reset the dropdown
                         sizes.forEach(function(size) {
                             let option = document.createElement('option');
                             option.value = size.id;
@@ -452,9 +450,10 @@
             let tableBody = table.querySelector('tbody');
 
 
-            // Show the table header cells (except the button column) when adding the first row
             if (tableBody.children.length === 0) {
-                tableHead.style.display = ''; // Show the entire table head section
+                tableHead.forEach((headCell) => {
+                    headCell.style.display = ''; // Show each header cell
+                });
             }
             // Create a new row
             let newRow = document.createElement('tr');
@@ -467,7 +466,7 @@
         <td><input type="number" class="form-control" name="base_price[]" placeholder="Price"></td>
         <td>
                <select class="form-control" id="variation_size" name="variation_size[]">
-                    <option selected disabled>Select Size</option>
+                    <option selected disabled value=''>Select Size</option>
                </select>
 
             </td>
@@ -524,14 +523,19 @@
                 let priceVari = row.querySelector('input[name="base_price[]"]').value.trim();
                 let sizeVari = row.querySelector('select[name="variation_size[]"]').value;
 
+                let modelVari = row.querySelector('input[name="model_no[]"]').value.trim(); // Use `input` for model_no[] if it's an input field.
+                let qualityVari = row.querySelector('select[name="quality[]"]').value;
+                let colorVari = row.querySelector('input[name="color[]"]').value.trim(); // Use `input` for color[] if it's an input field.
+
                 if (!priceVari) {
                     errorMessages.push(`⚠️ Row ${index + 1}: Price field is required.`);
                     allFieldsFilled = false;
                 }
-                if (!sizeVari) {
-                    errorMessages.push(`⚠️ Row ${index + 1}: Size field is required.`);
+                if (sizeVari ===' ' && !modelVari && !qualityVari && !colorVari) {
+                    errorMessages.push(`⚠️ Row ${index + 1}: At least one of Size, Model No, Quality, or Color must be filled.`);
                     allFieldsFilled = false;
                 }
+
             });
 
             // Display error messages if validation fails
