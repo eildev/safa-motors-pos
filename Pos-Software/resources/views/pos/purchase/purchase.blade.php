@@ -27,7 +27,7 @@
                             <div class="row align-items-center g-3">
                                 <div class="col-lg-8">
                                     <select class="js-example-basic-single form-select select-supplier supplier_id w-100"
-                                        data-width="100%" name="supplier_id">
+                                        data-width="100%" name="supplier_id" onchange="errorRemove(this);">
                                     </select>
                                     <span class="text-danger supplier_id_error"></span>
                                 </div>
@@ -278,7 +278,21 @@
 
 
     <script>
+        // error remove
+        function errorRemove(element) {
+            if (element.value != '') {
+                $(element).siblings('span').hide();
+                $(element).css('border-color', 'green');
+            }
+        }
         $(document).ready(function() {
+            // show error
+            function showError(name, message) {
+                $(name).css('border-color', 'red'); // Highlight input with red border
+                $(name).focus(); // Set focus to the input field
+                $(`${name}_error`).show().text(message); // Show error message
+            }
+
             // show supplier
             function supplierView() {
                 // console.log('hello')
@@ -307,76 +321,15 @@
             supplierView();
 
             // save supplier
-            // const saveSupplier = document.querySelector('.save_supplier');
-            // saveSupplier.addEventListener('click', function(e) {
-            //     e.preventDefault();
-            //     let formData = new FormData($('.supplierForm')[0]);
-            //     $.ajaxSetup({
-            //         headers: {
-            //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            //         }
-            //     });
-            //     $.ajax({
-            //         url: '/supplier/store',
-            //         type: 'POST',
-            //         data: formData,
-            //         processData: false,
-            //         contentType: false,
-            //         success: function(res) {
-            //             if (res.status == 200) {
-            //                 $('#exampleModalLongScollable').modal('hide');
-            //                 $('.supplierForm')[0].reset();
-            //                 supplierView();
-            //                 toastr.success(res.message);
-            //             } else if (res.status == 400) {
-            //                 if (res.error.name) {
-            //                     showError('.supplier_name', res.error.name);
-            //                 }
-            //                 if (res.error.phone) {
-            //                     showError('.phone', res.error.phone);
-            //                 }
-            //                 if (res.error.email) {
-            //                     showError('.email', res.error.email);
-            //                 }
-            //                 if (res.error.address) {
-            //                     showError('.address', res.error.address);
-            //                 }
-            //                 if (res.error.business_name) {
-            //                     showError('.business_name', res.error.business_name);
-            //                 }
-            //                 if (res.error.due_balance) {
-            //                     showError('.due_balance', res.error.due_balance);
-            //                 }
-            //             } else {
-            //                 toastr.error(res.message);
-            //             }
-            //         }
-            //     });
-            // })
-
-
-
             const saveSupplier = document.querySelector('.save_supplier');
             saveSupplier.addEventListener('click', function(e) {
                 e.preventDefault();
-
-                // চেক করুন যে ফর্মটি ডকুমেন্টে উপস্থিত আছে
-                const supplierForm = document.querySelector('.supplierForm');
-                console.log(supplierForm);
-                if (!supplierForm) {
-                    alert('Supplier form not found!');
-                    return;
-                }
-
-                let formData = new FormData(
-                    supplierForm); // এখানে .supplierForm ব্যবহার হচ্ছে যা সরাসরি DOM এলিমেন্ট রিটার্ন করবে।
-
+                let formData = new FormData($('.supplierForm')[0]);
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 });
-
                 $.ajax({
                     url: '/supplier/store',
                     type: 'POST',
@@ -386,11 +339,10 @@
                     success: function(res) {
                         if (res.status == 200) {
                             $('#exampleModalLongScollable').modal('hide');
-                            supplierForm.reset(); // ফর্ম রিসেট করার জন্য
+                            $('.supplierForm')[0].reset();
                             supplierView();
                             toastr.success(res.message);
                         } else if (res.status == 400) {
-                            // এরর হ্যান্ডলিং
                             if (res.error.name) {
                                 showError('.supplier_name', res.error.name);
                             }
@@ -414,7 +366,7 @@
                         }
                     }
                 });
-            });
+            })
 
         })
     </script>
