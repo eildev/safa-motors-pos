@@ -387,4 +387,10 @@ class ProductsController extends Controller
             'message' => 'Variation added successfully!',
         ]);
     }
+    public function productVariationView($id){
+
+        $product = Product::with('productvariation')->findOrFail($id);
+        $defaultVariation = $product->productvariation->where('status', 'default')->first();
+        return view('pos.products.variations.variation_view', compact('product','defaultVariation'));
+    }
 }

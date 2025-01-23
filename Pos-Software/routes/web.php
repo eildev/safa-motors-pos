@@ -154,6 +154,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/product/find/{id}', 'find')->name('product.find');
         Route::get('/product/barcode/{id}', 'ProductBarcode')->name('product.barcode');
         Route::get('/search/{value}', 'globalSearch');
+        Route::get('/product/variation/view/{id}', 'productVariationView')->name('product.variation.view');
+
         // product ledger
         Route::get('/product/ledger/{id}', 'productLedger')->name('product.ledger');
         Route::get('/latest-product', 'latestProduct');

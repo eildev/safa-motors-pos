@@ -29,7 +29,7 @@ class Product extends Model
     }
     function size()
     {
-        return $this->belongsTo(Size::class, 'size_id', 'id');
+        return $this->belongsTo(Size::class, 'size', 'id');
     }
     function damage()
     {
@@ -49,6 +49,10 @@ class Product extends Model
         return $this->hasOne(Variation::class, 'product_id', 'id')->where('status', 'default');
     }
     public function variations()
+    {
+        return $this->hasMany(Variation::class, 'product_id');
+    }
+    public function productvariation()
     {
         return $this->hasMany(Variation::class, 'product_id');
     }

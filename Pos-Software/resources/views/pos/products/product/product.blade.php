@@ -26,7 +26,7 @@
                             </div>
                             <div class="mb-3 col-md-6">
                                 @php
-                                    $categories = App\Models\Category::where('status','active')->get();
+                                    $categories = App\Models\Category::where('status', 'active')->get();
                                 @endphp
                                 <label for="ageSelect" class="form-label">Category <span
                                         class="text-danger">*</span></label>
@@ -53,7 +53,7 @@
 
                             <div class="mb-3 col-md-6">
                                 @php
-                                    $brands = App\Models\Brand::where('status','active')->get();
+                                    $brands = App\Models\Brand::where('status', 'active')->get();
                                 @endphp
                                 <label for="ageSelect" class="form-label">Brand <span class="text-danger">*</span></label>
                                 <select class="js-example-basic-single form-select brand_id" name="brand_id"
@@ -83,8 +83,7 @@
                                 @php
                                     $units = App\Models\Unit::where('status', 'active')->get();
                                 @endphp
-                                <label for="ageSelect" class="form-label"> Unit <span
-                                        class="text-danger">*</span></label>
+                                <label for="ageSelect" class="form-label"> Unit <span class="text-danger">*</span></label>
                                 <select class="js-example-basic-single form-select unit" name="unit"
                                     onchange="errorRemove(this);">
                                     @if ($units->count() > 0)
@@ -241,8 +240,9 @@
                                                             <tfoot>
                                                             </tfoot>
                                                         </table>
-                                                        <button type="submit" class="btn mt-1 btn-md float-end variationStoreAdd"
-                                                        style="border:1px solid #6587ff ">Submit</button>
+                                                        <button type="submit"
+                                                            class="btn mt-1 btn-md float-end variationStoreAdd"
+                                                            style="border:1px solid #6587ff ">Submit</button>
                                                     </div>
 
                                                 </div>
@@ -369,7 +369,7 @@
                             latestProduct();
                             // latestSize();
                             hideSpinner()
-                            // $('.productForm')[0].reset();
+                            $('.productForm')[0].reset();
                             toastr.success(res.message);
                             // window.location.href = "{{ route('product.view') }}";
                         } else {
@@ -487,7 +487,7 @@
             // Append the new row to the table body
             tableBody.appendChild(newRow);
             latestSize();
-            tableHead.forEach(function (head) {
+            tableHead.forEach(function(head) {
                 head.style.display = 'table-cell';
             });
 
@@ -495,10 +495,10 @@
             newRow.querySelector('.removeVariationRowBtn').addEventListener('click', function() {
                 newRow.remove();
                 if (tableBody.querySelectorAll('tr').length === 0) {
-            tableHead.forEach(function (head) {
-                head.style.display = 'none';
-            });
-        }
+                    tableHead.forEach(function(head) {
+                        head.style.display = 'none';
+                    });
+                }
             });
 
         });
@@ -525,16 +525,20 @@
                 let priceVari = row.querySelector('input[name="base_price[]"]').value.trim();
                 let sizeVari = row.querySelector('select[name="variation_size[]"]').value;
 
-                let modelVari = row.querySelector('input[name="model_no[]"]').value.trim(); // Use `input` for model_no[] if it's an input field.
+                let modelVari = row.querySelector('input[name="model_no[]"]').value
+            .trim(); // Use `input` for model_no[] if it's an input field.
                 let qualityVari = row.querySelector('select[name="quality[]"]').value;
-                let colorVari = row.querySelector('input[name="color[]"]').value.trim(); // Use `input` for color[] if it's an input field.
+                let colorVari = row.querySelector('input[name="color[]"]').value
+            .trim(); // Use `input` for color[] if it's an input field.
 
                 if (!priceVari) {
                     errorMessages.push(`⚠️ Row ${index + 1}: Price field is required.`);
                     allFieldsFilled = false;
                 }
-                if (sizeVari ===' ' && !modelVari && !qualityVari && !colorVari) {
-                    errorMessages.push(`⚠️ Row ${index + 1}: At least one of Size, Model No, Quality, or Color must be filled.`);
+                if (sizeVari === ' ' && !modelVari && !qualityVari && !colorVari) {
+                    errorMessages.push(
+                        `⚠️ Row ${index + 1}: At least one of Size, Model No, Quality, or Color must be filled.`
+                        );
                     allFieldsFilled = false;
                 }
 
@@ -570,7 +574,7 @@
                             // $('#variationTable tbody').empty();
                             toastr.success(response.message);
                             // Optionally reload the page
-                            // window.location.href = '/service/sale/view';
+                            window.location.href = "{{ route('product.view') }}";
                         } else {
                             hideSpinner()
                             toastr.error(response.error || 'Something went wrong.');

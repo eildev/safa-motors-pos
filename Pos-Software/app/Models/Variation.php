@@ -8,11 +8,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Variation extends Model
 {
-    use HasFactory, SoftDeletes; 
+    use HasFactory, SoftDeletes;
     protected $guarded = [];
 
     public function stocks()
     {
         return $this->hasMany(Stocks::class, 'variation_id');
     }
+    // function size()
+    // {
+    //     return $this->belongsTo(Size::class, 'size');
+    // }
 }
