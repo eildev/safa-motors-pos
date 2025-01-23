@@ -43,6 +43,7 @@
     @include('pos.supplier.add-modal')
 
 
+
     <!-- Modal -->
     <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
@@ -98,12 +99,29 @@
 
     <script>
         // error remove
+        // function errorRemove(element) {
+        //     if (element.value != '') {
+        //         $(element).siblings('span').hide();
+        //         $(element).css('border-color', 'green');
+        //     }
+        // }
+
+
+        // remove error
         function errorRemove(element) {
+            tag = element.tagName.toLowerCase();
             if (element.value != '') {
-                $(element).siblings('span').hide();
-                $(element).css('border-color', 'green');
+                // console.log('ok');
+                if (tag == 'select') {
+                    $(element).closest('.mb-3').find('.text-danger').hide();
+                } else {
+                    $(element).siblings('span').hide();
+                    $(element).css('border-color', 'green');
+                }
             }
         }
+
+
         $(document).ready(function() {
             // show error
             function showError(name, message) {
