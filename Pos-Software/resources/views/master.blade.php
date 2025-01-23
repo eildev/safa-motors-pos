@@ -6,6 +6,13 @@
 </head>
 
 <body>
+    {{-- spinner  --}}
+    <div class="spinner-container">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
     <div class="main-wrapper">
 
         <!-- partial:partials/_sidebar.html -->
@@ -32,6 +39,8 @@
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+
+
         const flexSwitchCheckDefault = document.querySelector('.flexSwitchCheckDefault');
         const form = document.getElementById('darkModeForm');
         if (flexSwitchCheckDefault && form) {
@@ -158,6 +167,16 @@
     global_search.addEventListener('blur', function() {
         search_result.style.display = 'none';
     });
+    const spinner = document.querySelector('.spinner-container');
+        // Show the spinner
+        function showSpinner() {
+            spinner.style.display = 'flex';
+        }
+
+        // Hide the spinner
+        function hideSpinner() {
+            spinner.style.display = 'none';
+        }
 </script>
 
 </html>

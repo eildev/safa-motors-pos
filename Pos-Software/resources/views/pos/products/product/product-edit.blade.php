@@ -158,7 +158,7 @@
                                         </option>
                                         @endforeach
                                     @else
-                                        <option selected disabled>Please Add Tags</option>
+                                        <option  disabled>Please Add Tags</option>
                                     @endif
                                 </select>
 

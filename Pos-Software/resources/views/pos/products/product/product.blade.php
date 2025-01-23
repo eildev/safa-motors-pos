@@ -1,6 +1,7 @@
 @extends('master')
 @section('title', '| Add Product')
 @section('admin')
+
     <nav class="page-breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
@@ -347,6 +348,7 @@
             $('.save_product').click(function(e) {
                 e.preventDefault();
                 // alert('ok')
+                showSpinner();
                 let formData = new FormData($('.productForm')[0]);
                 $.ajaxSetup({
                     headers: {
@@ -360,16 +362,21 @@
                     processData: false,
                     contentType: false,
                     success: function(res) {
+
                         if (res.status == 200) {
+
                             // console.log(res);
                             latestProduct();
                             // latestSize();
+                            hideSpinner()
                             // $('.productForm')[0].reset();
                             toastr.success(res.message);
                             // window.location.href = "{{ route('product.view') }}";
                         } else {
                             // console.log(res.error);
+                            hideSpinner()
                             const error = res.error;
+
                             // console.log(error)
                             if (error.name) {
                                 showError('.name', error.name);
@@ -388,6 +395,7 @@
                                 showError('.size', error.size);
                             }
                         }
+
                     }
                 });
             })
@@ -540,7 +548,7 @@
 
             ///////////////Validation End /////////////
             if (rows.length > 0) {
-
+                showSpinner()
                 // AJAX Submission
                 let formData = new FormData(variationForm);
                 $.ajaxSetup({
@@ -558,11 +566,13 @@
                     success: function(response) {
                         if (response.status === 200) {
                             variationForm.reset();
+                            hideSpinner()
                             // $('#variationTable tbody').empty();
                             toastr.success(response.message);
                             // Optionally reload the page
                             // window.location.href = '/service/sale/view';
                         } else {
+                            hideSpinner()
                             toastr.error(response.error || 'Something went wrong.');
                         }
                     },
@@ -572,6 +582,7 @@
                             let errorList = Object.values(errors).flat().join('<br>');
                             toastr.error(errorList);
                         } else {
+                            hideSpinner()
                             toastr.warning('An unexpected error occurred.');
                         }
                     }

@@ -230,7 +230,7 @@ class ProductsController extends Controller
     {
         // $product = Product::with('unit')->findOrFail($id);
         $varients = Variation::where('product_id', $id)->get();
-        
+
             // If no promotion details exist, still return the product with the unit
             return response()->json([
                 'status' => '200',
