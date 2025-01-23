@@ -288,18 +288,25 @@
 
     <script>
         // remove error
-        function errorRemove(element) {
-            tag = element.tagName.toLowerCase();
-            if (element.value != '') {
-                // console.log('ok');
-                if (tag == 'select') {
-                    $(element).closest('.mb-3').find('.text-danger').hide();
-                } else {
-                    $(element).siblings('span').hide();
-                    $(element).css('border-color', 'green');
-                }
-            }
-        }
+        // function errorRemove(element) {
+        //     tag = element.tagName.toLowerCase();
+        //     if (element.value != '') {
+        //         // console.log('ok');
+        //         if (tag == 'select') {
+        //             $(element).closest('.mb-3').find('.text-danger').hide();
+        //         } else {
+        //             $(element).siblings('span').hide();
+        //             $(element).css('border-color', 'green');
+        //         }
+        //     }
+        // }
+        // error remove
+        // function errorRemove(element) {
+        //     if (element.value != '') {
+        //         $(element).siblings('span').hide();
+        //         $(element).css('border-color', 'green');
+        //     }
+        // }
 
         // Function to recalculate total
         function calculateTotal() {
@@ -348,180 +355,145 @@
         }
 
         $(document).ready(function() {
-                    // show error
-                    function showError(name, message) {
-                        $(name).css('border-color', 'red'); // Highlight input with red border
-                        $(name).focus(); // Set focus to the input field
-                        $(`${name}_error`).show().text(message); // Show error message
-                    }
+            // show error
+            function showError(name, message) {
+                $(name).css('border-color', 'red'); // Highlight input with red border
+                $(name).focus(); // Set focus to the input field
+                $(`${name}_error`).show().text(message); // Show error message
+            }
 
 
-                    // show supplier
-                    function supplierView() {
-                        // console.log('hello')
-                        $.ajax({
-                            url: '/supplier/view',
-                            method: 'GET',
-                            success: function(res) {
-                                const suppliers = res.data;
-                                // console.log(suppliers);
-                                $('.select-supplier').empty();
-                                if (suppliers.length > 0) {
-                                    $('.select-supplier').html(
-                                        `<option selected disabled>Select a Supplier</option>`);
-                                    $.each(suppliers, function(index, supplier) {
-                                        $('.select-supplier').append(
-                                            `<option value="${supplier.id}">${supplier.name}</option>`
-                                        );
-                                    })
-                                } else {
-                                    $('.select-supplier').html(`
-                    <option selected disable>Please add supplier</option>`)
-                                }
-                            }
-                        })
-                    }
-                    supplierView();
-
-                    // save supplier
-                    const saveSupplier = document.querySelector('.save_supplier');
-                    saveSupplier.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        let formData = new FormData($('.supplierForm')[0]);
-                        $.ajaxSetup({
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            }
-                        });
-                        $.ajax({
-                            url: '/supplier/store',
-                            type: 'POST',
-                            data: formData,
-                            processData: false,
-                            contentType: false,
-                            success: function(res) {
-                                if (res.status == 200) {
-                                    $('#exampleModalLongScollable').modal('hide');
-                                    $('.supplierForm')[0].reset();
-                                    supplierView();
-                                    toastr.success(res.message);
-                                } else if (res.status == 400) {
-                                    if (res.error.name) {
-                                        showError('.supplier_name', res.error.name);
-                                    }
-                                    if (res.error.phone) {
-                                        showError('.phone', res.error.phone);
-                                    }
-                                    if (res.error.email) {
-                                        showError('.email', res.error.email);
-                                    }
-                                    if (res.error.address) {
-                                        showError('.address', res.error.address);
-                                    }
-                                    if (res.error.business_name) {
-                                        showError('.business_name', res.error.business_name);
-                                    }
-                                    if (res.error.due_balance) {
-                                        showError('.due_balance', res.error.due_balance);
-                                    }
-                                } else {
-                                    toastr.error(res.message);
-                                }
-                            }
-                        });
-                    })
-
-                    //Supplier Data find
-                    function fetchSupplierDetails(supplierId) {
-                        $.ajax({
-                            url: `/purchase/supplier/${supplierId}`,
-                            method: 'GET',
-                            success: function(res) {
-                                const supplier = res.supplier;
-                                // console.log(supplier);
-                                if (supplier.wallet_balance > 0) {
-                                    $('.previous_due').text(supplier.wallet_balance);
-                                } else {
-                                    $('.previous_due').text(0);
-                                }
-                            }
-                        });
-                    } //
-
-                    // select supplier 
-                    $('.select-supplier').on('change', function() {
-                        const selectedSupplierId = $(this).val();
-                        if (selectedSupplierId) {
-                            fetchSupplierDetails(selectedSupplierId);
+            // show supplier
+            function supplierView() {
+                // console.log('hello')
+                $.ajax({
+                    url: '/supplier/view',
+                    method: 'GET',
+                    success: function(res) {
+                        const suppliers = res.data;
+                        // console.log(suppliers);
+                        $('.select-supplier').empty();
+                        if (suppliers.length > 0) {
+                            $('.select-supplier').html(
+                                `<option selected disabled>Select a Supplier</option>`);
+                            $.each(suppliers, function(index, supplier) {
+                                $('.select-supplier').append(
+                                    `<option value="${supplier.id}">${supplier.name}</option>`
+                                );
+                            })
+                        } else {
+                            $('.select-supplier').html(`
+                                    <option selected disable>Please add supplier</option>`)
                         }
-                    });
+                    }
+                })
+            }
+            supplierView();
 
-                    // total quantity 
-                    let totalQuantity = 0;
-
-                    // Function to update total quantity
-                    function updateTotalQuantity() {
-                        totalQuantity = 0;
-                        $('.quantity').each(function() {
-                            let quantity = parseFloat($(this).val());
-                            if (!isNaN(quantity)) {
-                                totalQuantity += quantity;
+            // save supplier
+            const saveSupplier = document.querySelector('.save_supplier');
+            saveSupplier.addEventListener('click', function(e) {
+                e.preventDefault();
+                let formData = new FormData($('.supplierForm')[0]);
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: '/supplier/store',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        if (res.status == 200) {
+                            $('#exampleModalLongScollable').modal('hide');
+                            $('.supplierForm')[0].reset();
+                            supplierView();
+                            toastr.success(res.message);
+                        } else if (res.status == 400) {
+                            if (res.error.name) {
+                                showError('.supplier_name', res.error.name);
                             }
-                        });
-                        // console.log(totalQuantity);
-                    }
-                    // Function to update SL numbers
-                    function updateSLNumbers() {
-                        $('.showData > tr').each(function(index) {
-                            $(this).find('td:first').text(index + 1);
-                        });
-                    }
-
-
-                    // select product
-                    $('.product_select').change(function() {
-                        let id = $(this).val();
-                        let supplier = $('.select-supplier').val();
-                        // alert(id);
-                        if (supplier) {
-                            if ($(`.data_row${id}`).length === 0 && id) {
-                                $.ajax({
-                                    url: '/product/find/' + id,
-                                    type: 'GET',
-                                    dataType: 'JSON',
-                                    success: function(res) {
-                                        if (res.status == 200) {
-                                            const varients = res.varients;
-                                            $('.select-varient').empty();
-                                            if (varients.length > 0) {
-                                                $('.select-varient').html(
-                                                    `<option selected disabled>Select a varients</option>`
-                                                );
-                                                $.each(varients, function(index, varient) {
-                                                    $('.select-varient').append(
-                                                        `<option value="${varient.id}">${varient.model_no ?? ""}</option>`
-                                                    );
-                                                })
-                                            } else {
-                                                $('.select-varient').html(`
-                                        <option selected disable>Please add supplier</option>`)
-                                            }
-                                        } else {
-                                            toastr.warning('Variation not found');
-                                        }
-                                    }
-                                })
+                            if (res.error.phone) {
+                                showError('.phone', res.error.phone);
+                            }
+                            if (res.error.email) {
+                                showError('.email', res.error.email);
+                            }
+                            if (res.error.address) {
+                                showError('.address', res.error.address);
+                            }
+                            if (res.error.business_name) {
+                                showError('.business_name', res.error.business_name);
+                            }
+                            if (res.error.due_balance) {
+                                showError('.due_balance', res.error.due_balance);
                             }
                         } else {
-                            showError('.supplier_id', 'Please Select Supplier');
+                            toastr.error(res.message);
                         }
+                    }
+                });
+            })
 
-                    })
+            //Supplier Data find
+            function fetchSupplierDetails(supplierId) {
+                $.ajax({
+                    url: `/purchase/supplier/${supplierId}`,
+                    method: 'GET',
+                    success: function(res) {
+                        const supplier = res.supplier;
+                        // console.log(supplier);
+                        if (supplier.wallet_balance > 0) {
+                            $('.previous_due').text(supplier.wallet_balance);
+                        } else {
+                            $('.previous_due').text(0);
+                        }
+                    }
+                });
+            } //
 
-                    $('.select-varient').change(function() {
-                        let id = $(this).val();
+            // select supplier 
+            $('.select-supplier').on('change', function() {
+                const selectedSupplierId = $(this).val();
+                if (selectedSupplierId) {
+                    fetchSupplierDetails(selectedSupplierId);
+                }
+            });
+
+            // total quantity 
+            let totalQuantity = 0;
+
+            // Function to update total quantity
+            function updateTotalQuantity() {
+                totalQuantity = 0;
+                $('.quantity').each(function() {
+                    let quantity = parseFloat($(this).val());
+                    if (!isNaN(quantity)) {
+                        totalQuantity += quantity;
+                    }
+                });
+                // console.log(totalQuantity);
+            }
+            // Function to update SL numbers
+            function updateSLNumbers() {
+                $('.showData > tr').each(function(index) {
+                    $(this).find('td:first').text(index + 1);
+                });
+            }
+
+
+            // select product
+            $('.product_select').change(function() {
+                let id = $(this).val();
+                let supplier = $('.select-supplier').val();
+                // alert(id);
+                if (supplier) {
+                    if ($(`.data_row${id}`).length === 0 && id) {
                         $.ajax({
-                            url: '/product/variantion/' + id,
+                            url: '/product/find/' + id,
                             type: 'GET',
                             dataType: 'JSON',
                             success: function(res) {
@@ -546,118 +518,154 @@
                                 }
                             }
                         })
+                    }
+                } else {
+                    showError('.supplier_id', 'Please Select Supplier');
+                }
 
+            })
 
-
-
-                        // purchase Delete
-                        $(document).on('click', '.purchase_delete', function(e) {
-                            // alert('ok');
-                            let id = $(this).attr('data-id');
-                            let dataRow = $('.data_row' + id);
-                            dataRow.remove();
-                            // Recalculate grand total
-                            calculateTotal();
-                            updateSLNumbers();
-                            updateTotalQuantity();
-                        });
-
-                        // payment button click event
-                        $('.payment_btn').click(function(e) {
-                            e.preventDefault();
-                            updateTotalQuantity();
-                            let cumtomer_due = parseFloat($('.previous_due').text());
-                            let subtotal = parseFloat($('.grand_total').val());
-                            $('.subTotal').val(subtotal);
-                            let grandTotal = cumtomer_due + subtotal;
-                            $('.grandTotal').val(grandTotal);
-                            $('.paying_items').text(totalQuantity);
-                            $('.total_payable').focus();
-
-                            var isValid = true;
-                            //Quantity Message
-                            $('.quantity').each(function() {
-                                var quantity = $(this).val();
-                                if (!quantity || quantity < 1) {
-                                    isValid = false;
-                                    return false;
-                                }
-                            });
-                            if (!isValid) {
-                                event.preventDefault();
-                                // alert('Please enter a quantity of at least 1 for all products.');
-                                toastr.error('Please enter a quantity of at least 1.)');
-                                $('#paymentModal').modal('hide');
+            $('.select-varient').change(function() {
+                let id = $(this).val();
+                $.ajax({
+                    url: '/product/variantion/' + id,
+                    type: 'GET',
+                    dataType: 'JSON',
+                    success: function(res) {
+                        if (res.status == 200) {
+                            const varients = res.varients;
+                            $('.select-varient').empty();
+                            if (varients.length > 0) {
+                                $('.select-varient').html(
+                                    `<option selected disabled>Select a varients</option>`
+                                );
+                                $.each(varients, function(index, varient) {
+                                    $('.select-varient').append(
+                                        `<option value="${varient.id}">${varient.model_no ?? ""}</option>`
+                                    );
+                                })
+                            } else {
+                                $('.select-varient').html(`
+                                        <option selected disable>Please add supplier</option>`)
                             }
-                        })
-
-                        // paid amount
-                        $('.paid_btn').click(function(e) {
-                            e.preventDefault();
-                            // alert('ok');
-                            let grandTotal = $('.grandTotal').val();
-                            $('.total_payable').val(grandTotal);
-                            payFunc();
-                        })
+                        } else {
+                            toastr.warning('Variation not found');
+                        }
+                    }
+                })
 
 
-                        $('#purchaseForm').submit(function(event) {
-                            event.preventDefault();
-                            let formData = new FormData($('#purchaseForm')[0]);
-                            $.ajaxSetup({
-                                headers: {
-                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                                }
-                            });
 
-                            $.ajax({
-                                url: '/purchase/store',
-                                type: 'POST',
-                                data: formData,
-                                processData: false,
-                                contentType: false,
-                                success: function(res) {
-                                    if (res.status == 200) {
-                                        $('#paymentModal').modal('hide');
-                                        toastr.success(res.message);
-                                        let id = res.purchaseId;
-                                        window.location.href = '/purchase/invoice/' + id;
 
-                                    } else if (res.status == 400) {
-                                        toastr.warning(res.message);
-                                        showError('.payment_method',
-                                            'please Select Another Payment Method');
-                                    } else {
-                                        console.log(res);
-                                        if (res.error.payment_method || res.error
-                                            .total_payable) {
-                                            if (res.error.total_payable) {
-                                                showError('.total_payable', res.error
-                                                    .total_payable);
-                                            }
-                                            if (res.error.payment_method) {
-                                                showError('.payment_method', res.error
-                                                    .payment_method);
-                                            }
-                                        } else {
-                                            $('#paymentModal').modal('hide');
-                                            if (res.error.supplier_id) {
-                                                showError('.supplier_id', res.error
-                                                .supplier_id);
-                                            }
-                                            if (res.error.purchase_date) {
-                                                showError('.purchase_date', res.error
-                                                    .purchase_date);
-                                            }
-                                            if (res.error.document) {
-                                                showError('.document_file', res.error.document);
-                                            }
-                                        }
+                // purchase Delete
+                $(document).on('click', '.purchase_delete', function(e) {
+                    // alert('ok');
+                    let id = $(this).attr('data-id');
+                    let dataRow = $('.data_row' + id);
+                    dataRow.remove();
+                    // Recalculate grand total
+                    calculateTotal();
+                    updateSLNumbers();
+                    updateTotalQuantity();
+                });
+
+                // payment button click event
+                $('.payment_btn').click(function(e) {
+                    e.preventDefault();
+                    updateTotalQuantity();
+                    let cumtomer_due = parseFloat($('.previous_due').text());
+                    let subtotal = parseFloat($('.grand_total').val());
+                    $('.subTotal').val(subtotal);
+                    let grandTotal = cumtomer_due + subtotal;
+                    $('.grandTotal').val(grandTotal);
+                    $('.paying_items').text(totalQuantity);
+                    $('.total_payable').focus();
+
+                    var isValid = true;
+                    //Quantity Message
+                    $('.quantity').each(function() {
+                        var quantity = $(this).val();
+                        if (!quantity || quantity < 1) {
+                            isValid = false;
+                            return false;
+                        }
+                    });
+                    if (!isValid) {
+                        event.preventDefault();
+                        // alert('Please enter a quantity of at least 1 for all products.');
+                        toastr.error('Please enter a quantity of at least 1.)');
+                        $('#paymentModal').modal('hide');
+                    }
+                })
+
+                // paid amount
+                $('.paid_btn').click(function(e) {
+                    e.preventDefault();
+                    // alert('ok');
+                    let grandTotal = $('.grandTotal').val();
+                    $('.total_payable').val(grandTotal);
+                    payFunc();
+                })
+
+
+                $('#purchaseForm').submit(function(event) {
+                    event.preventDefault();
+                    let formData = new FormData($('#purchaseForm')[0]);
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+
+                    $.ajax({
+                        url: '/purchase/store',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(res) {
+                            if (res.status == 200) {
+                                $('#paymentModal').modal('hide');
+                                toastr.success(res.message);
+                                let id = res.purchaseId;
+                                window.location.href = '/purchase/invoice/' + id;
+
+                            } else if (res.status == 400) {
+                                toastr.warning(res.message);
+                                showError('.payment_method',
+                                    'please Select Another Payment Method');
+                            } else {
+                                console.log(res);
+                                if (res.error.payment_method || res.error
+                                    .total_payable) {
+                                    if (res.error.total_payable) {
+                                        showError('.total_payable', res.error
+                                            .total_payable);
+                                    }
+                                    if (res.error.payment_method) {
+                                        showError('.payment_method', res.error
+                                            .payment_method);
+                                    }
+                                } else {
+                                    $('#paymentModal').modal('hide');
+                                    if (res.error.supplier_id) {
+                                        showError('.supplier_id', res.error
+                                            .supplier_id);
+                                    }
+                                    if (res.error.purchase_date) {
+                                        showError('.purchase_date', res.error
+                                            .purchase_date);
+                                    }
+                                    if (res.error.document) {
+                                        showError('.document_file', res.error.document);
                                     }
                                 }
-                            });
-                        });
+                            }
+                        }
                     });
+                });
+            });
+        });
     </script>
 
 @endsection
