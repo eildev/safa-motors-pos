@@ -35,7 +35,7 @@
                                     <div class="col-md-4">
                                         <button class="btn btn-primary" data-bs-toggle="modal"
                                             data-bs-target="#exampleModalLongScollable">
-                                            Add Supplier
+                                            Add Supplier 1
                                         </button>
                                     </div>
                                 </div>
@@ -455,7 +455,7 @@
                 });
             } //
 
-            // select supplier 
+            // select supplier
             $('.select-supplier').on('change', function() {
                 const selectedSupplierId = $(this).val();
                 if (selectedSupplierId) {
@@ -463,7 +463,7 @@
                 }
             });
 
-            // total quantity 
+            // total quantity
             let totalQuantity = 0;
 
             // Function to update total quantity
