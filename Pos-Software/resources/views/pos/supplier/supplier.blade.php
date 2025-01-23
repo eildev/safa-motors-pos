@@ -43,8 +43,10 @@
     @include('pos.supplier.add-modal')
 
 
+
     <!-- Modal -->
-    <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+    <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalScrollableTitle"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -56,8 +58,8 @@
                         <div class="mb-3 col-md-6">
                             <label for="name" class="form-label">Supplier Name <span
                                     class="text-danger">*</span></label>
-                            <input id="defaultconfig" class="form-control edit_supplier_name" maxlength="255" name="name"
-                                type="text" onkeyup="errorRemove(this);">
+                            <input id="defaultconfig" class="form-control edit_supplier_name" maxlength="255"
+                                name="name" type="text" onkeyup="errorRemove(this);">
                             <span class="text-danger edit_name_error"></span>
                         </div>
                         <div class="mb-3 col-md-6">
