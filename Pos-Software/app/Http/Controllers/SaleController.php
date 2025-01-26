@@ -32,7 +32,9 @@ class SaleController extends Controller
     public function index()
     {
         // $withoutPurchase = Product::whereDoesntHave('purchaseItems')->get();
-        return view('pos.sale.sale');
+        // return view('pos.sale.sale');
+         return view('pos.safa-sale-page.sale');
+
     }
     public function getCustomer()
     {
