@@ -91,6 +91,23 @@
     .page-breadcrumb .breadcrumb {
         padding: 12px;
     }
+    .spinner-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1050;
+            /* Ensure it's above all content */
+            display: none;
+            /* Initially hidden */
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Optional: Semi-transparent background */
+            width: 100vw;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+        }
+
 </style>
 {{-- jquery plugin  --}}
 

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\AccountTransaction;
 use App\Models\ActualPayment;
 use App\Models\Branch;
-use App\Models\Category;
 use App\Models\Expense;
 use App\Models\Product;
 use App\Models\Purchase;
@@ -23,6 +22,10 @@ class PurchaseController extends Controller
 {
     public function index()
     {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 391dcfb33e304f64965f3150c664fcc0fdf5afcd
         $products = Product::get();
 
         return view('pos.purchase.purchase', compact('products'));

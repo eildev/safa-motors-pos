@@ -144,7 +144,7 @@ class SubCategoryController extends Controller
     }
     public function find($id)
     {
-        $subcategory = SubCategory::where('category_id', $id)->get();
+        $subcategory = SubCategory::where('category_id', $id)->where('status','active')->get();
         $size = Size::where('category_id', $id)->get();
 
         return response()->json([
