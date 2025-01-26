@@ -389,6 +389,11 @@
                 });
             })
 
+<<<<<<< HEAD
+=======
+            var name = "hello world";
+            console.log(name);
+>>>>>>> 376b1fabe5b622bbd1cea310995ad7b1e71665b6
 
         })
     </script>
