@@ -12,6 +12,27 @@
             <li class="breadcrumb-item active" aria-current="page">Purchase Products</li>
         </ol>
     </nav>
+<<<<<<< HEAD
+    <form id="purchaseForm" class="row" enctype="multipart/form-data">
+        {{-- form  --}}
+        <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="card-title">Purchase Products</h6>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3 col-md-6">
+                                <label for="ageSelect" class="form-label">Supplier <span
+                                        class="text-danger">*</span></label>
+                                <select class="js-example-basic-single form-select select-supplier supplier_id"
+                                    data-width="100%" onchange="errorRemove(this);" name="supplier_id">
+                                </select>
+                                <span class="text-danger supplier_id_error"></span>
+                            </div>
+=======
+>>>>>>> 391dcfb33e304f64965f3150c664fcc0fdf5afcd
 
 
     <div class="row">
@@ -37,6 +58,30 @@
                                         Add Supplier
                                     </button>
                                 </div>
+<<<<<<< HEAD
+                                <span class="text-danger purchase_date_error"></span>
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label for="ageSelect" class="form-label">Products <span
+                                        class="text-danger">*</span></label>
+                                <select class="js-example-basic-single form-select product_select" data-width="100%"
+                                    onclick="errorRemove(this);">
+                                    @if ($products->count() > 0)
+                                        <option selected disabled>Select Products</option>
+                                        @foreach ($products as $product)
+                                            <option value="{{ $product->id }}">{{ $product->name ?? '' }}
+                                                ({{ $product->variation->stocks->sum('quantity') ?? 0 }}
+                                                {{ $product->purchaseUnit->name ?? '' }})
+                                            </option>
+                                        @endforeach
+                                    @else
+                                        <option selected disabled>
+                                            Please Add Product</option>
+                                    @endif
+                                </select>
+                                <span class="text-danger product_select_error"></span>
+=======
+>>>>>>> 391dcfb33e304f64965f3150c664fcc0fdf5afcd
                             </div>
                         </div>
 
