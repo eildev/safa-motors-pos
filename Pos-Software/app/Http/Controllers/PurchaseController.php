@@ -22,10 +22,6 @@ class PurchaseController extends Controller
 {
     public function index()
     {
-<<<<<<< HEAD
-=======
-
->>>>>>> 391dcfb33e304f64965f3150c664fcc0fdf5afcd
         $products = Product::get();
 
         return view('pos.purchase.purchase', compact('products'));

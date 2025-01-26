@@ -30,11 +30,7 @@ class Product extends Model
     }
     function purchaseUnit()
     {
-<<<<<<< HEAD
         return $this->belongsTo(Unit::class, 'purchase_unit', 'id');
-=======
-        return $this->belongsTo(Size::class, 'size', 'id');
->>>>>>> 391dcfb33e304f64965f3150c664fcc0fdf5afcd
     }
     function damage()
     {
@@ -57,11 +53,8 @@ class Product extends Model
     {
         return $this->hasMany(Variation::class, 'product_id');
     }
-<<<<<<< HEAD
-=======
     public function productvariation()
     {
         return $this->hasMany(Variation::class, 'product_id');
     }
->>>>>>> 391dcfb33e304f64965f3150c664fcc0fdf5afcd
 }
